@@ -1,0 +1,34 @@
+## (Given a Dataset) Analyze this dataset and give me a model that can predict this response variable.
+
+```{r}
+# Generate synthetic data
+set.seed(123) # for reproducibility
+n <- 100 # number of observations
+x1 <- rnorm(n) # predictor variable 1
+x2 <- runif(n) # predictor variable 2
+error <- rnorm(n, mean = 0, sd = 1) # random error
+
+# Define the true relationship
+y <- 2 + 3*x1 + 0.5*x2 + error # response variable
+
+# Create a data frame
+df <- data.frame(y = y, x1 = x1, x2 = x2)
+
+# Fit a linear regression model
+model <- lm(y ~ x1 + x2, data = df)
+
+# Print the model summary
+summary(model)
+
+# Make predictions on new data
+new_data <- data.frame(x1 = c(0, 1, 2), x2 = c(0.5, 0.75, 1))
+predictions <- predict(model, newdata = new_data)
+print(predictions)
+
+# filepath: /Users/namomac/Desktop/DS-Questions-codes/Predictive Modelling/q1.qmd
+# Explanation:
+# 1. Synthetic data generation:  Generates a dataset with a response variable 'y' that depends on two predictor variables 'x1' and 'x2', plus some random noise.
+# 2. Linear Regression:  Fits a linear regression model to the data, with 'y' as the response and 'x1' and 'x2' as predictors.
+# 3. Model Summary:  Prints a summary of the model, including coefficients, p-values, and R-squared.
+# 4. Prediction:  Generates predictions for new data points using the fitted model.
+```
