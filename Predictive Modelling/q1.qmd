@@ -32,3 +32,10 @@ print(predictions)
 # 3. Model Summary:  Prints a summary of the model, including coefficients, p-values, and R-squared.
 # 4. Prediction:  Generates predictions for new data points using the fitted model.
 ```
+
+
+The code generates synthetic data, fits a linear regression model, and makes predictions using R. First, it sets a seed for reproducibility and defines the number of observations. It then creates predictor variables x1 (normally distributed) and x2 (uniformly distributed), along with a random error term. The response variable y is defined as a linear combination of x1, x2, and the error term.
+
+Next, a data frame df is created from y, x1, and x2. A linear regression model is fit using the lm() function, with y as the response variable and x1 and x2 as predictors. The summary of the model is printed to the console, providing information about the model's coefficients, standard errors, p-values, and R-squared.
+
+Finally, new data is created in a data frame called new_data, and the predict() function is used to generate predictions based on the fitted model. These predictions are then printed to the console.
