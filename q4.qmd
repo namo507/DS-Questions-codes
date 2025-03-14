@@ -1,0 +1,63 @@
+## What are some differences you would expect in a model that minimizes squared error, versus a model that min-imizes absolute error? In which cases would each error metric be appropriate?
+
+1. Model Characteristics
+
+Squared Error Models (e.g., OLS regression):
+More sensitive to outliers as errors are squared, giving larger weight to large deviations
+Computationally convenient (differentiable everywhere)
+Statistically efficient when errors are normally distributed
+Tends to produce parameter estimates with lower variance
+Solutions typically have closed-form expressions
+
+
+Absolute Error Models (e.g., LAD/median regression):
+More robust to outliers as errors scale linearly
+Computationally more challenging (non-differentiable at zero)
+Produces the median prediction (versus mean for squared error)
+Often requires iterative solution methods
+Parameter estimates may have higher variance but lower bias in the presence of outliers
+
+
+
+Predicted Values
+MEANN   Squared error minimization estimates the conditional (mean) of the target variable.
+
+MEDIAN  Absolute error minimization estimates the conditional (median) of the target variable.
+
+
+Distribution of Residuals
+
+Squared error assumes errors follow a normal distribution
+
+Absolute error assumes errors follow a Laplace (double exponential) distribution
+
+
+
+When to Use Each Error Metric
+Use Squared Error When:
+Data has few or no outliers
+You want to penalize large errors more heavily
+Your data approximately follows a normal distribution
+You need a differentiable loss function (for gradient-based optimization)
+The mean is an appropriate central tendency measure for your problem
+You care about overall model stability and prediction variance
+Use Absolute Error When:
+Data contains significant outliers that you don't want to overly influence the model
+You want errors to scale linearly with their magnitude
+Your data follows a more peaked distribution than normal
+The median is a more appropriate central tendency measure for your problem
+You're interested in minimizing the total absolute deviation
+You want more robust predictions in noisy environments
+Examples of Appropriate Applications
+Squared Error Applications:
+
+Linear regression for well-behaved data
+Financial forecasting where both positive and negative errors are equally important but large errors are very costly
+Scientific modeling where theoretical foundations suggest normal error distributions
+Absolute Error Applications:
+
+Real estate price prediction where a few very unusual properties shouldn't skew the model
+Time series forecasting in the presence of occasional spikes or anomalies
+Financial applications where the magnitude of error matters linearly
+Scenarios where median predictions are more useful than mean predictions
+In practice, it's often valuable to try both approaches and evaluate which performs better on your specific dataset and problem definition.
