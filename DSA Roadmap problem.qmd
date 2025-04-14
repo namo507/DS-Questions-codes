@@ -1,0 +1,714 @@
+1️⃣ Arrays, Intervals, Two Pointers
+
+## • Merge Intervals
+*Explanation**: When given a set of intervals, the goal is to merge any that overlap. The procedure is:
+Sort: Order intervals by their start.
+Traverse: Maintain a current interval. For each subsequent interval, if its start is less than or equal to the current interval’s end, merge them by updating the end. Otherwise, add the current interval to the result and move on.
+
+```{r}
+merge_intervals <- function(intervals) {
+  # intervals is expected to be a matrix with 2 columns: "start" and "end".
+  if (nrow(intervals) == 0) return(intervals)
+  
+  # Sort intervals by the start value.
+  intervals <- intervals[order(intervals[, 1]), , drop = FALSE]
+  merged <- list()
+  current <- intervals[1, ]
+  
+  for (i in 2:nrow(intervals)) {
+    interval <- intervals[i, ]
+    if (interval[1] <= current[2]) {
+      # There is an overlap, so update the end.
+      current[2] <- max(current[2], interval[2])
+    } else {
+      # No overlap; push the current interval and update it.
+      merged <- append(merged, list(current))
+      current <- interval
+    }
+  }
+  # Append the last interval.
+  merged <- append(merged, list(current))
+  # Convert list back to a matrix.
+  result <- matrix(unlist(merged), ncol = 2, byrow = TRUE)
+  colnames(result) <- c("start", "end")
+  return(result)
+}
+
+# Example usage:
+intervals <- matrix(c(1,3, 2,6, 8,10, 15,18), byrow = TRUE, ncol = 2)
+print(merge_intervals(intervals))
+```
+
+
+## • Two Sum
+Explanation: Given an array and a target value, find the indices of the two numbers that add up to the target. The efficient solution uses a hash (or dictionary) as follows:
+Iterate through the array.
+For each element, check if its complement (target minus the current value) has been seen.
+If yes, return the pair of indices; otherwise, record the current value with its index.
+
+
+```{r}
+two_sum <- function(nums, target) {
+  # Use an environment to simulate a hash map.
+  seen <- new.env(hash = TRUE, parent = emptyenv())
+  
+  for (i in seq_along(nums)) {
+    complement <- target - nums[i]
+    key <- as.character(complement)
+    if (!is.null(seen[[key]])) {
+      # Return indices (note: R uses 1-indexing).
+      return(c(seen[[key]], i))
+    }
+    # Store the current number with its index.
+    seen[[as.character(nums[i])]] <- i
+  }
+  return(NULL)  # Return NULL if no valid pair is found.
+}
+
+# Example usage:
+nums <- c(2, 7, 11, 15)
+target <- 9
+print(two_sum(nums, target))
+```
+
+
+2️⃣ Binary Search, Linked List
+• Koko Eating Bananas
+Explanation: Koko must eat all bananas within H hours. Given piles of bananas, the minimum eating speed (K) is determined using binary search on the range 1 to max(pile). For each mid‐value, calculate the total hours (using ceiling division) required. Adjust the search range based on whether the hours exceed H.
+
+```{r}
+koko_eating_bananas <- function(piles, H) {
+  lo <- 1
+  hi <- max(piles)
+  
+  while (lo < hi) {
+    mid <- floor((lo + hi) / 2)
+    # Compute required hours for speed mid.
+    hours <- sum(sapply(piles, function(x) ceiling(x / mid)))
+    if (hours > H) {
+      lo <- mid + 1  # Need a faster speed.
+    } else {
+      hi <- mid  # Try a lower speed.
+    }
+  }
+  return(lo)
+}
+
+# Example usage:
+piles <- c(3, 6, 7, 11)
+H <- 8
+print(koko_eating_bananas(piles, H))
+```
+
+
+• Search in Rotated Sorted Array
+Explanation: In a rotated sorted array, one half is still sorted. The approach is to perform binary search while determining which half is sorted. Then decide whether the target lies in the sorted half or not, adjusting the search boundaries accordingly.
+
+```{r}
+search_rotated_array <- function(nums, target) {
+  left <- 1
+  right <- length(nums)
+  
+  while (left <= right) {
+    mid <- floor((left + right) / 2)
+    if (nums[mid] == target) return(mid)
+    
+    # Check if the left half is sorted.
+    if (nums[left] <= nums[mid]) {
+      if (nums[left] <= target && target < nums[mid]) {
+        right <- mid - 1
+      } else {
+        left <- mid + 1
+      }
+    } else {
+      # Right half is sorted.
+      if (nums[mid] < target && target <= nums[right]) {
+        left <- mid + 1
+      } else {
+        right <- mid - 1
+      }
+    }
+  }
+  return(-1)  # Target not found.
+}
+
+# Example usage:
+nums <- c(4, 5, 6, 7, 0, 1, 2)
+target <- 0
+print(search_rotated_array(nums, target))
+```
+
+
+
+• Detect a Cycle in Linked List
+Explanation: The cycle detection problem is elegantly solved with Floyd’s Tortoise and Hare algorithm:
+Use two pointers (slow and fast).
+Move one pointer step-by-step while the other moves two steps.
+If there’s a cycle, they eventually meet; otherwise, the fast pointer will hit NULL.
+R Code: Since R doesn’t have built–in linked list objects, we simulate them as lists with a val and a next field.
+
+```{R}
+# Example node creator.
+create_node <- function(val, next = NULL) {
+  list(val = val, next = next)
+}
+
+has_cycle <- function(head) {
+  slow <- head
+  fast <- head
+  
+  while (!is.null(fast) && !is.null(fast$next)) {
+    slow <- slow$next
+    fast <- fast$next$next
+    if (identical(slow, fast)) return(TRUE)
+  }
+  return(FALSE)
+}
+
+# Example usage:
+# Create a simple linked list: 1 -> 2 -> 3 and then a cycle: 3 -> 2
+node3 <- create_node(3)
+node2 <- create_node(2, node3)
+node1 <- create_node(1, node2)
+node3$next <- node2  # creates a cycle
+
+print(has_cycle(node1))  # Should print TRUE.
+```
+
+
+
+3️⃣ Stack, Queues, Sliding Window
+• Trapping Rainwater
+Explanation: This problem asks you to compute how much water is trapped between bars (heights). The two-pointer method works by keeping track of the maximum height on each side. The water trapped at any position is the minimum of the two max values minus the current height.
+R Code:
+
+```{r}
+trap_rainwater <- function(heights) {
+  if (length(heights) == 0) return(0)
+  left <- 1
+  right <- length(heights)
+  left_max <- 0
+  right_max <- 0
+  water <- 0
+  
+  while (left <= right) {
+    if (heights[left] < heights[right]) {
+      if (heights[left] >= left_max) {
+        left_max <- heights[left]
+      } else {
+        water <- water + (left_max - heights[left])
+      }
+      left <- left + 1
+    } else {
+      if (heights[right] >= right_max) {
+        right_max <- heights[right]
+      } else {
+        water <- water + (right_max - heights[right])
+      }
+      right <- right - 1
+    }
+  }
+  return(water)
+}
+
+# Example usage:
+heights <- c(0,1,0,2,1,0,1,3,2,1,2,1)
+print(trap_rainwater(heights))
+```
+
+• Sliding Window Maximum
+Explanation: For a given array and window size, we want to determine the maximum in each sliding window. An efficient solution uses a deque (double-ended queue) to store indices of potential maximum candidates:
+Remove indices that fall out of the window.
+Remove indices whose corresponding values are less than the current number.
+The front of the deque always holds the index of the maximum for that window.
+
+```{r}
+sliding_window_maximum <- function(nums, k) {
+  n <- length(nums)
+  if (n * k == 0) return(c())
+  if (k == 1) return(nums)
+  
+  deque <- c()  # stores indices
+  result <- c()
+  
+  for (i in 1:n) {
+    # Remove indices out of the current window.
+    if (length(deque) > 0 && deque[1] < (i - k + 1)) {
+      deque <- deque[-1]
+    }
+    # Remove indices with smaller corresponding values.
+    while (length(deque) > 0 && nums[deque[length(deque)]] < nums[i]) {
+      deque <- deque[-length(deque)]
+    }
+    deque <- c(deque, i)
+    if (i >= k) {
+      result <- c(result, nums[deque[1]])
+    }
+  }
+  return(result)
+}
+
+# Example usage:
+nums <- c(1,3,-1,-3,5,3,6,7)
+k <- 3
+print(sliding_window_maximum(nums, k))
+```
+
+
+4️⃣ Backtracking, Trees
+• Sudoku Solver
+Explanation: Sudoku solving is a classic backtracking problem. Represent the board as a 9×9 matrix (use 0 for empty cells). The algorithm is:
+Find an empty cell.
+Try all numbers 1–9.
+For each, check row, column, and 3×3 sub-grid constraints.
+Recursively attempt to solve with the chosen number, and backtrack if needed.
+
+```{r}
+solve_sudoku <- function(board) {
+  # Helper: Check if num can be placed at board[row, col]
+  is_valid <- function(board, row, col, num) {
+    if (num %in% board[row, ]) return(FALSE)
+    if (num %in% board[, col]) return(FALSE)
+    startRow <- 3 * ((row - 1) %/% 3) + 1
+    startCol <- 3 * ((col - 1) %/% 3) + 1
+    subgrid <- board[startRow:(startRow + 2), startCol:(startCol + 2)]
+    if (num %in% subgrid) return(FALSE)
+    return(TRUE)
+  }
+  
+  # Helper: Find an empty cell (cell with 0).
+  find_empty <- function(board) {
+    for (i in 1:9) {
+      for (j in 1:9) {
+        if (board[i, j] == 0) return(c(i, j))
+      }
+    }
+    return(NULL)
+  }
+  
+  solve <- function(board) {
+    empty <- find_empty(board)
+    if (is.null(empty)) return(board)
+    row <- empty[1]
+    col <- empty[2]
+    for (num in 1:9) {
+      if (is_valid(board, row, col, num)) {
+        board[row, col] <- num
+        result <- solve(board)
+        if (!is.null(result)) return(result)
+        board[row, col] <- 0  # Backtrack.
+      }
+    }
+    return(NULL)
+  }
+  
+  return(solve(board))
+}
+
+# Example usage (0 denotes an empty cell):
+sudoku_board <- matrix(c(
+  5,3,0, 0,7,0, 0,0,0,
+  6,0,0, 1,9,5, 0,0,0,
+  0,9,8, 0,0,0, 0,6,0,
+  8,0,0, 0,6,0, 0,0,3,
+  4,0,0, 8,0,3, 0,0,1,
+  7,0,0, 0,2,0, 0,0,6,
+  0,6,0, 0,0,0, 2,8,0,
+  0,0,0, 4,1,9, 0,0,5,
+  0,0,0, 0,8,0, 0,7,9
+), byrow = TRUE, nrow = 9)
+
+solved_board <- solve_sudoku(sudoku_board)
+print(solved_board)
+```
+
+• Binary Tree Maximum Path Sum
+Explanation: Given a binary tree where each node holds a value (possibly negative), the objective is to find the maximum path sum. A path may start and end at any node. The approach uses recursion:
+Compute the maximum gain from left and right subtrees (ignoring negatives).
+At each node, the maximum path sum is either the node’s value alone or the node plus one or both child gains. A global variable is updated whenever a higher sum is encountered.
+R Code: Here we represent tree nodes as a list with val, left, and right.
+
+```{r}
+max_path_sum <- function(root) {
+  max_sum <- -Inf
+  
+  max_gain <- function(node) {
+    if (is.null(node)) return(0)
+    # Only consider positive gains.
+    left_gain <- max(max_gain(node$left), 0)
+    right_gain <- max(max_gain(node$right), 0)
+    current_sum <- node$val + left_gain + right_gain
+    max_sum <<- max(max_sum, current_sum)
+    return(node$val + max(left_gain, right_gain))
+  }
+  
+  max_gain(root)
+  return(max_sum)
+}
+
+# Example usage:
+# Construct a sample binary tree:
+node4 <- list(val = 4, left = NULL, right = NULL)
+node5 <- list(val = 5, left = NULL, right = NULL)
+node2 <- list(val = 2, left = node4, right = node5)
+node3 <- list(val = 3, left = NULL, right = NULL)
+root  <- list(val = 1, left = node2, right = node3)
+
+print(max_path_sum(root))
+```
+
+
+5️⃣ Heaps, Graphs
+• Top K Frequent Elements
+Explanation: Count the frequency of each element (using R’s table function) and then retrieve the top k keys with the highest counts. Sorting the resulting frequencies in descending order is an easy and efficient solution in R.
+
+
+```{r}
+top_k_frequent <- function(nums, k) {
+  freq <- table(nums)
+  freq_df <- as.data.frame(freq)
+  colnames(freq_df) <- c("num", "freq")
+  # Sort by frequency in descending order.
+  freq_df <- freq_df[order(-freq_df$freq), ]
+  return(as.numeric(as.character(freq_df$num[1:k])))
+}
+
+# Example usage:
+nums <- c(1,1,1,2,2,3)
+k <- 2
+print(top_k_frequent(nums, k))
+```
+
+
+• Course Schedule II
+Explanation: This problem models courses with prerequisites as a directed graph. To determine a valid course order, use topological sorting (Kahn’s algorithm):
+Build an adjacency list and in-degree array.
+Insert courses with zero in-degree into a queue.
+Remove them, update neighbors, and collect the sorted order.
+If the sorted order includes all courses, it’s valid; otherwise, a cycle exists.
+
+
+```{r}
+course_schedule <- function(numCourses, prerequisites) {
+  # prerequisites should be a matrix/data.frame with 2 columns: [course, prerequisite]
+  adj <- vector("list", numCourses)
+  indegree <- rep(0, numCourses)
+  
+  for (i in 1:nrow(prerequisites)) {
+    course <- prerequisites[i, 1] + 1   # Converting from 0-indexed to R's 1-indexed.
+    pre    <- prerequisites[i, 2] + 1
+    adj[[pre]] <- if (is.null(adj[[pre]])) c(course) else c(adj[[pre]], course)
+    indegree[course] <- indegree[course] + 1
+  }
+  
+  # Initialize queue with courses having indegree 0.
+  queue <- which(indegree == 0)
+  order <- c()
+  
+  while (length(queue) > 0) {
+    course <- queue[1]
+    queue <- queue[-1]
+    order <- c(order, course)
+    if (!is.null(adj[[course]])) {
+      for (nei in adj[[course]]) {
+        indegree[nei] <- indegree[nei] - 1
+        if (indegree[nei] == 0) {
+          queue <- c(queue, nei)
+        }
+      }
+    }
+  }
+  
+  if (length(order) == numCourses)
+    return(order - 1)  # Convert back to 0-indexed.
+  else
+    return(c())      # Return an empty vector if no valid order exists.
+}
+
+# Example usage:
+# Courses are labeled 0 to numCourses - 1.
+prerequisites <- matrix(c(1,0, 2,0, 3,1, 3,2), byrow = TRUE, ncol = 2)
+print(course_schedule(4, prerequisites))
+```
+
+• Pacific Atlantic Water Flow
+Explanation: This problem uses DFS from the boundaries:
+Start one DFS from all Pacific border cells (top and left) and one from all Atlantic border cells (bottom and right).
+Every cell reached in the DFS means water can flow from that cell to the ocean.
+The answer is the intersection of the cells reachable from both oceans.
+
+```{r}
+pacific_atlantic <- function(heights) {
+  if (length(heights) == 0) return(list())
+  
+  m <- nrow(heights)
+  n <- ncol(heights)
+  pacific <- matrix(FALSE, m, n)
+  atlantic <- matrix(FALSE, m, n)
+  
+  directions <- list(c(1, 0), c(-1, 0), c(0, 1), c(0, -1))
+  
+  dfs_pacific <- function(i, j) {
+    pacific[i, j] <<- TRUE
+    for (d in directions) {
+      new_i <- i + d[1]
+      new_j <- j + d[2]
+      if (new_i >= 1 && new_i <= m && new_j >= 1 && new_j <= n &&
+          !pacific[new_i, new_j] && heights[new_i, new_j] >= heights[i, j]) {
+        dfs_pacific(new_i, new_j)
+      }
+    }
+  }
+  
+  dfs_atlantic <- function(i, j) {
+    atlantic[i, j] <<- TRUE
+    for (d in directions) {
+      new_i <- i + d[1]
+      new_j <- j + d[2]
+      if (new_i >= 1 && new_i <= m && new_j >= 1 && new_j <= n &&
+          !atlantic[new_i, new_j] && heights[new_i, new_j] >= heights[i, j]) {
+        dfs_atlantic(new_i, new_j)
+      }
+    }
+  }
+  
+  # Pacific borders: top row and left column.
+  for (i in 1:m) {
+    dfs_pacific(i, 1)
+  }
+  for (j in 1:n) {
+    dfs_pacific(1, j)
+  }
+  
+  # Atlantic borders: bottom row and right column.
+  for (i in 1:m) {
+    dfs_atlantic(i, n)
+  }
+  for (j in 1:n) {
+    dfs_atlantic(m, j)
+  }
+  
+  result <- list()
+  for (i in 1:m) {
+    for (j in 1:n) {
+      if (pacific[i, j] && atlantic[i, j]) {
+        result <- append(result, list(c(i, j)))
+      }
+    }
+  }
+  return(result)
+}
+
+# Example usage:
+heights <- matrix(c(
+  1, 2, 2, 3, 5,
+  3, 2, 3, 4, 4,
+  2, 4, 5, 3, 1,
+  6, 7, 1, 4, 5,
+  5, 1, 1, 2, 4
+), byrow = TRUE, nrow = 5)
+print(pacific_atlantic(heights))
+```
+
+• Cheapest Flights Within K Stops
+Explanation: This problem is essentially a modified shortest path search (with a constraint on the number of stops). One effective approach is to use a dynamic programming (DP) method similar to Bellman–Ford:
+Run DP for K + 1 rounds, relaxing the flights (edges) each round.
+The final DP value at the destination is the cheapest price if reachable within K stops.
+
+```{r}
+find_cheapest_price <- function(n, flights, src, dst, K) {
+  # flights: matrix with columns [from, to, price], assumed 0-indexed.
+  dp <- rep(Inf, n)
+  dp[src + 1] <- 0  # Adjust for R's 1-indexing.
+  
+  for (i in 1:(K + 1)) {
+    temp <- dp
+    for (j in 1:nrow(flights)) {
+      u <- flights[j, 1] + 1
+      v <- flights[j, 2] + 1
+      price <- flights[j, 3]
+      if (dp[u] + price < temp[v]) {
+        temp[v] <- dp[u] + price
+      }
+    }
+    dp <- temp
+  }
+  
+  if (dp[dst + 1] == Inf) return(-1) else return(dp[dst + 1])
+}
+
+# Example usage:
+# Flights: each row: [from, to, price]
+flights <- matrix(c(
+  0, 1, 100,
+  1, 2, 100,
+  0, 2, 500
+), byrow = TRUE, ncol = 3)
+print(find_cheapest_price(3, flights, 0, 2, 1))
+```
+
+• Min Cost to Connect All Points
+Explanation: This is a minimum spanning tree (MST) problem. One effective method is Prim’s algorithm:
+Start from an arbitrary point.
+Maintain a minDist vector representing the smallest cost to connect each point to the growing MST.
+Iteratively add the point with the minimum distance that’s not yet in the MST and update distances.
+
+```{r}
+min_cost_connect_points <- function(points) {
+  # points: matrix with each row as a point [x, y]
+  N <- nrow(points)
+  if (N == 0) return(0)
+  
+  in_mst <- rep(FALSE, N)
+  minDist <- rep(Inf, N)
+  minDist[1] <- 0
+  total_cost <- 0
+  
+  for (i in 1:N) {
+    # Choose the point with the smallest connection cost.
+    u <- which(!in_mst & (minDist == min(minDist[!in_mst])))[1]
+    in_mst[u] <- TRUE
+    total_cost <- total_cost + minDist[u]
+    
+    # Update connection costs for points not in MST.
+    for (v in 1:N) {
+      if (!in_mst[v]) {
+        dist <- abs(points[u, 1] - points[v, 1]) + abs(points[u, 2] - points[v, 2])
+        if (dist < minDist[v]) {
+          minDist[v] <- dist
+        }
+      }
+    }
+  }
+  return(total_cost)
+}
+
+# Example usage:
+points <- matrix(c(
+  0, 0,
+  2, 2,
+  3, 10,
+  5, 2,
+  7, 0
+), byrow = TRUE, ncol = 2)
+print(min_cost_connect_points(points))
+```
+
+
+6️⃣ Greedy Algorithms, Dynamic Programming
+• Gas Station
+Explanation: You are given arrays for gas available and cost to travel to the next station in a circular route. If the total gas is less than the total cost, no solution exists. Otherwise, iterate through each station, tracking the current fuel tank. When the tank drops below zero, reset the start candidate to the next station.
+
+```{R}
+gas_station <- function(gas, cost) {
+  if (sum(gas) < sum(cost)) return(-1)
+  start <- 1
+  tank <- 0
+  n <- length(gas)
+  
+  for (i in 1:n) {
+    tank <- tank + gas[i] - cost[i]
+    if (tank < 0) {
+      start <- i + 1
+      tank <- 0
+    }
+  }
+  return(start - 1)  # Returning 0-indexed station
+}
+
+# Example usage:
+gas <- c(1,2,3,4,5)
+cost <- c(3,4,5,1,2)
+print(gas_station(gas, cost))
+```
+
+
+• Coin Change
+Explanation: The coin change problem asks for the minimum coins needed to reach a target amount. Use dynamic programming where dp[a] represents the fewest coins needed for amount a (using 0-based indexing shifted to 1 in R). Update using the recurrence:   dp[a + coin] = min(dp[a + coin], dp[a] + 1).
+
+```{r}
+coin_change <- function(coins, amount) {
+  # dp[i] represents the fewest coins for amount i-1.
+  dp <- rep(Inf, amount + 1)
+  dp[1] <- 0  # dp[1] corresponds to amount 0.
+  
+  for (a in 0:amount) {
+    for (coin in coins) {
+      if (a + coin <= amount) {
+        dp[a + coin + 1] <- min(dp[a + coin + 1], dp[a + 1] + 1)
+      }
+    }
+  }
+  if (is.infinite(dp[amount + 1])) return(-1) else return(dp[amount + 1])
+}
+
+# Example usage:
+coins <- c(1, 2, 5)
+amount <- 11
+print(coin_change(coins, amount))
+```
+
+• Word Break
+Explanation: Given a string and a dictionary of words, determine whether the string can be segmented into a sequence of dictionary words. Use dynamic programming:
+Let dp[i] be TRUE if the substring up to position i can be segmented.
+For every index, check if any word ending there is in the dictionary and if the prefix is segmentable.
+
+```{r}
+word_break <- function(s, wordDict) {
+  n <- nchar(s)
+  dp <- rep(FALSE, n + 1)
+  dp[1] <- TRUE  # Empty string is segmentable.
+  
+  for (i in 1:n) {
+    for (j in 0:(i - 1)) {
+      if (dp[j + 1]) {
+        word <- substr(s, j + 1, i)
+        if (word %in% wordDict) {
+          dp[i + 1] <- TRUE
+          break
+        }
+      }
+    }
+  }
+  return(dp[n + 1])
+}
+
+# Example usage:
+s <- "leetcode"
+wordDict <- c("leet", "code")
+print(word_break(s, wordDict))
+```
+
+• Edit Distance
+Explanation: Edit distance (Levenshtein distance) measures how many insertions, deletions, or substitutions are needed to convert one string into another. Use a 2D dynamic programming table where dp[i, j] represents the edit distance between the first i characters of s1 and the first j characters of s2.
+
+```{r}
+edit_distance <- function(s1, s2) {
+  m <- nchar(s1)
+  n <- nchar(s2)
+  dp <- matrix(0, nrow = m + 1, ncol = n + 1)
+  
+  for (i in 0:m) {
+    dp[i + 1, 1] <- i
+  }
+  for (j in 0:n) {
+    dp[1, j + 1] <- j
+  }
+  
+  for (i in 1:m) {
+    for (j in 1:n) {
+      if (substr(s1, i, i) == substr(s2, j, j)) {
+        dp[i + 1, j + 1] <- dp[i, j]
+      } else {
+        dp[i + 1, j + 1] <- 1 + min(dp[i, j + 1], dp[i + 1, j], dp[i, j])
+      }
+    }
+  }
+  return(dp[m + 1, n + 1])
+}
+
+# Example usage:
+s1 <- "horse"
+s2 <- "ros"
+print(edit_distance(s1, s2))
+```
