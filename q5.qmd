@@ -36,4 +36,4 @@ For multi-class problems, I'd use an ensemble approach with these metrics:
 
 Macro-averaged F1-Score: Treats all classes equally regardless of frequency
 Weighted F1-Score: Accounts for class imbalance by weighting by support
-Log Loss: Penalizes confident incorrect predictions more severely than uncertain ones
+Log Loss: Penalizes **confident incorrect predictions** more severely than uncertain ones
