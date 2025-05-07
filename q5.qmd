@@ -1,1 +1,39 @@
 ## What error metric would you use to evaluate how good a binary classifier is? What if the classes are imbalanced? What if there are more than 2 groups?
+
+Binary Classification
+* Accuracy: Proportion of correct predictions (TP+TN)/(TP+TN+FP+FN)
+* Precision: How many selected items are relevant (TP)/(TP+FP)
+* Recall: How many relevant items are selected (TP)/(TP+FN)
+* F1-Score: Harmonic mean of precision and recall
+* ROC-AUC: Area under the ROC curve (plots true positive rate vs false positive rate)
+
+
+                 │ Actually Positive │ Actually Negative │
+────────────────┼──────────────────┼──────────────────┤
+Predicted       │                  │                  │
+Positive        │ True Positive    │ False Positive   │
+                │ (TP)             │ (FP)             │
+────────────────┼──────────────────┼──────────────────┤
+Predicted       │                  │                  │
+Negative        │ False Negative   │ True Negative    │
+                │ (FN)             │ (TN)             │
+
+
+Imbalanced Classes
+* Avoid accuracy as it can be misleading (99% accuracy by always predicting the majority class)
+* Precision-Recall AUC is better than ROC-AUC
+* F1-Score balances precision and recall
+* Balanced accuracy or **weighted F1-Score account** for class imbalance
+
+
+Multi-class Classification
+* Confusion matrix to see all class predictions
+* Macro-average: Calculate metrics for each class and average (equal weight to each class)
+* Weighted-average: Weight class metrics by their frequency
+* Micro-average: Calculate metrics globally by counting total TP, FP, FN
+
+For multi-class problems, I'd use an ensemble approach with these metrics:
+
+Macro-averaged F1-Score: Treats all classes equally regardless of frequency
+Weighted F1-Score: Accounts for class imbalance by weighting by support
+Log Loss: Penalizes confident incorrect predictions more severely than uncertain ones
