@@ -1,0 +1,11 @@
+## What are various ways to predict a binary response variable? Can you compare two of them and tell me when one would be more appropriate? What’s the difference between these? (SVM, Logistic Regression, Naive Bayes, Decision Tree, etc.)
+
+Common Binary Classification Methods
+
+* Logistic Regression: Uses a logistic function to model probability of class membership
+* Support Vector Machines (SVM): Finds the optimal hyperplane that maximizes margin between classes
+* Naive Bayes: Applies Bayes theorem with independence assumptions between features
+* Decision Trees: Creates a tree-like model of decisions based on feature values
+* Random Forests: Ensemble of decision trees with bootstrapped samples and random feature selection
+* Gradient Boosting: Sequential ensemble method that builds new models to correct errors of existing ones
+* Neural Networks: Connected nodes with weights learned through backpropagation
