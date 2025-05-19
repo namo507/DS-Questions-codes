@@ -1,0 +1,17 @@
+## What  is  regularization  and  where  might  it  be  helpful?  What is an example of using regularization in a model?
+
+What Is Regularization?
+Regularization is like putting your model on a diet – restricting it from becoming too complex by adding a penalty for weight gain. It's mathematically adding a cost to your model's complexity in the loss function.
+
+Where It's Helpful
+* When your model is memorizing training data (food) instead of learning patterns (overfitting)
+* With high-dimensional data where many features might be noise
+* When you have more features than observations
+* In transfer learning when adapting pre-trained models
+
+
+Types of Regularization
+* L1/Lasso: The feature eliminator (creates ***sparse models*** by setting some weights to zero) Lassoing Lassi to zero
+* L2/Ridge: The weight shrinker (reduces all weights proportionally but rarely to zero) Proportional bridge master
+* Elastic Net: The hybrid approach (combines L1 and L2)
+* Dropout: The neural network's randomized test (temporarily disables neurons during training)
