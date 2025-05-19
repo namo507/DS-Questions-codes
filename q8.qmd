@@ -1,0 +1,21 @@
+## Why might it be preferable to include fewer predictors over many?
+
+The Simplicity Advantage
+Using fewer predictors is like traveling with a (cabin mein lejaane ke liye bag) carry-on instead of checked luggage - you move faster, worry less about what might get lost, and focus on what's truly essential.
+
+Model Parsimony : Meaning simplicity;
+
+Clear stories, what drives these predictions, easier to implement
+
+Occam's razor: meaning simple explaination is the best
+avoids overfittig yaani noise ki jageh dhang se ab signal ko understand karega.
+
+reduces the multicolliniarity problems meaning(correlated predictors)
+
+ab cost bhi lower and faster training and prediction time with data collection ki kam dikkat and easier to maintain and debug
+
+so because of this we can focus more upon the imoportant factors and focus on fundamental relationships rather than coincedental patterns and creare more robust model across different datasets.
+
+Think of it as precision surgery versus carpet bombing - targeted intervention with key predictors often outperforms throwing everything possible at the problem.
+
+The real art in data science isn't including everything you can, but knowing what you can leave out while preserving predictive power.
