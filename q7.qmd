@@ -15,3 +15,14 @@ Types of Regularization
 * L2/Ridge: The weight shrinker (reduces all weights proportionally but rarely to zero) Proportional bridge master
 * Elastic Net: The hybrid approach (combines L1 and L2)
 * Dropout: The neural network's randomized test (temporarily disables neurons during training)
+
+
+
+Real-World Example
+In house price prediction with 100 features, unregularized linear regression might assign huge importance to random correlations (like houses with blue doors selling for more). 
+
+L2 regularization would temper these extreme coefficients(proportional weighting karke jo bhi), focusing on genuinely predictive features like square footage and location.
+
+The effect: A model that generalizes better to new neighborhoods rather than memorizing patterns specific to your training data.
+
+Regularization doesn't add complexity to solve problems—it adds constraints to prevent them.
