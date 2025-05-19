@@ -1,0 +1,38 @@
+## Given  training  data  on  tweets  and  their  retweets,  how  would you predict the number of retweets of a given tweet after 7 days after only observing 2 days worth of data?
+
+We will be using the two stage approach for this.
+
+This problem requires predicting the future trajectory of retweets with limited early data - similar to forecasting a hurricane's path after observing just its initial formation.
+
+1) Pattern Recognition
+
+I'd first analyze how tweets typically accumulate retweets over time:
+
+* Extract temporal signatures from historical data
+
+Map the 2-day to 7-day retweet ratio patterns
+Identify characteristic growth curves (exponential, logarithmic, etc.)
+Classify tweets into "growth pattern clusters" based on early behavior
+
+2) Engineer predictive features
+
+Velocity metrics: Rate of retweets in hours 0-24 vs. hours 24-48
+Acceleration: Is the rate increasing or decreasing by day 2?
+Content factors: Hashtags, media attachments, author influence
+Network effects: Initial spread pattern (concentrated vs. distributed)
+
+
+Now onto the predictive modelling
+
+* Growth pattern classifier that predicts which trajectory type the tweet will follow
+
+"Flash-in-the-pan" (quick burst, rapid decay)
+"Slow burner" (gradual, sustained growth)
+"Sleeper hit" (initial slow period, then acceleration)
+"Viral potential" (showing early exponential growth signs)
+
+Specialized regression models for each pattern type to estimate day 7 totals
+
+The key innovation is recognizing that tweet popularity follows distinct patterns rather than treating all tweets with the same model. This allows for more accurate **extrapolation** from limited early data.
+
+This approach combines time series analysis techniques with classification to create a robust prediction system that can adapt to different viral dynamics.
