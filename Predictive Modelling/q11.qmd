@@ -1,1 +1,19 @@
 ## How would you construct a feed to show relevant content for a site that involves user interactions with items?
+
+The Three Pillars Approach
+I'd construct the feed using a balanced three-pillar framework that guides users to relevant content:
+
+1. User Affinity Map 🧲 (User ka behaviour)
+Explicit signals: What they've liked, saved, commented on
+Implicit patterns: Dwell time, click behavior, scroll patterns
+Collaborative insights: What similar (mutual friends wagera jo bhi) users engage with.
+
+2. Content DNA Analysis 🧬 (In depth ab topic ka dekhenge )
+Item characteristics: Topic, format, recency, quality metrics
+Interaction history: How users typically engage with this content
+Popularity gradient: Rising vs. stable vs. declining interest
+
+3. Discovery Dynamics 🔍
+Controlled serendipity: Introducing new-but-related content
+Diversity metrics: Preventing echo chambers and content fatigue
+Contextual relevance: Time of day, device, user situation
