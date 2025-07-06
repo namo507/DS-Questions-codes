@@ -1,0 +1,23 @@
+## How would you design the people you may know feature on LinkedIn or Facebook?
+
+## Designing "People You May Know": The Gym Buddy Metaphor
+
+Imagine LinkedIn or Facebook as a giant gym, and the "People You May Know" feature as your personal trainer helping you find the best workout partners.
+
+### 1. **Spotting Familiar Faces (Mutual Friends)**
+Just like your trainer suggests you work out with people you already see around (mutual friends), the system recommends users who share many connections with you.
+
+### 2. **Shared Workout Interests (Common Groups/Activities)**
+If you both attend the same yoga class or use the same equipment (groups, schools, companies), the trainer pairs you up, knowing you have something in common.
+
+### 3. **Similar Fitness Goals (Profile Similarity)**
+The trainer notices you and someone else both track cardio or strength (similar job titles, interests), so you’re likely to benefit from connecting.
+
+### 4. **Regulars at the Same Time (Location & Timing)**
+If you both hit the gym at 6 AM or live nearby (location, recent check-ins), the trainer suggests you might make good gym buddies.
+
+### 5. **Smart Recommendations (Machine Learning)**
+Over time, the trainer learns from your choices—who you actually connect with or ignore—and gets better at suggesting new partners, just like the algorithm improves with user feedback.
+
+**In short:**  
+The "People You May Know" feature is like a smart gym trainer, constantly observing your routines, interests, and social circles to introduce you to the most relevant workout partners—making your gym (social network) experience more connected and motivating!
