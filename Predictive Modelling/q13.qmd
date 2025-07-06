@@ -1,0 +1,23 @@
+## How would you predict who someone may want to send a Snapchat or Gmail to?
+
+## Predicting Who You’ll Message Next: The Gym Spotter Metaphor
+
+Think of Snapchat or Gmail as a busy gym, and the “Who to Message” feature as your gym spotter who knows your routines and helps you connect with the right people at the right time.
+
+### 1. **Frequent Workout Partners (Recent Contacts)**
+Your spotter knows you often train with certain friends—so the system suggests people you’ve messaged most recently or most often.
+
+### 2. **Workout Schedules (Time & Context)**
+If you always meet your running buddy on Saturday mornings, the spotter reminds you to reach out at that time—just like the app suggests contacts based on time of day or your current activity.
+
+### 3. **Group Classes (Group Chats & Threads)**
+If you’re part of a spin class (group chat), your spotter nudges you to invite or message those group members again.
+
+### 4. **New Gym Members (New Contacts)**
+When you meet someone new at the gym, your spotter encourages you to connect—just like the app highlights new contacts you’ve recently added.
+
+### 5. **Personalized Coaching (Machine Learning)**
+The spotter learns from your messaging habits—who you reply to quickly, who you ignore, and adapts suggestions over time, just like the algorithm gets smarter with your feedback.
+
+**In short:**  
+The “Who to Message” feature acts like a gym spotter, always ready to suggest the right workout partner (contact) based on your habits, routines, and changing needs—making your messaging experience smoother and more personal!
