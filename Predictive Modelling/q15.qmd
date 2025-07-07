@@ -1,0 +1,13 @@
+## In a search engine, given partial data on what the user has typed, how would you predict the user’s eventual search query?
+
+Picture a coach who finishes your sentences as you describe a workout:
+
+Past Routines: The coach remembers what you usually ask for (historical search data).
+
+Popular Moves: Suggests trending exercises (popular queries).
+Auto-Completion: As you say “bench…,” the coach guesses “bench press” or “bench dips” (autocomplete using n-grams or language models).
+
+Personalization: If you love yoga, the coach suggests “bench yoga stretches” (personalized suggestions).
+
+In short:
+Predict the user’s search by combining their habits, popular trends, and context—just like a coach who knows your next move.

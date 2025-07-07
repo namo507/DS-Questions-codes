@@ -1,0 +1,13 @@
+## You’re Uber and you want to design a heatmap to recom-mend to drivers where to wait for a passenger. How would you approach this?
+
+Imagine a gym map showing where the action is:
+
+Track Crowd Flow: Use past data to see where and when people gather (ride demand by location and time).
+
+Spot Hot Zones: Highlight areas with frequent “workout requests” (ride requests).
+
+Real-Time Updates: Adjust the map as new crowds arrive (live data feeds).
+
+Weather & Events: Overlay special events or weather changes that affect gym attendance (external factors).
+In short:
+Guide drivers to “high-energy zones” where passengers are most likely to appear, just like gym-goers flock to popular classes.

@@ -1,0 +1,14 @@
+## Given a database of all previous alumni donations to your university, how would you predict which recent alumni are most likely to donate?
+
+Think of alumni as gym members:
+
+Track Attendance: Who attended events or stayed active (engagement signals)?
+
+Past Purchases: Who bought merch or renewed memberships (previous donations)?
+
+Personal Milestones: Members celebrating anniversaries or achievements may be more likely to give (life events).
+
+Peer Influence: If their workout buddies donate, they might too (social proof).
+
+In short:
+Spot likely donors by finding engaged, loyal, and socially connected “members” who’ve shown generosity before.

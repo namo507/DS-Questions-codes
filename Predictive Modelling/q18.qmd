@@ -1,0 +1,14 @@
+## How would you build a model to predict a March Mad-ness bracket?
+
+Building a bracket is like picking a fantasy gym team:
+
+Analyze Stats: Review each athlete’s performance (team stats, win/loss records).
+
+Spot Upsets: Look for underdogs with hidden strengths (historical upsets).
+
+Simulate Matches: Run “practice games” to see likely outcomes (Monte Carlo simulations).
+
+Adjust for Injuries: Factor in recent injuries or changes (latest news).
+
+In short:
+Combine stats, simulations, and surprises to build a winning bracket—like assembling a dream team for a gym competition.

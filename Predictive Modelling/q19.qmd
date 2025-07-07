@@ -1,0 +1,15 @@
+## You want to run a regression to predict the probability of a flight delay, but there are flights with delays of up to 12 hours that are really messing up your model. How can you address this?
+
+Some gym members lift way more than others—these outliers can skew your stats:
+
+Cap the Max: Set a limit on how much weight counts (cap extreme delays).
+
+Log Transform: Use a scale that shrinks big numbers (log transformation).
+
+Robust Models: Choose models less sensitive to outliers (robust regression).
+
+Separate Analysis: Treat extreme cases as a special group (model separately).
+
+In short:
+Don’t let a few “super-lifters” distort your view—adjust your analysis to focus on the typical gym crowd (flights).
+
