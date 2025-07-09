@@ -158,3 +158,29 @@ Imagine your personal trainer is tracking your weight loss over time as you foll
 Linear regression is like your trainer drawing the best-fit line through your progress chart, showing the overall relationship between your training time and your results!
 
 
+
+
+
+## Q5. What is OLS Stats Model (Ordinary Least Squares)?
+
+Let’s use a gym fitness metaphor to make OLS easy to understand:
+
+---
+
+### **OLS: Finding the Most Impactful Exercises in Your Routine**
+
+Imagine you’re trying to figure out which exercises in your workout routine actually help you lose weight the most. You track your progress and use a special analysis (OLS) to see which exercises (features) have the biggest impact on your results (output).
+
+- **How it works:**  
+  OLS checks each exercise and tells you how strongly it affects your weight loss. If an exercise has a high t-value (testorone value) and a low p-value (pain index) (less than 0.05), it means that exercise is truly making a difference, not just by chance.
+
+- **In Python:**  
+  You run a test (like `lm = smf.ols(formula='WeightLoss ~ Squats + Pushups + Constant', data=data).fit()`) and look at the summary to see which exercises matter most.
+
+- **Goal:**  
+  Keep the exercises that really help you reach your goal, and drop the ones that don’t show significant results.
+
+---
+
+**In summary:**  
+OLS is like analyzing your workout to find out which exercises are truly effective, so you can focus on what actually helps you achieve.
