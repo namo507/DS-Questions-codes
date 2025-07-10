@@ -280,3 +280,27 @@ Imagine your trainer draws a line through your weekly weight loss chart to show 
 
 **In summary:**  
 R-squared is like checking how closely your progress line matches your real results, but don’t be fooled—adding more exercises always boosts the score, even if they don’t help. Use Adjusted R-squared for a fairer measure!
+
+
+
+
+## Q9. What is Mean Square Error (MSE)?
+
+Let’s use a gym fitness metaphor to make Mean Square Error easy to understand:
+
+---
+
+### **Mean Square Error: Measuring How Far Off Your Progress Is**
+
+Imagine your trainer draws a line to predict your weight each week based on your workout plan. Each week, you step on the scale and compare your actual weight to what the line predicted. The difference between your real weight and the predicted weight is the “error.”
+
+- **How MSE Works:**  
+  For every week, you measure how far off the prediction was (the error), then you square each of those errors (so big mistakes count even more). Finally, you average all those squared errors to get the Mean Square Error.
+
+- **Goal:**  
+  Your trainer wants to adjust the plan (change the slope M and intercept B of the line) to make the MSE as small as possible—meaning the predictions are as close as possible to your real results.
+
+---
+
+**In summary:**  
+Mean Square Error is like your trainer checking how far off their predictions are from your actual progress each week, squaring those differences, and averaging them to see how well the plan is working!
