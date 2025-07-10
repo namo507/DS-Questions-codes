@@ -184,3 +184,99 @@ Imagine you’re trying to figure out which exercises in your workout routine ac
 
 **In summary:**  
 OLS is like analyzing your workout to find out which exercises are truly effective, so you can focus on what actually helps you achieve.
+
+
+
+
+
+
+## Q6. What is L1 Regularization (Lasso)?
+
+Let’s use a gym fitness metaphor to make L1 regularization (Lasso) easy to understand:
+
+---
+
+### **Lasso: Trimming Down Your Workout to Only the Essentials**
+
+Imagine you’re training for a fitness competition, but you have way too many exercises in your routine. Some exercises help a lot, while others barely make a difference. If you try to do everything, you might get tired and not perform well on competition day (overfitting like overtraining).
+
+- **How Lasso Works:**  
+  Lasso is like a strict coach who watches your routine and says, “Let’s cut out the exercises that aren’t really helping you.” The coach adds a penalty for every extra exercise you do, encouraging you to focus only on the most effective ones.
+
+- **Feature Selection:**  
+  If an exercise (feature) isn’t helping much, the coach tells you to drop it completely (sets its importance to zero). This way, you only keep the moves that truly improve your performance.
+
+- **Why Use Lasso?**  
+  When you have a huge list of possible exercises (features), Lasso helps you pick just the best ones, making your routine lean and powerful—so you don’t waste energy on things that don’t matter.
+
+---
+
+**In summary:**  
+L1 regularization (Lasso) is like having a coach who forces you to drop the least useful exercises from your workout, helping you avoid overtraining (overfitting) and focus only on what really boosts
+
+
+
+
+
+
+## Q7. What is L2 Regularization (Ridge Regression)?
+
+Let’s use a gym fitness metaphor to make L2 regularization (Ridge) easy to understand:
+
+---
+
+### **Ridge: Keeping All Your Exercises in Balance**
+
+Imagine you’re preparing for a fitness competition, and you have a long list of exercises in your routine. Some exercises are more important, but you don’t want to completely drop any of them—you just want to make sure you’re not overdoing any one move.
+
+- **How Ridge Works:**  
+  Ridge is like a coach who says, “Let’s keep all your exercises, but make sure you don’t focus too much on any single one.” The coach adds a penalty for putting too much effort into any exercise, encouraging you to spread your energy more evenly.
+
+- **Penalty for Overdoing:**  
+  If you start spending too much time on one exercise, the coach gently pulls you back, making sure all your moves get some attention but none dominate your routine.
+
+- **Why Use Ridge?**  
+  When every exercise (feature) has some value, Ridge helps you keep them all, but with balanced effort—so you don’t overfit by relying too much on a few.
+
+- **Difference from Lasso:**  
+  Unlike Lasso, Ridge doesn’t drop any exercises completely (no coefficients go to zero). Instead, it just keeps all the weights small and balanced.
+
+---
+
+**In summary:**  
+L2 regularization (Ridge) is like having a coach who makes sure you do all your exercises, but in moderation—preventing you from overtraining on any one move and helping you build a well-rounded, generalizable fitness routine!
+
+
+
+
+
+
+
+## Q8. What is R-squared (where to use and where not)?
+
+Let’s use a gym fitness metaphor to make R-squared easy to understand:
+
+---
+
+### **R-squared: How Well Your Progress Chart Matches Reality**
+
+Imagine your trainer draws a line through your weekly weight loss chart to show your progress. R-squared tells you how well that line matches your actual weigh-ins.
+
+- **How it works:**  
+  R-squared is like saying, “What percentage of your weight changes can be explained by your training plan?”  
+  - **100% R-squared:** The line perfectly matches every weigh-in—your plan explains all your progress.
+  - **0% R-squared:** The line doesn’t match at all—your plan explains nothing about your results.
+
+- **Where to use it:**  
+  Use R-squared to see how well your model (training plan) explains the results (progress) in linear regression.
+
+- **Where NOT to use it:**  
+  Be careful! If you keep adding more exercises (features) to your plan—even useless ones—R-squared will always go up, even if those exercises don’t actually help. This can trick you into thinking your plan is better than it really is.
+
+- **The Fix:**  
+  That’s why trainers also use “Adjusted R-squared,” which only rewards you for adding exercises that truly help, and penalizes you for adding junk.
+
+---
+
+**In summary:**  
+R-squared is like checking how closely your progress line matches your real results, but don’t be fooled—adding more exercises always boosts the score, even if they don’t help. Use Adjusted R-squared for a fairer measure!
