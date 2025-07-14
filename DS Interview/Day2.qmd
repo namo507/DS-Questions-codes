@@ -71,3 +71,34 @@ Use **Linear Regression** when you want to predict a quantity, like the weight o
 
 
 
+## Q3. Why can't we do a classification problem using Regression?
+
+Let's use our gym metaphor to explain why a simple progress chart (Linear Regression) is the wrong tool for a "Yes/No" prediction.
+
+---
+
+### **The Problem: Using a Ruler to Weigh Yourself**
+
+Imagine you're trying to predict whether someone will succeed (1) or fail (0) at a lift based on how many hours they slept. You plot the data and draw a straight line through it.
+
+- **The Initial Plan:** You decide that if the line is above a 0.5 threshold, you'll predict "Success." For your regular gym members, this might work okay.
+
+- **The Outlier Problem:** Now, a professional athlete who sleeps 10 hours a night (a major outlier) joins your gym and succeeds. When you add their data, it drags your straight line way up and to the right.
+
+- **The Breakdown:** Because the line has shifted, it might now predict that a regular member who slept 7 hours will fail (predicting below 0.5), even though they would have succeeded before. The outlier broke your prediction system.
+
+---
+
+### **Why Linear Regression Fails for Yes/No Questions:**
+
+1.  **It's Unbounded:** The line can go way above 1 or below 0. What does a 150% chance of success or a -10% chance even mean? It's nonsense for a probability.
+
+2.  **It's Too Sensitive to Outliers:** One extreme data point can completely mess up the predictions for everyone else.
+
+3.  **It's the Wrong Tool for the Job:** You need a model that gives a probability between 0% and 100%, like the S-shaped curve of Logistic Regression, not a straight line that goes on forever.
+
+---
+
+**In summary:**  
+Using Linear Regression for a "Yes/No" task is like tryin to measure your weight with a ruler. Its the wrong tool and gives you answers that dont make sense, especially when extreme examples(outliers) show up.
+
