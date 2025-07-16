@@ -226,3 +226,42 @@ This is like the trainer first creating a very detailed, complex flowchart and t
 To prevent a workout plan from becoming too complex, the trainer either sets rules upfront (**Pre-pruning**) like limiting the number of questions, or they create a detailed plan first and then trim off the unhelpful parts (**Post-pruning**). Both methods prevent overfitting and create a better, more general plan.
 
 
+
+
+## Q7. How does a Decision Tree handle numerical and categorical data?
+
+Let's use our gym metaphor to explain how the trainer's flowchart (Decision Tree) can handle different types of information.
+
+---
+
+### **The Trainer's Flexible Questioning Style**
+
+A good trainer is flexible and can ask two kinds of questions to build the best workout plan:
+
+#### 1. **Categorical Questions (Choice-Based)**
+These are straightforward "this or that" questions.
+-   **Example:** "Is your main goal today **Cardio** or **Strength**?"
+-   **How it works:** The tree splits the group based on their direct answer. One branch for the "Cardio" people, another for the "Strength" people.
+
+#### 2. **Numerical Questions (Number-Based)**
+These questions involve numbers, like time, weight, or age.
+-   **Example:** "How many minutes do you have to work out?"
+-   **How it works:** The tree doesn't ask about every single minute. Instead, it finds the best **threshold** to split the group. It might discover that splitting people into "Less than 30 minutes" and "More than 30 minutes" creates the most organized (purest) groups. It essentially turns the number into a categorical choice.
+
+---
+
+### **How the Trainer Decides Which Question to Ask**
+
+At every step of building the flowchart, the trainer considers all possible questions—both categorical and numerical. They use their "chaos meter" (Gini or Entropy) to see which single question does the best job of creating purer, more organized groups.
+
+-   It might be that splitting by **Goal (Cardio/Strength)** is the best first step.
+-   Or, it might be that splitting by **Time (<30 mins / >30 mins)** is more effective.
+
+The tree simply picks the best split at each level, regardless of whether the data is a category or a number.
+
+---
+
+**A Good Practice:**  
+Even though the tree can handle categories directly, it's often a good habit to convert them into numbers first (using techniques like One-Hot Encoding). This is like giving each workout type a specific number, which can sometimes make the process smoother for the algorithm.
+
+
