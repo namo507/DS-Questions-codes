@@ -619,36 +619,47 @@ So yes, sometimes it is dissapointing to be specific in the nakhre to point out 
 
 **In summary:**  
 -   **True Positive Rate (Recall)** measures how good the model is at finding all the *actual positives*.
--   **True Negative Rate (Specificity)** measures how good the model is at finding all the *actual negatives*.## Q14. What are True Positive Rate and True Negative Rate?
+-   **True Negative Rate (Specificity)** measures how good the model is at finding all the *actual negatives*.
 
-Let's use the trainer's scorecard again to understand these two important and specific performance metrics.
 
----
 
-### **True Positive Rate (TPR): The "Don't Miss a Winner" Rate**
-(Also known as **Sensitivity** or **Recall**)
+## Q15. What are False Positive Rate & False Negative Rate?
 
-TPR answers a very specific question: **"Of all the people who *actually succeeded* today, what percentage did the trainer correctly predict?"**
-
--   **The Trainer's Goal:** A trainer with a high TPR is excellent at identifying all the members who have the potential to succeed. They rarely underestimate people.
--   **Calculation:** (Number of Correct "Succeed" Predictions) / (Total Number of People Who Actually Succeeded).
--   **Why it's important:** If you want to make sure you identify every potential success story (e.g., find every qualified candidate for a team), you want a high True Positive Rate. You don't want to miss anyone.
+Let's go back to the trainer's scorecard to understand the two types of *error rates*.
 
 ---
 
-### **True Negative Rate (TNR): The "Don't Make False Promises" Rate**
-(Also known as **Specificity**)
+### **False Positive Rate (FPR): The "Overconfidence Mistake" Rate**
 
-TNR answers another specific question: **"Of all the people who *actually failed* today, what percentage did the trainer correctly predict?"**
+FPR focuses on the group that **actually failed** and asks: **"Of all the people who *actually failed* today, what percentage did the trainer mistakenly predict would succeed?"**
 
--   **The Trainer's Goal:** A trainer with a high TNR is excellent at identifying the members who are not ready and will likely fail. They are not overly optimistic and don't make false promises.
--   **Calculation:** (Number of Correct "Fail" Predictions) / (Total Number of People Who Actually Failed).
--   **Why it's important:** If it's very costly to be wrong about a success (e.g., approving a risky loan that defaults), you want a high True Negative Rate. You need to be very specific and accurate when identifying failures.
+-   **The Trainer's Mistake:** This measures how often the trainer was overconfident, giving false hope to someone who wasn't ready.
+-   **Calculation:** (Number of Overconfident Mistakes) / (Total Number of People Who Actually Failed).
+
+So numerator dhyaan dena ki ismein prediction ka dekhna always and denominator mein usually the actual results ka combination hota.
+
+-   **Why it matters:** A high FPR is bad if failure is costly (e.g., risk of injury). You want a trainer who doesn't make a lot of overconfident, risky predictions. This is the opposite of the True Negative Rate (Specificity).
+
+---
+
+### **False Negative Rate (FNR): The "Missed Opportunity" Rate**
+
+FNR focuses on the group that **actually succeeded** and asks: **"Of all the people who *actually succeeded* today, what percentage did the trainer wrongly predict would fail?"**
+
+-   **The Trainer's Mistake:** This measures how often the trainer underestimated someone's potential, missing out on a success story.
+-   **Calculation:** (Number of Times Potential Was Underestimated) / (Total Number of People Who Actually Succeeded).
+-   **Why it matters:** A high FNR is bad if you want to identify every possible success. You don't want a trainer who is too cautious and holds talented people back. This is the opposite of the True Positive Rate (Recall).
+
+
+```TPR ka negation is FNR
+TNR ka negation is FPR```
 
 ---
 
 **In summary:**  
--   **True Positive Rate (Recall)** measures how good the model is at finding all the *actual positives*.
--   **True Negative Rate (Specificity)** measures how good the model is at finding all the *actual negatives*.
+-   **False Positive Rate** measures how often the model makes an overconfident mistake among all the actual negatives.
+-   **False Negative Rate** measures how often the model misses an opportunity among all the actual positives.
+
+
 
 
