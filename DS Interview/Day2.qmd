@@ -651,8 +651,10 @@ FNR focuses on the group that **actually succeeded** and asks: **"Of all the peo
 -   **Why it matters:** A high FNR is bad if you want to identify every possible success. You don't want a trainer who is too cautious and holds talented people back. This is the opposite of the True Positive Rate (Recall).
 
 
-```TPR ka negation is FNR
-TNR ka negation is FPR```
+```
+TPR ka negation is FNR
+TNR ka negation is FPR
+```
 
 ---
 
@@ -663,3 +665,59 @@ TNR ka negation is FPR```
 
 
 
+
+
+## Q16. What are F1-Score, Precision, and Recall?
+
+Let's use our gym trainer metaphor to break down these crucial performance metrics. They help us understand the quality of a trainer's "Succeed" predictions beyond simple accuracy.
+
+---
+
+### **Recall: The "No Talent Left Behind" Rate**
+(Also known as Sensitivity or True Positive Rate)
+
+Recall answers the question: **"Of all the people who *actually could have succeeded*, how many did the trainer correctly identify?"**
+
+-   **The Trainer's Goal:** A trainer with high recall is like a great talent scout. They cast a wide net and make sure they don't miss anyone who has potential. They are great at avoiding "missed opportunities" (False Negatives).
+-   **High Recall:** The trainer correctly identifies most of the true successes.
+-   **Low Recall:** The trainer underestimates a lot of people and misses many potential successes.
+
+
+Recall is like scouting for talent. Woh hain already Successful players aur unn ko correctly identify karna
+
+---
+
+### **Precision: The "Don't Give False Praise" Rate**
+
+Precision answers a different question: **"When the trainer predicted someone would 'Succeed,' how often were they actually right?"**
+
+Precision is predicition pehle se hi superstitioion karna. So experienced gurus are precise
+
+-   **The Trainer's Goal:** A trainer with high precision is very trustworthy. When they tell you you're going to succeed, you can believe them. They don't make a lot of "overconfident mistakes" (False Positives).
+-   **High Precision:** The trainer's "Succeed" predictions are very accurate.
+-   **Low Precision:** The trainer says "Succeed" a lot, but is often wrong.
+
+---
+
+### **The Classic Trade-off: Recall vs. Precision**
+
+A trainer usually has to choose which is more important.
+
+-   **High Recall, Low Precision:** The trainer encourages everyone, saying "You can do it!" to almost every member. They won't miss any hidden talent (high recall), but they'll be wrong a lot (low precision).
+-   **Low Recall, High Precision:** The trainer only says "You can do it!" to the absolute strongest, most obvious champions. Their predictions will be nearly perfect (high precision), but they'll fail to encourage many others who also could have succeeded (low recall).
+
+---
+
+### **F1-Score: The "Balanced Trainer" Score**
+
+Since you often want a trainer who is good at *both* spotting talent and being trustworthy, you need a single score that reflects this balance. That's the F1-Score.
+
+-   **How it works:** The F1-Score is the **harmonic mean** of Precision and Recall. This is important because it heavily penalizes a trainer who is excellent at one metric but terrible at the other.
+-   **The Goal:** To get a high F1-Score, a trainer must have both high precision AND high recall. It's the ultimate measure of a well-balanced, effective trainer.
+
+---
+
+**In summary:**
+-   **Recall:** How many of the *actual* successes did you find?
+-   **Precision:** When you *predicted* success, how often were you right?
+-   **F1-Score:** A single score that rewards models for being good at both Recall and Precision. Punishes for being extreme in any case
