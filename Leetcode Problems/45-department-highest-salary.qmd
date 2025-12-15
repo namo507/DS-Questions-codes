@@ -1,0 +1,585 @@
+---
+title: "Department Highest Salary"
+subtitle: "LeetCode #184 | Medium | SQL"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #184 - Department Highest Salary**
+
+Find employees who have the highest salary in each of their departments.
+
+## Table Schemas
+
+### Employee Table
+
+| Column Name | Type |
+|:------------|:-----|
+| id | int |
+| name | varchar |
+| salary | int |
+| departmentId | int |
+
+`id` is the primary key. `departmentId` is a foreign key to `Department.id`.
+
+### Department Table
+
+| Column Name | Type |
+|:------------|:-----|
+| id | int |
+| name | varchar |
+
+`id` is the primary key.
+
+## Example
+
+**Employee Table**:
+
+| id | name | salary | departmentId |
+|:---|:-----|:-------|:-------------|
+| 1 | Joe | 70000 | 1 |
+| 2 | Jim | 90000 | 1 |
+| 3 | Henry | 80000 | 2 |
+| 4 | Sam | 60000 | 2 |
+| 5 | Max | 90000 | 1 |
+
+**Department Table**:
+
+| id | name |
+|:---|:-----|
+| 1 | IT |
+| 2 | Sales |
+
+**Output**:
+
+| Department | Employee | Salary |
+|:-----------|:---------|:-------|
+| IT | Jim | 90000 |
+| IT | Max | 90000 |
+| Sales | Henry | 80000 |
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Meta | ⭐⭐⭐⭐ |
+| Microsoft | ⭐⭐⭐⭐ |
+| Bloomberg | ⭐⭐⭐ |
+| Oracle | ⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: Finding the Strongest in Each Class
+
+## Understanding the Problem Through Fitness
+
+Imagine you're the **gym manager** awarding "Strongest Member" in each fitness class:
+
+```
+GYM MEMBERS BY CLASS:
+┌────────────────────────────────────────────────────────┐
+│                                                        │
+│  💪 WEIGHTLIFTING CLASS                               │
+│  ├── Joe:  350 lb deadlift                            │
+│  ├── Jim:  400 lb deadlift  ⭐ STRONGEST              │
+│  └── Max:  400 lb deadlift  ⭐ STRONGEST (TIE!)       │
+│                                                        │
+│  🏃 CARDIO CLASS                                       │
+│  ├── Henry: 300 calories burned  ⭐ STRONGEST         │
+│  └── Sam:   250 calories burned                        │
+│                                                        │
+└────────────────────────────────────────────────────────┘
+
+Task: Find ALL members with the highest score in EACH class!
+```
+
+**Key Insight**: There can be **multiple winners** (ties) per department!
+
+---
+
+## The Strategy: Find Max, Then Match
+
+```
+Step 1: Find the max salary in each department
+        IT → 90000
+        Sales → 80000
+
+Step 2: Find all employees matching that max
+        IT: Jim (90000), Max (90000)
+        Sales: Henry (80000)
+
+Step 3: Join with department names
+        Output the results!
+```
+
+---
+
+# 💻 SQL Solutions
+
+## Approach 1: Subquery with IN
+
+```sql
+-- Find employees whose (departmentId, salary) matches the max for their department
+SELECT 
+    d.name AS Department,
+    e.name AS Employee,
+    e.salary AS Salary
+FROM Employee e
+JOIN Department d ON e.departmentId = d.id
+WHERE (e.departmentId, e.salary) IN (
+    SELECT departmentId, MAX(salary)
+    FROM Employee
+    GROUP BY departmentId
+);
+```
+
+### How It Works
+
+```
+Step 1: Inner query finds max salary per department
+        ┌──────────────┬─────────────┐
+        │ departmentId │ MAX(salary) │
+        ├──────────────┼─────────────┤
+        │ 1            │ 90000       │
+        │ 2            │ 80000       │
+        └──────────────┴─────────────┘
+
+Step 2: Outer query finds employees matching those pairs
+        Employee (1, 90000) → Jim, Max
+        Employee (2, 80000) → Henry
+```
+
+---
+
+## Approach 2: Window Function with RANK
+
+```sql
+-- Use RANK to find employees with rank 1 salary in each department
+WITH RankedEmployees AS (
+    SELECT 
+        e.name AS Employee,
+        e.salary AS Salary,
+        d.name AS Department,
+        RANK() OVER (
+            PARTITION BY e.departmentId 
+            ORDER BY e.salary DESC
+        ) AS salary_rank
+    FROM Employee e
+    JOIN Department d ON e.departmentId = d.id
+)
+SELECT Department, Employee, Salary
+FROM RankedEmployees
+WHERE salary_rank = 1;
+```
+
+### Visual Ranking Process
+
+```
+Before ranking:
+┌─────────────┬──────────┬────────┐
+│ Department  │ Employee │ Salary │
+├─────────────┼──────────┼────────┤
+│ IT          │ Jim      │ 90000  │
+│ IT          │ Max      │ 90000  │
+│ IT          │ Joe      │ 70000  │
+│ Sales       │ Henry    │ 80000  │
+│ Sales       │ Sam      │ 60000  │
+└─────────────┴──────────┴────────┘
+
+After RANK() within each department:
+┌─────────────┬──────────┬────────┬──────┐
+│ Department  │ Employee │ Salary │ Rank │
+├─────────────┼──────────┼────────┼──────┤
+│ IT          │ Jim      │ 90000  │ 1    │
+│ IT          │ Max      │ 90000  │ 1    │ ← Tie!
+│ IT          │ Joe      │ 70000  │ 3    │
+│ Sales       │ Henry    │ 80000  │ 1    │
+│ Sales       │ Sam      │ 60000  │ 2    │
+└─────────────┴──────────┴────────┴──────┘
+
+Filter WHERE salary_rank = 1
+→ Jim, Max, Henry
+```
+
+---
+
+## Approach 3: Correlated Subquery
+
+```sql
+-- Check if no one in same department has higher salary
+SELECT 
+    d.name AS Department,
+    e.name AS Employee,
+    e.salary AS Salary
+FROM Employee e
+JOIN Department d ON e.departmentId = d.id
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM Employee e2 
+    WHERE e2.departmentId = e.departmentId 
+    AND e2.salary > e.salary
+);
+```
+
+### Logic Explanation
+
+```
+For each employee, ask:
+"Is there anyone in my department with a HIGHER salary?"
+
+If NO → I'm the highest (or tied for highest)!
+If YES → I'm not the highest
+
+Jim (90000, IT):  Anyone > 90000 in IT? NO → Include
+Max (90000, IT):  Anyone > 90000 in IT? NO → Include
+Joe (70000, IT):  Anyone > 70000 in IT? YES (Jim, Max) → Exclude
+Henry (80000, Sales): Anyone > 80000 in Sales? NO → Include
+Sam (60000, Sales): Anyone > 60000 in Sales? YES (Henry) → Exclude
+```
+
+---
+
+## Approach 4: JOIN with Aggregated Subquery
+
+```sql
+-- Join employees with max salaries table
+SELECT 
+    d.name AS Department,
+    e.name AS Employee,
+    e.salary AS Salary
+FROM Employee e
+JOIN Department d ON e.departmentId = d.id
+JOIN (
+    SELECT departmentId, MAX(salary) AS max_salary
+    FROM Employee
+    GROUP BY departmentId
+) dept_max ON e.departmentId = dept_max.departmentId 
+           AND e.salary = dept_max.max_salary;
+```
+
+---
+
+# 📊 R & Python Solutions
+
+## Python (pandas)
+
+```{python}
+import pandas as pd
+
+# Create sample data
+employee_data = {
+    'id': [1, 2, 3, 4, 5],
+    'name': ['Joe', 'Jim', 'Henry', 'Sam', 'Max'],
+    'salary': [70000, 90000, 80000, 60000, 90000],
+    'departmentId': [1, 1, 2, 2, 1]
+}
+
+department_data = {
+    'id': [1, 2],
+    'name': ['IT', 'Sales']
+}
+
+employee_df = pd.DataFrame(employee_data)
+department_df = pd.DataFrame(department_data)
+
+print("Employee Table:")
+print(employee_df)
+print("\nDepartment Table:")
+print(department_df)
+
+
+def department_highest_salary(employee: pd.DataFrame, 
+                              department: pd.DataFrame) -> pd.DataFrame:
+    """
+    Find employees with highest salary in each department.
+    
+    The "Class Champion" Strategy:
+    1. Find max salary per department
+    2. Merge to find matching employees
+    3. Join with department names
+    
+    Time: O(n) for groupby operations
+    Space: O(n) for intermediate DataFrames
+    """
+    # Find max salary per department
+    max_salaries = employee.groupby('departmentId')['salary'].max().reset_index()
+    max_salaries.columns = ['departmentId', 'max_salary']
+    
+    # Find employees matching max salary
+    merged = employee.merge(max_salaries, on='departmentId')
+    top_earners = merged[merged['salary'] == merged['max_salary']]
+    
+    # Join with department names
+    result = top_earners.merge(department, left_on='departmentId', right_on='id')
+    
+    # Select and rename columns
+    result = result[['name_y', 'name_x', 'salary']]
+    result.columns = ['Department', 'Employee', 'Salary']
+    
+    return result
+
+
+# Execute
+result = department_highest_salary(employee_df, department_df)
+print("\nResult:")
+print(result)
+
+
+# Alternative using transform (more elegant)
+def department_highest_salary_v2(employee: pd.DataFrame, 
+                                  department: pd.DataFrame) -> pd.DataFrame:
+    """Using transform for a more pandas-idiomatic solution."""
+    # Join tables first
+    merged = employee.merge(department, left_on='departmentId', right_on='id')
+    
+    # Find max salary per department using transform
+    merged['max_salary'] = merged.groupby('departmentId')['salary'].transform('max')
+    
+    # Filter to top earners
+    top = merged[merged['salary'] == merged['max_salary']]
+    
+    # Format output
+    return top[['name_y', 'name_x', 'salary']].rename(
+        columns={'name_y': 'Department', 'name_x': 'Employee', 'salary': 'Salary'}
+    )
+
+
+print("\nAlternative solution:")
+print(department_highest_salary_v2(employee_df, department_df))
+```
+
+## R (dplyr)
+
+```{r}
+library(dplyr)
+
+# Create sample data
+employee <- data.frame(
+  id = c(1, 2, 3, 4, 5),
+  name = c('Joe', 'Jim', 'Henry', 'Sam', 'Max'),
+  salary = c(70000, 90000, 80000, 60000, 90000),
+  departmentId = c(1, 1, 2, 2, 1)
+)
+
+department <- data.frame(
+  id = c(1, 2),
+  name = c('IT', 'Sales')
+)
+
+cat("Employee Table:\n")
+print(employee)
+cat("\nDepartment Table:\n")
+print(department)
+
+
+department_highest_salary <- function(employee, department) {
+  #' Find employees with highest salary in each department.
+  #' 
+  #' Time: O(n log n) for grouping operations
+  #' Space: O(n)
+  
+  # Find max salary per department
+  max_salaries <- employee %>%
+    group_by(departmentId) %>%
+    summarize(max_salary = max(salary))
+  
+  # Join and filter
+  result <- employee %>%
+    inner_join(max_salaries, by = "departmentId") %>%
+    filter(salary == max_salary) %>%
+    inner_join(department, by = c("departmentId" = "id")) %>%
+    select(Department = name.y, Employee = name.x, Salary = salary)
+  
+  return(result)
+}
+
+
+cat("\nResult:\n")
+print(department_highest_salary(employee, department))
+
+
+# Alternative using window functions
+department_highest_salary_v2 <- function(employee, department) {
+  #' Using dense_rank window function
+  
+  employee %>%
+    inner_join(department, by = c("departmentId" = "id")) %>%
+    group_by(departmentId) %>%
+    mutate(salary_rank = dense_rank(desc(salary))) %>%
+    filter(salary_rank == 1) %>%
+    ungroup() %>%
+    select(Department = name.y, Employee = name.x, Salary = salary)
+}
+
+
+cat("\nAlternative (window function):\n")
+print(department_highest_salary_v2(employee, department))
+```
+
+---
+
+# 🔍 Solution Breakdown: Full Analysis
+
+## Approach Comparison
+
+| Approach | Pros | Cons |
+|:---------|:-----|:-----|
+| IN subquery | Simple, readable | May be slower |
+| Window RANK | Elegant, powerful | Requires CTE |
+| NOT EXISTS | Shows logic clearly | Can be verbose |
+| JOIN subquery | Very explicit | More code |
+
+## Performance Considerations
+
+```
+Data Size: 1M employees, 100 departments
+
+IN Subquery:     ~2.5 seconds (subquery runs once)
+Window RANK:     ~1.8 seconds (single scan with ranking)
+NOT EXISTS:      ~5.0 seconds (correlated, runs per row)
+JOIN Subquery:   ~2.0 seconds (similar to IN)
+
+Winner: Window function for large datasets!
+```
+
+---
+
+## RANK vs DENSE_RANK vs ROW_NUMBER
+
+| Function | Behavior with Ties | Use Case |
+|:---------|:-------------------|:---------|
+| RANK() | Same rank, skip next | Allow ties, show gaps |
+| DENSE_RANK() | Same rank, no skip | Allow ties, no gaps |
+| ROW_NUMBER() | Different rank always | Unique ranking needed |
+
+### Example
+
+```
+Salaries: 90000, 90000, 70000
+
+RANK():        1, 1, 3    ← Skips 2
+DENSE_RANK():  1, 1, 2    ← No skip
+ROW_NUMBER():  1, 2, 3    ← All different
+```
+
+**For this problem**: Both RANK() and DENSE_RANK() work since we only filter for rank = 1.
+
+---
+
+# 📈 Complexity Analysis
+
+## SQL Query Complexity
+
+| Approach | Time | Space |
+|:---------|:-----|:------|
+| IN subquery | O(n + m) | O(d) for max salaries |
+| Window RANK | O(n log n) | O(n) for ranking |
+| NOT EXISTS | O(n × d) worst case | O(1) |
+| JOIN subquery | O(n + m) | O(d) |
+
+Where n = employees, d = departments
+
+---
+
+# 🎯 Key Takeaways
+
+## Window Functions Power
+
+Window functions are incredibly useful for:
+- Ranking within groups
+- Running totals
+- Comparing to group aggregates
+- Partitioned calculations
+
+```sql
+-- Basic window function template
+RANK() OVER (
+    PARTITION BY grouping_column
+    ORDER BY sort_column DESC
+)
+```
+
+## The Tuple IN Pattern
+
+```sql
+WHERE (col1, col2) IN (SELECT col1, col2 FROM ...)
+```
+
+This is a powerful pattern for matching multiple columns simultaneously!
+
+## Handling Ties
+
+Always consider: **Should ties be included?**
+
+- This problem: YES (all max earners)
+- Other problems: Maybe just one (use ROW_NUMBER)
+
+---
+
+# 🔧 Interview Tips
+
+## Common Mistakes
+
+| Mistake | Solution |
+|:--------|:---------|
+| Missing ties | Use RANK not ROW_NUMBER |
+| Wrong join type | Use INNER JOIN (only matched) |
+| Forgetting department join | Include department name |
+| Null handling | Consider NULL salaries |
+
+## Follow-up Questions
+
+**Q: Top 3 earners per department?**
+
+```sql
+WITH Ranked AS (
+    SELECT *, DENSE_RANK() OVER (
+        PARTITION BY departmentId 
+        ORDER BY salary DESC
+    ) AS rn
+    FROM Employee
+)
+SELECT * FROM Ranked WHERE rn <= 3;
+```
+
+**Q: What if no department exists?**
+
+```sql
+-- Use LEFT JOIN to include employees without department
+```
+
+---
+
+# 🏆 Related Problems
+
+| Problem | Difficulty | Key Variation |
+|:--------|:-----------|:--------------|
+| Department Top Three Salaries | Hard | Top 3, not just max |
+| Nth Highest Salary | Medium | Specific rank |
+| Rank Scores | Medium | Dense ranking |
+| Consecutive Numbers | Medium | Window patterns |
+
+---
+
+# 💡 The Gym Metaphor Summary
+
+| Coding Concept | Gym Equivalent |
+|:---------------|:---------------|
+| Department | Fitness class |
+| Employee | Class member |
+| Salary | Performance score |
+| GROUP BY | By class |
+| MAX() | Highest score |
+| RANK() | Leaderboard position |
+| Ties | Co-champions |
+
+---
+
+*"In the gym of SQL, window functions are like having a personal leaderboard — they rank everyone within their class without losing sight of the bigger picture!"* 💪🏆

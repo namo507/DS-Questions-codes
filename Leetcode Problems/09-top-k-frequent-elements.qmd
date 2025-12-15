@@ -1,0 +1,488 @@
+---
+title: "Top K Frequent Elements"
+subtitle: "LeetCode #347 | Medium | Hash Table & Heap"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #347 - Top K Frequent Elements**
+
+Given an integer array `nums` and an integer `k`, return the `k` most frequent elements. You may return the answer in **any order**.
+
+## Examples
+
+| Example | Input | k | Output |
+|:--------|:------|:--|:-------|
+| 1 | `[1,1,1,2,2,3]` | 2 | `[1,2]` |
+| 2 | `[1]` | 1 | `[1]` |
+
+## Constraints
+
+- $1 \leq \text{nums.length} \leq 10^5$
+- $-10^4 \leq \text{nums[i]} \leq 10^4$
+- `k` is in the range `[1, number of unique elements]`
+- Answer is guaranteed to be unique
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Meta | ⭐⭐⭐⭐⭐ |
+| Google | ⭐⭐⭐⭐ |
+| Apple | ⭐⭐⭐⭐ |
+| Bloomberg | ⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: Most Popular Equipment
+
+## Understanding the Problem Through Fitness
+
+Imagine you're the **gym manager** tracking equipment usage:
+
+```
+Today's Equipment Log:
+┌─────────────────────────────────────────────┐
+│ Member    │ Equipment Used                  │
+├───────────┼─────────────────────────────────┤
+│ Alice     │ Treadmill                       │
+│ Bob       │ Dumbbells                       │
+│ Charlie   │ Treadmill                       │
+│ Diana     │ Treadmill                       │
+│ Eve       │ Dumbbells                       │
+│ Frank     │ Bench Press                     │
+└─────────────────────────────────────────────┘
+```
+
+**Your Task**: Find the top `k=2` most used pieces of equipment!
+
+**Answer**: Treadmill (3 uses), Dumbbells (2 uses)
+
+---
+
+## The Counting Station 📊
+
+First, tally up all equipment usage:
+
+```
+Equipment Usage Board:
+┌──────────────┬───────────────┐
+│ Equipment    │ Times Used    │
+├──────────────┼───────────────┤
+│ Treadmill    │ III (3)       │
+│ Dumbbells    │ II  (2)       │
+│ Bench Press  │ I   (1)       │
+└──────────────┴───────────────┘
+```
+
+Then select the top K highest counts!
+
+---
+
+## Three Approaches: Different Gym Strategies
+
+### Approach 1: Sort by Popularity (Simple)
+
+```
+Count all → Sort by count → Take top K
+Like: Ranking all equipment, then picking the winners
+Time: O(n log n) - full sorting
+```
+
+### Approach 2: Min-Heap (Efficient for small K)
+
+```
+Count all → Keep heap of size K → Only track top K
+Like: "Hall of Fame" board with limited spots
+Time: O(n log k) - much better when k << n
+```
+
+### Approach 3: Bucket Sort (Optimal)
+
+```
+Count all → Use count as bucket index → Collect from highest buckets
+Like: Organizing equipment by usage tiers
+Time: O(n) - no sorting needed!
+```
+
+---
+
+# 💻 Python Solutions
+
+## Approach 1: Sorting
+
+```{python}
+from collections import Counter
+
+def topKFrequent_sort(nums: list[int], k: int) -> list[int]:
+    """
+    Simple sorting approach.
+    
+    The Equipment Ranking Strategy:
+    1. Count all equipment usage (hash map)
+    2. Sort by usage count (descending)
+    3. Pick top K winners
+    
+    Time: O(n log n)
+    Space: O(n)
+    """
+    # Count frequencies
+    count = Counter(nums)
+    
+    # Sort by frequency (descending) and take top k
+    sorted_items = sorted(count.keys(), key=lambda x: count[x], reverse=True)
+    
+    return sorted_items[:k]
+
+
+print("Sorting approach:")
+print(topKFrequent_sort([1,1,1,2,2,3], 2))  # [1, 2]
+```
+
+## Approach 2: Min-Heap (Recommended for Interviews)
+
+```{python}
+import heapq
+from collections import Counter
+
+def topKFrequent_heap(nums: list[int], k: int) -> list[int]:
+    """
+    Min-heap approach for better efficiency.
+    
+    The "Hall of Fame" Strategy:
+    1. Count all equipment usage
+    2. Maintain a "top K" board (min-heap)
+    3. When board is full, kick out lowest if new entry is higher
+    
+    Time: O(n log k) - log k for each heap operation
+    Space: O(n) for count + O(k) for heap
+    
+    Why min-heap? To efficiently remove the smallest!
+    """
+    # Count frequencies
+    count = Counter(nums)
+    
+    # Use a min-heap of size k
+    # Heap stores (frequency, element)
+    min_heap = []
+    
+    for num, freq in count.items():
+        heapq.heappush(min_heap, (freq, num))
+        
+        # If heap exceeds size k, remove the smallest
+        if len(min_heap) > k:
+            heapq.heappop(min_heap)
+    
+    # Extract elements from heap
+    return [num for freq, num in min_heap]
+
+
+print("\nMin-heap approach:")
+print(topKFrequent_heap([1,1,1,2,2,3], 2))  # [2, 1] (order may vary)
+
+
+# Using heapq.nlargest (built-in shortcut)
+def topKFrequent_nlargest(nums: list[int], k: int) -> list[int]:
+    """Using Python's built-in nlargest function."""
+    count = Counter(nums)
+    # nlargest uses a heap internally
+    return heapq.nlargest(k, count.keys(), key=count.get)
+
+
+print("\nUsing nlargest:")
+print(topKFrequent_nlargest([1,1,1,2,2,3], 2))  # [1, 2]
+```
+
+## Approach 3: Bucket Sort (Optimal O(n))
+
+```{python}
+from collections import Counter
+
+def topKFrequent_bucket(nums: list[int], k: int) -> list[int]:
+    """
+    Bucket sort approach - O(n) time!
+    
+    The "Tier System" Strategy:
+    1. Count frequencies
+    2. Create buckets: bucket[i] = elements with frequency i
+    3. Collect from highest buckets until we have k elements
+    
+    Time: O(n) - No sorting!
+    Space: O(n) for buckets
+    
+    Key insight: Max possible frequency = n
+    """
+    count = Counter(nums)
+    
+    # Create buckets: index = frequency, value = list of elements
+    # Bucket size = n + 1 (frequencies from 0 to n)
+    n = len(nums)
+    buckets = [[] for _ in range(n + 1)]
+    
+    # Place each element in its frequency bucket
+    for num, freq in count.items():
+        buckets[freq].append(num)
+    
+    # Collect from highest frequency buckets
+    result = []
+    for freq in range(n, 0, -1):  # Start from highest frequency
+        for num in buckets[freq]:
+            result.append(num)
+            if len(result) == k:
+                return result
+    
+    return result
+
+
+print("\nBucket sort approach:")
+print(topKFrequent_bucket([1,1,1,2,2,3], 2))  # [1, 2]
+print(topKFrequent_bucket([1], 1))            # [1]
+print(topKFrequent_bucket([4,4,4,4,3,3,3,2,2,1], 3))  # [4, 3, 2]
+```
+
+---
+
+# 📊 R Solutions
+
+```{r}
+# Approach 1: Sorting
+top_k_frequent_sort <- function(nums, k) {
+  #' Simple sorting approach.
+  #' Time: O(n log n)
+  #' Space: O(n)
+  
+  # Count frequencies
+  freq_table <- table(nums)
+  
+  # Sort by frequency (descending) and take top k
+  sorted_freqs <- sort(freq_table, decreasing = TRUE)
+  
+  # Return the names (the actual numbers)
+  result <- as.integer(names(sorted_freqs)[1:k])
+  return(result)
+}
+
+
+cat("Sorting approach:\n")
+print(top_k_frequent_sort(c(1,1,1,2,2,3), 2))
+
+
+# Approach 2: Using data.frame and dplyr
+library(dplyr)
+
+top_k_frequent_tidy <- function(nums, k) {
+  #' Tidyverse approach - clean and readable
+  #' Time: O(n log n)
+  
+  data.frame(num = nums) %>%
+    count(num) %>%
+    arrange(desc(n)) %>%
+    head(k) %>%
+    pull(num)
+}
+
+
+cat("\nTidyverse approach:\n")
+print(top_k_frequent_tidy(c(1,1,1,2,2,3), 2))
+
+
+# Approach 3: Bucket Sort (Optimal O(n))
+top_k_frequent_bucket <- function(nums, k) {
+  #' Bucket sort approach - O(n) time
+  #' 
+  #' The "Tier System" Strategy:
+  #' 1. Count frequencies
+  #' 2. Create buckets by frequency
+  #' 3. Collect from highest buckets
+  
+  # Count frequencies
+  freq_table <- table(nums)
+  n <- length(nums)
+  
+  # Create buckets (list of lists)
+  buckets <- vector("list", n + 1)
+  for (i in seq_along(buckets)) {
+    buckets[[i]] <- integer(0)
+  }
+  
+  # Fill buckets
+  for (i in seq_along(freq_table)) {
+    num <- as.integer(names(freq_table)[i])
+    freq <- freq_table[[i]]
+    buckets[[freq + 1]] <- c(buckets[[freq + 1]], num)  # +1 for 1-indexing
+  }
+  
+  # Collect from highest frequency buckets
+  result <- integer(0)
+  for (freq in n:1) {
+    result <- c(result, buckets[[freq + 1]])
+    if (length(result) >= k) {
+      return(result[1:k])
+    }
+  }
+  
+  return(result)
+}
+
+
+cat("\nBucket sort approach:\n")
+print(top_k_frequent_bucket(c(1,1,1,2,2,3), 2))
+print(top_k_frequent_bucket(c(4,4,4,4,3,3,3,2,2,1), 3))
+```
+
+---
+
+# 🔍 Solution Breakdown: Full Gym Analysis
+
+## Detailed Trace: Heap Approach
+
+**Input**: `nums = [1,1,1,2,2,3]`, `k = 2`
+
+### Step 1: Build Frequency Count
+
+| Element | Frequency |
+|:--------|:----------|
+| 1 | 3 |
+| 2 | 2 |
+| 3 | 1 |
+
+### Step 2: Build Min-Heap of Size K
+
+| Operation | Item | Heap State | Action |
+|:----------|:-----|:-----------|:-------|
+| Push | (3, 1) | [(3, 1)] | Add, size=1 ≤ k=2 |
+| Push | (2, 2) | [(2, 2), (3, 1)] | Add, size=2 ≤ k=2 |
+| Push | (1, 3) | [(1, 3), (3, 1), (2, 2)] | Add, size=3 > k=2 |
+| Pop | — | [(2, 2), (3, 1)] | Remove smallest (1, 3) |
+
+### Step 3: Extract Result
+
+Final heap: `[(2, 2), (3, 1)]` → Elements: `[2, 1]`
+
+---
+
+## Detailed Trace: Bucket Sort
+
+**Input**: `nums = [1,1,1,2,2,3]`, `k = 2`
+
+### Step 1: Count Frequencies
+
+```python
+count = {1: 3, 2: 2, 3: 1}
+```
+
+### Step 2: Create Buckets
+
+Array size = n + 1 = 7 (frequencies can be 0 to 6)
+
+| Bucket Index | Frequency | Elements |
+|:-------------|:----------|:---------|
+| 0 | 0 times | [] |
+| 1 | 1 time | [3] |
+| 2 | 2 times | [2] |
+| 3 | 3 times | [1] |
+| 4 | 4 times | [] |
+| 5 | 5 times | [] |
+| 6 | 6 times | [] |
+
+### Step 3: Collect from Highest
+
+```
+Start from bucket 6 → empty
+Bucket 5 → empty
+Bucket 4 → empty
+Bucket 3 → [1] → result = [1], need 1 more
+Bucket 2 → [2] → result = [1, 2], done!
+```
+
+**Result**: `[1, 2]`
+
+---
+
+# 📈 Complexity Comparison
+
+| Approach | Time | Space | When to Use |
+|:---------|:-----|:------|:------------|
+| Sorting | O(n log n) | O(n) | Simple, small n |
+| Min-Heap | O(n log k) | O(n + k) | k << n |
+| Bucket Sort | O(n) | O(n) | Always optimal |
+| Quick Select | O(n) avg | O(n) | Also optimal |
+
+## Why Bucket Sort Wins
+
+```
+Traditional sorting: Compare elements
+→ Best possible: O(n log n)
+
+Bucket sort: Use count as index
+→ No comparisons needed: O(n)
+
+Key insight: Frequencies are bounded by n!
+```
+
+---
+
+# 🎯 Key Takeaways
+
+## Pattern: Counting + Selection
+
+Many "top K" problems follow this pattern:
+
+1. **Count** occurrences (hash map)
+2. **Select** top K by some criteria
+3. **Choose** optimal selection method
+
+## When to Use Each Approach
+
+| Scenario | Best Approach |
+|:---------|:--------------|
+| k is close to n | Sorting or Bucket |
+| k << n | Min-Heap |
+| Need O(n) guarantee | Bucket Sort |
+| Need stable order | Sorting |
+
+## The "Heap Trick"
+
+> To find top K **largest**, use a **min**-heap of size K.
+> 
+> This way, the smallest in our "top K" can be easily kicked out!
+
+---
+
+# 🔧 Interview Tips
+
+## Common Follow-ups
+
+**Q: What if there are ties?**
+A: The problem says answer is unique, but in general you'd need to define tie-breaking (lexicographic, first seen, etc.)
+
+**Q: What if k can be 0?**
+A: Return empty list - handle as edge case.
+
+**Q: Can you do it in O(n)?**
+A: Yes! Bucket sort. This often impresses interviewers.
+
+**Q: What about Quick Select?**
+A: Also O(n) average, O(n²) worst case. Good to mention.
+
+---
+
+# 🏆 Related Problems
+
+| Problem | Difficulty | Key Difference |
+|:--------|:-----------|:---------------|
+| Top K Frequent Words | Medium | Tie-breaking by lexicographic |
+| Sort Characters By Frequency | Medium | Build string by frequency |
+| Kth Largest Element | Medium | Selection, not frequency |
+| Top K Frequent Elements II | Hard | Streaming/online version |
+
+---
+
+*"In the gym of data structures, heaps are your personal trainers for 'top K' problems — they always keep the best performers in the spotlight!"* 💪🏆

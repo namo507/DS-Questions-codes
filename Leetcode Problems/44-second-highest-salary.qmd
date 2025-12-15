@@ -1,0 +1,508 @@
+---
+title: "Second Highest Salary"
+subtitle: "LeetCode #176 | Medium | SQL"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #176 - Second Highest Salary**
+
+Write a SQL query to find the **second highest salary** from the `Employee` table. If there is no second highest salary, return `null`.
+
+## Table Schema
+
+**Employee Table:**
+
+| Column Name | Type |
+|:------------|:-----|
+| id | int |
+| salary | int |
+
+`id` is the primary key for this table. Each row contains the employee's ID and salary.
+
+## Examples
+
+### Example 1
+
+**Input:**
+
+| id | salary |
+|:---|:-------|
+| 1 | 100 |
+| 2 | 200 |
+| 3 | 300 |
+
+**Output:**
+
+| SecondHighestSalary |
+|:--------------------|
+| 200 |
+
+### Example 2
+
+**Input:**
+
+| id | salary |
+|:---|:-------|
+| 1 | 100 |
+
+**Output:**
+
+| SecondHighestSalary |
+|:--------------------|
+| null |
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Meta | ⭐⭐⭐⭐ |
+| Bloomberg | ⭐⭐⭐⭐ |
+| Microsoft | ⭐⭐⭐ |
+| Goldman Sachs | ⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: Finding the Silver Medalist
+
+## Understanding the Problem Through Fitness
+
+Imagine you're the **head judge** at a powerlifting competition:
+
+```
+Competition Results:
+Athlete A: 300 kg total lift (Gold 🥇)
+Athlete B: 200 kg total lift (Silver 🥈 ← FIND THIS!)
+Athlete C: 100 kg total lift (Bronze 🥉)
+```
+
+**Your Task**: Find the **second-place finisher** (silver medalist).
+
+**The Catch**: What if there's only one competitor? Or everyone tied for first?
+
+---
+
+## The Challenge
+
+Three tricky scenarios:
+
+| Scenario | Data | Second Highest | Challenge |
+|:---------|:-----|:---------------|:----------|
+| Normal | [300, 200, 100] | 200 | Easy |
+| Single entry | [100] | NULL | No second place |
+| All same | [100, 100, 100] | NULL | Everyone tied for first |
+| Ties at top | [300, 300, 200] | 200 | Skip the ties |
+
+---
+
+## Gym Analogy: Ranking Athletes
+
+Think of it like the **podium positioning system**:
+
+1. **Find the highest** (Gold medalist)
+2. **Find the highest BELOW Gold** (Silver medalist)
+3. **Handle edge cases** (solo competitor = no silver)
+
+---
+
+# 💾 SQL Solutions
+
+## Solution 1: Subquery with MAX (Most Intuitive)
+
+```sql
+-- The "Find Anyone Below the Champion" Strategy
+-- 
+-- 1. Find the maximum salary (Gold medalist)
+-- 2. Find the maximum among those BELOW the gold
+-- 3. Returns NULL automatically if no such salary exists
+
+SELECT MAX(salary) AS SecondHighestSalary
+FROM Employee
+WHERE salary < (SELECT MAX(salary) FROM Employee);
+```
+
+### How It Works
+
+| Step | Action | Result |
+|:-----|:-------|:-------|
+| 1 | Inner query finds MAX salary | 300 |
+| 2 | Outer query filters salary < 300 | [200, 100] |
+| 3 | MAX of filtered | 200 |
+
+**Edge Case Handling**:
+
+- If all salaries are the same, `WHERE salary < MAX` returns empty set
+- MAX of empty set = NULL ✓
+
+---
+
+## Solution 2: LIMIT/OFFSET (Clean and Modern)
+
+```sql
+-- The "Skip the Gold Medalist" Strategy
+-- 
+-- 1. Sort all DISTINCT salaries descending
+-- 2. Skip 1 (the highest)
+-- 3. Take 1 (the second highest)
+-- 4. Wrap in subquery to return NULL instead of empty
+
+SELECT (
+    SELECT DISTINCT salary
+    FROM Employee
+    ORDER BY salary DESC
+    LIMIT 1 OFFSET 1
+) AS SecondHighestSalary;
+```
+
+### Why the Outer SELECT?
+
+Without the wrapper:
+- If no second salary exists → returns **empty result**
+
+With the wrapper:
+- If no second salary exists → returns **NULL**
+
+| Without Wrapper | With Wrapper |
+|:----------------|:-------------|
+| (empty result) | NULL |
+
+---
+
+## Solution 3: DENSE_RANK Window Function (Most Powerful)
+
+```sql
+-- The "Official Ranking Board" Strategy
+-- 
+-- Use DENSE_RANK to assign podium positions
+-- DENSE_RANK handles ties correctly!
+
+SELECT MAX(salary) AS SecondHighestSalary
+FROM (
+    SELECT salary,
+           DENSE_RANK() OVER (ORDER BY salary DESC) AS rank
+    FROM Employee
+) ranked
+WHERE rank = 2;
+```
+
+### Why DENSE_RANK vs RANK vs ROW_NUMBER?
+
+| Data | DENSE_RANK | RANK | ROW_NUMBER |
+|:-----|:-----------|:-----|:-----------|
+| 300 | 1 | 1 | 1 |
+| 300 | 1 | 1 | 2 |
+| 200 | **2** | **3** | 3 |
+| 100 | 3 | 4 | 4 |
+
+**DENSE_RANK** gives `200` rank 2 (correct!)
+**RANK** gives `200` rank 3 (wrong - skips 2)
+**ROW_NUMBER** gives `200` rank 3 (wrong - no tie handling)
+
+---
+
+## Solution 4: Self-Join (Classic Interview Approach)
+
+```sql
+-- The "Distinct Salaries Above Me" Strategy
+-- 
+-- Second highest = exactly 1 distinct salary above it
+
+SELECT MAX(e1.salary) AS SecondHighestSalary
+FROM Employee e1
+WHERE 1 = (
+    SELECT COUNT(DISTINCT e2.salary)
+    FROM Employee e2
+    WHERE e2.salary > e1.salary
+);
+```
+
+### How It Works
+
+For each salary, count how many distinct salaries are above it:
+
+| Salary | Distinct Above | Is Second? |
+|:-------|:---------------|:-----------|
+| 300 | 0 | No (it's first) |
+| 200 | 1 | **Yes!** |
+| 100 | 2 | No (it's third) |
+
+---
+
+# 📊 R/Python Equivalent (Data Analysis Perspective)
+
+## R Solution (using dplyr)
+
+```{r}
+library(dplyr)
+
+# Sample data
+employee <- data.frame(
+  id = c(1, 2, 3),
+  salary = c(100, 200, 300)
+)
+
+# Solution 1: Using nth() function
+second_highest_salary <- function(df) {
+  result <- df %>%
+    distinct(salary) %>%
+    arrange(desc(salary)) %>%
+    slice(2) %>%
+    pull(salary)
+  
+  # Return NULL if no second highest
+  if (length(result) == 0) return(NA) else return(result)
+}
+
+cat("Second Highest Salary:", second_highest_salary(employee), "\n")
+
+
+# Solution 2: Using dense_rank
+second_highest_rank <- function(df) {
+  df %>%
+    distinct(salary) %>%
+    mutate(rank = dense_rank(desc(salary))) %>%
+    filter(rank == 2) %>%
+    pull(salary) %>%
+    { if (length(.) == 0) NA else . }
+}
+
+cat("Using rank:", second_highest_rank(employee), "\n")
+
+
+# Edge case: single entry
+employee_single <- data.frame(id = 1, salary = 100)
+cat("Single entry:", second_highest_salary(employee_single), "\n")  # NA
+```
+
+## Python Solution (using pandas)
+
+```{python}
+import pandas as pd
+import numpy as np
+
+# Sample data
+employee = pd.DataFrame({
+    'id': [1, 2, 3],
+    'salary': [100, 200, 300]
+})
+
+def second_highest_salary(df):
+    """
+    Find second highest salary.
+    Returns None if no second highest exists.
+    """
+    unique_salaries = df['salary'].drop_duplicates().sort_values(ascending=False)
+    
+    if len(unique_salaries) < 2:
+        return None
+    
+    return unique_salaries.iloc[1]
+
+
+print("Second Highest Salary:", second_highest_salary(employee))
+
+
+# Using nlargest
+def second_highest_nlargest(df):
+    """Using pandas nlargest method."""
+    unique_salaries = df['salary'].drop_duplicates()
+    
+    if len(unique_salaries) < 2:
+        return None
+    
+    return unique_salaries.nlargest(2).iloc[-1]
+
+
+print("Using nlargest:", second_highest_nlargest(employee))
+
+
+# Edge case
+employee_single = pd.DataFrame({'id': [1], 'salary': [100]})
+print("Single entry:", second_highest_salary(employee_single))  # None
+```
+
+---
+
+# 🔍 Solution Breakdown: The Full Analysis
+
+## Approach Comparison
+
+| Approach | Time | Readability | Edge Cases | Best For |
+|:---------|:-----|:------------|:-----------|:---------|
+| MAX + Subquery | O(n) | ⭐⭐⭐⭐⭐ | Auto-handles | Interviews |
+| LIMIT OFFSET | O(n log n) | ⭐⭐⭐⭐ | Need wrapper | Simple cases |
+| DENSE_RANK | O(n log n) | ⭐⭐⭐ | Auto-handles | Extensible |
+| Self-Join | O(n²) | ⭐⭐ | Auto-handles | Understanding |
+
+---
+
+## Edge Cases Analysis
+
+### Case 1: Normal Data
+
+```sql
+-- Data: [300, 200, 100]
+-- MAX subquery approach:
+SELECT MAX(salary) FROM Employee WHERE salary < 300;
+-- Result: 200 ✓
+```
+
+### Case 2: Single Entry
+
+```sql
+-- Data: [100]
+-- MAX subquery approach:
+SELECT MAX(salary) FROM Employee WHERE salary < 100;
+-- Filtered data: [] (empty)
+-- MAX of empty: NULL ✓
+```
+
+### Case 3: All Same Values
+
+```sql
+-- Data: [100, 100, 100]
+-- MAX subquery approach:
+SELECT MAX(salary) FROM Employee WHERE salary < 100;
+-- Filtered data: [] (empty)
+-- MAX of empty: NULL ✓
+```
+
+### Case 4: Two Employees, Same Salary
+
+```sql
+-- Data: [100, 100]
+-- DISTINCT + OFFSET approach:
+SELECT DISTINCT salary ORDER BY salary DESC LIMIT 1 OFFSET 1;
+-- After DISTINCT: [100]
+-- After OFFSET 1: [] (empty)
+-- Result: NULL ✓
+```
+
+---
+
+## The Gym Metaphor Breakdown
+
+| SQL Concept | Gym Equivalent |
+|:------------|:---------------|
+| MAX(salary) | Finding the Gold medalist |
+| WHERE salary < MAX | Looking at non-Gold athletes |
+| DISTINCT | Each lift weight counts once (no duplicate medals) |
+| ORDER BY DESC | Ranking from heaviest to lightest |
+| LIMIT 1 OFFSET 1 | "Skip Gold, take Silver" |
+| DENSE_RANK() | Official competition ranking |
+| NULL result | "No silver medal to give" |
+
+---
+
+# 📈 Complexity Analysis
+
+## MAX + Subquery Approach
+
+| Operation | Complexity | Notes |
+|:----------|:-----------|:------|
+| Inner MAX | O(n) | Scan all rows |
+| WHERE filter | O(n) | Compare each row |
+| Outer MAX | O(n) | Scan filtered rows |
+| **Total** | **O(n)** | Linear |
+
+## LIMIT OFFSET Approach
+
+| Operation | Complexity | Notes |
+|:----------|:-----------|:------|
+| DISTINCT | O(n) | Deduplicate |
+| ORDER BY | O(n log n) | Sort unique values |
+| LIMIT OFFSET | O(1) | Direct access |
+| **Total** | **O(n log n)** | Sort dominates |
+
+---
+
+# 🎯 Key Takeaways
+
+## SQL Patterns Learned
+
+| Pattern | Use Case |
+|:--------|:---------|
+| MAX + Subquery | Find second/third/nth value |
+| LIMIT OFFSET | Pagination, ranking |
+| DENSE_RANK() | Competition-style ranking |
+| NULL handling | Subquery wrapper for empty results |
+
+## Important SQL Concepts
+
+### DISTINCT is Key!
+
+Without DISTINCT, duplicate salaries cause wrong results:
+
+```sql
+-- Data: [300, 300, 200]
+-- Without DISTINCT: OFFSET 1 → 300 (wrong!)
+-- With DISTINCT: OFFSET 1 → 200 (correct!)
+```
+
+### NULL vs Empty Result
+
+| Query Type | No Result Returns |
+|:-----------|:------------------|
+| Simple SELECT | Empty result set |
+| SELECT with subquery | NULL (if wrapped) |
+
+---
+
+# 🏆 Practice Variations
+
+Build on this concept:
+
+| Problem | Difficulty | Key Extension |
+|:--------|:-----------|:--------------|
+| Nth Highest Salary | Medium | Generalize to any N |
+| Department Highest Salary | Medium | Partition by department |
+| Rank Scores | Medium | Rank all entries |
+| Consecutive Numbers | Medium | Sequential patterns |
+
+---
+
+## Generalization: Nth Highest Salary
+
+```sql
+-- Function to find Nth highest salary
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+  SET N = N - 1;  -- OFFSET is 0-indexed
+  RETURN (
+    SELECT DISTINCT salary
+    FROM Employee
+    ORDER BY salary DESC
+    LIMIT 1 OFFSET N
+  );
+END
+```
+
+---
+
+# 🔧 Interview Tips
+
+## Questions to Clarify
+
+1. "Should I handle NULL salaries?" (Usually no)
+2. "What if multiple employees have the same salary?" (Use DISTINCT)
+3. "What should I return if there's no second highest?" (NULL)
+
+## Common Mistakes
+
+| Mistake | Why Wrong | Fix |
+|:--------|:----------|:----|
+| Forgetting DISTINCT | Duplicates counted | Add DISTINCT |
+| Returning empty not NULL | Different behavior | Wrap in subquery |
+| Using RANK not DENSE_RANK | Skips numbers | Use DENSE_RANK |
+| Off-by-one in OFFSET | Wrong position | OFFSET is 0-indexed |
+
+---
+
+*"In the gym of SQL, finding the silver medalist teaches us that handling edge cases is just as important as the main logic."* 🥈🏋️

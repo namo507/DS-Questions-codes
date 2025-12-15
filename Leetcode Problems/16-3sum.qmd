@@ -1,0 +1,547 @@
+---
+title: "3Sum"
+subtitle: "LeetCode #15 | Medium | Two Pointers & Sorting"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #15 - 3Sum**
+
+Given an integer array `nums`, return all the triplets `[nums[i], nums[j], nums[k]]` such that `i != j`, `i != k`, and `j != k`, and `nums[i] + nums[j] + nums[k] == 0`.
+
+Notice that the solution set must **not contain duplicate triplets**.
+
+## Examples
+
+| Example | Input | Output |
+|:--------|:------|:-------|
+| 1 | `[-1,0,1,2,-1,-4]` | `[[-1,-1,2],[-1,0,1]]` |
+| 2 | `[0,1,1]` | `[]` |
+| 3 | `[0,0,0]` | `[[0,0,0]]` |
+
+## Constraints
+
+- $3 \leq \text{nums.length} \leq 3000$
+- $-10^5 \leq \text{nums[i]} \leq 10^5$
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Meta | ⭐⭐⭐⭐⭐ |
+| Bloomberg | ⭐⭐⭐⭐⭐ |
+| Apple | ⭐⭐⭐⭐ |
+| Google | ⭐⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: The Balanced Workout Trio
+
+## Understanding the Problem Through Fitness
+
+Imagine you're a **personal trainer** creating **perfectly balanced workout combinations**:
+
+```
+The Workout Balance Rule:
+┌─────────────────────────────────────────────────────┐
+│                                                     │
+│    Exercise A    +    Exercise B    +    Exercise C │
+│    (intensity)        (intensity)       (intensity) │
+│                                                     │
+│         MUST EQUAL ZERO NET INTENSITY               │
+│                                                     │
+│    Cardio (-1)   +   Weights (+1)   +   Stretch (0)│
+│    = -1 + 1 + 0 = 0 ✓ Balanced!                    │
+└─────────────────────────────────────────────────────┘
+```
+
+**Positive intensity** = High effort (weights, HIIT)
+**Negative intensity** = Recovery (stretching, light cardio)
+**Zero** = Neutral (core work)
+
+**Goal**: Find ALL unique combinations of three exercises that create a balanced workout!
+
+---
+
+## The Naive Approach: Check Every Trio 🐌
+
+```
+Try every combination of 3 exercises:
+- Exercise 1 + Exercise 2 + Exercise 3 = 0?
+- Exercise 1 + Exercise 2 + Exercise 4 = 0?
+- ...
+
+Time: O(n³) — Too slow!
+```
+
+## The Smart Approach: Sort + Two Pointers 🚀
+
+```
+1. Sort exercises by intensity
+2. For each exercise, use two pointers to find complementary pair
+3. Skip duplicates to avoid repeated combinations
+
+Time: O(n²) — Much better!
+```
+
+---
+
+## Visual Walkthrough
+
+```
+Input: [-1, 0, 1, 2, -1, -4]
+After Sort: [-4, -1, -1, 0, 1, 2]
+
+Fix first element, use two pointers for rest:
+
+i=0, fixed=-4
+        [-4, -1, -1, 0, 1, 2]
+          ↑   ↑            ↑
+        fixed left       right
+        
+        Target = 0 - (-4) = 4
+        -1 + 2 = 1 < 4 → move left →
+        -1 + 2 = 1 < 4 → move left →
+        0 + 2 = 2 < 4 → move left →
+        1 + 2 = 3 < 4 → move left →
+        left >= right → done, no triplet with -4
+
+i=1, fixed=-1
+        [-4, -1, -1, 0, 1, 2]
+              ↑   ↑        ↑
+           fixed left    right
+        
+        Target = 0 - (-1) = 1
+        -1 + 2 = 1 = 1 ✓ → Found [-1, -1, 2]!
+        Move both pointers, skip duplicates
+        0 + 1 = 1 = 1 ✓ → Found [-1, 0, 1]!
+
+i=2, fixed=-1 (same as previous, SKIP!)
+
+Result: [[-1, -1, 2], [-1, 0, 1]]
+```
+
+---
+
+# 💻 Python Solution
+
+```{python}
+def threeSum(nums: list[int]) -> list[list[int]]:
+    """
+    Find all unique triplets that sum to zero.
+    
+    The "Balanced Workout Trio" Strategy:
+    1. Sort exercises by intensity
+    2. Fix one exercise, use two pointers for others
+    3. Skip duplicates to avoid repeated combos
+    
+    Time: O(n²) - One loop × two-pointer scan
+    Space: O(1) or O(n) depending on sort implementation
+    """
+    nums.sort()  # Sort for two-pointer technique
+    result = []
+    n = len(nums)
+    
+    for i in range(n - 2):
+        # Skip duplicate fixed elements
+        if i > 0 and nums[i] == nums[i - 1]:
+            continue
+        
+        # Early termination: if smallest is positive, no solution
+        if nums[i] > 0:
+            break
+        
+        # Two pointers for remaining elements
+        left = i + 1
+        right = n - 1
+        target = -nums[i]  # We need left + right = -fixed
+        
+        while left < right:
+            current_sum = nums[left] + nums[right]
+            
+            if current_sum == target:
+                # Found a valid triplet!
+                result.append([nums[i], nums[left], nums[right]])
+                
+                # Skip duplicates
+                while left < right and nums[left] == nums[left + 1]:
+                    left += 1
+                while left < right and nums[right] == nums[right - 1]:
+                    right -= 1
+                
+                # Move both pointers
+                left += 1
+                right -= 1
+                
+            elif current_sum < target:
+                # Need larger sum, move left pointer right
+                left += 1
+            else:
+                # Need smaller sum, move right pointer left
+                right -= 1
+    
+    return result
+
+
+# Test cases
+print("Example 1:", threeSum([-1, 0, 1, 2, -1, -4]))  
+# [[-1, -1, 2], [-1, 0, 1]]
+
+print("Example 2:", threeSum([0, 1, 1]))               
+# []
+
+print("Example 3:", threeSum([0, 0, 0]))               
+# [[0, 0, 0]]
+
+print("Example 4:", threeSum([0, 0, 0, 0]))            
+# [[0, 0, 0]]
+
+
+# Verbose version for understanding
+def threeSum_verbose(nums: list[int]) -> list[list[int]]:
+    """Verbose version with detailed output."""
+    nums.sort()
+    print(f"Sorted array: {nums}")
+    result = []
+    n = len(nums)
+    
+    for i in range(n - 2):
+        if i > 0 and nums[i] == nums[i - 1]:
+            print(f"\nSkipping duplicate fixed element: {nums[i]}")
+            continue
+        
+        if nums[i] > 0:
+            print(f"\nFixed element {nums[i]} > 0, stopping early")
+            break
+        
+        print(f"\n--- Fixed element: {nums[i]} (index {i}) ---")
+        print(f"Looking for two numbers that sum to {-nums[i]}")
+        
+        left, right = i + 1, n - 1
+        
+        while left < right:
+            current_sum = nums[left] + nums[right]
+            print(f"  left={nums[left]}, right={nums[right]}, sum={current_sum}")
+            
+            if current_sum == -nums[i]:
+                print(f"  ✓ Found triplet: [{nums[i]}, {nums[left]}, {nums[right]}]")
+                result.append([nums[i], nums[left], nums[right]])
+                
+                while left < right and nums[left] == nums[left + 1]:
+                    left += 1
+                while left < right and nums[right] == nums[right - 1]:
+                    right -= 1
+                left += 1
+                right -= 1
+            elif current_sum < -nums[i]:
+                print(f"  Sum too small, move left →")
+                left += 1
+            else:
+                print(f"  Sum too large, move right ←")
+                right -= 1
+    
+    return result
+
+
+print("\nVerbose trace:")
+threeSum_verbose([-1, 0, 1, 2, -1, -4])
+```
+
+---
+
+# 📊 R Solution
+
+```{r}
+three_sum <- function(nums) {
+  #' Find all unique triplets that sum to zero.
+  #' 
+  #' The "Balanced Workout Trio" Strategy:
+  #' 1. Sort exercises by intensity
+  #' 2. Fix one exercise, use two pointers for others
+  #' 3. Skip duplicates to avoid repeated combos
+  #' 
+  #' Time: O(n²)
+  #' Space: O(1) extra (excluding output)
+  
+  nums <- sort(nums)
+  n <- length(nums)
+  result <- list()
+  
+  if (n < 3) return(result)
+  
+  for (i in 1:(n - 2)) {
+    # Skip duplicate fixed elements
+    if (i > 1 && nums[i] == nums[i - 1]) {
+      next
+    }
+    
+    # Early termination
+    if (nums[i] > 0) {
+      break
+    }
+    
+    left <- i + 1
+    right <- n
+    target <- -nums[i]
+    
+    while (left < right) {
+      current_sum <- nums[left] + nums[right]
+      
+      if (current_sum == target) {
+        # Found a valid triplet
+        result <- append(result, list(c(nums[i], nums[left], nums[right])))
+        
+        # Skip duplicates
+        while (left < right && nums[left] == nums[left + 1]) {
+          left <- left + 1
+        }
+        while (left < right && nums[right] == nums[right - 1]) {
+          right <- right - 1
+        }
+        
+        left <- left + 1
+        right <- right - 1
+        
+      } else if (current_sum < target) {
+        left <- left + 1
+      } else {
+        right <- right - 1
+      }
+    }
+  }
+  
+  return(result)
+}
+
+
+cat("Example 1:\n")
+print(three_sum(c(-1, 0, 1, 2, -1, -4)))
+
+cat("\nExample 2:\n")
+print(three_sum(c(0, 1, 1)))
+
+cat("\nExample 3:\n")
+print(three_sum(c(0, 0, 0)))
+
+
+# Data frame approach for cleaner output
+library(dplyr)
+
+three_sum_df <- function(nums) {
+  #' Return results as a data frame for cleaner display
+  
+  triplets <- three_sum(nums)
+  
+  if (length(triplets) == 0) {
+    return(data.frame(a = integer(), b = integer(), c = integer()))
+  }
+  
+  do.call(rbind, lapply(triplets, function(x) {
+    data.frame(a = x[1], b = x[2], c = x[3])
+  }))
+}
+
+
+cat("\nAs data frame:\n")
+print(three_sum_df(c(-1, 0, 1, 2, -1, -4)))
+```
+
+---
+
+# 🔍 Solution Breakdown: Full Workout Analysis
+
+## Why Sort First?
+
+| Without Sorting | With Sorting |
+|:----------------|:-------------|
+| No pattern to exploit | Two-pointer technique works |
+| O(n³) brute force | O(n²) with two pointers |
+| Complex duplicate handling | Simple skip adjacent duplicates |
+
+## Detailed Trace: Example 1
+
+**Input**: `[-1, 0, 1, 2, -1, -4]`
+**After Sort**: `[-4, -1, -1, 0, 1, 2]`
+
+### Iteration 1: Fixed = -4
+
+| Left | Right | Sum | Target (1) | Action |
+|:-----|:------|:----|:-----------|:-------|
+| -1 | 2 | 1 | 4 | 1 < 4, left → |
+| -1 | 2 | 1 | 4 | 1 < 4, left → |
+| 0 | 2 | 2 | 4 | 2 < 4, left → |
+| 1 | 2 | 3 | 4 | 3 < 4, left → |
+| Done | — | — | — | left ≥ right |
+
+**Result so far**: `[]`
+
+### Iteration 2: Fixed = -1
+
+| Left | Right | Sum | Target (1) | Action |
+|:-----|:------|:----|:-----------|:-------|
+| -1 | 2 | 1 | 1 | 1 = 1 ✓ Found! |
+| 0 | 1 | 1 | 1 | 1 = 1 ✓ Found! |
+| Done | — | — | — | left ≥ right |
+
+**Result so far**: `[[-1, -1, 2], [-1, 0, 1]]`
+
+### Iteration 3: Fixed = -1 (duplicate)
+
+Skip! Same as previous fixed element.
+
+### Remaining Iterations
+
+Fixed = 0: Target = 0, need two positives that sum to 0 → impossible
+Fixed = 1: Already positive, early exit
+
+**Final Result**: `[[-1, -1, 2], [-1, 0, 1]]`
+
+---
+
+## Handling Duplicates: Key to Success
+
+```python
+# Skip duplicate FIXED elements
+if i > 0 and nums[i] == nums[i - 1]:
+    continue
+
+# Skip duplicate LEFT elements (after finding a triplet)
+while left < right and nums[left] == nums[left + 1]:
+    left += 1
+
+# Skip duplicate RIGHT elements (after finding a triplet)
+while left < right and nums[right] == nums[right - 1]:
+    right -= 1
+```
+
+### Why This Works
+
+```
+Array: [-1, -1, 0, 1, 1]
+
+Without skipping:
+  Fixed=-1: Found [-1, 0, 1] at indices (0, 2, 3)
+  Fixed=-1: Found [-1, 0, 1] at indices (1, 2, 3)  ← DUPLICATE!
+
+With skipping:
+  Fixed=-1: Found [-1, 0, 1]
+  Fixed=-1: SKIP (same as previous fixed)
+```
+
+---
+
+# 📈 Complexity Analysis
+
+## Time Complexity: O(n²)
+
+| Operation | Complexity |
+|:----------|:-----------|
+| Sorting | O(n log n) |
+| Outer loop | O(n) |
+| Inner two-pointer | O(n) |
+| **Total** | **O(n²)** |
+
+## Space Complexity: O(1) or O(n)
+
+| Component | Space |
+|:----------|:------|
+| Sorting (in-place) | O(1) or O(log n) |
+| Extra variables | O(1) |
+| Output | O(k) where k = number of triplets |
+| **Total** | **O(1)** extra (excluding output) |
+
+---
+
+# 🎯 Key Takeaways
+
+## The Two-Pointer Pattern for Sums
+
+```
+Sort the array first!
+
+Then:
+- Fix one element
+- Use two pointers on the rest
+- Adjust pointers based on sum comparison
+```
+
+## Generalizing to kSum
+
+The same pattern extends to **4Sum**, **5Sum**, etc.:
+
+```python
+def kSum(nums, k, target):
+    if k == 2:
+        return twoSum(nums, target)
+    else:
+        for each element:
+            fix element
+            solve (k-1)Sum on rest
+```
+
+## The Duplicate Trap
+
+> **Most common bug**: Forgetting to skip duplicates!
+
+This causes:
+1. Wrong answer (duplicate triplets)
+2. Time Limit Exceeded (redundant work)
+
+---
+
+# 🔧 Interview Tips
+
+## Common Mistakes
+
+| Mistake | Solution |
+|:--------|:---------|
+| Not sorting | Sort first for two-pointer |
+| Missing duplicates | Skip at all three levels |
+| Index out of bounds | Check `left < right` |
+| Returning too early | Continue searching after finding |
+
+## Follow-up Questions
+
+**Q: What if we want sum = target (not 0)?**
+A: Just change `target = -nums[i]` to `target = target - nums[i]`
+
+**Q: What about 4Sum?**
+A: Add another outer loop, same two-pointer inside. O(n³)
+
+**Q: Can we do better than O(n²)?**
+A: For 3Sum, O(n²) is essentially optimal. Hash-based approaches are also O(n²) with worse constants.
+
+---
+
+# 🏆 Related Problems
+
+| Problem | Difficulty | Key Difference |
+|:--------|:-----------|:---------------|
+| Two Sum | Easy | Only 2 elements |
+| 4Sum | Medium | 4 elements, O(n³) |
+| 3Sum Closest | Medium | Find closest sum |
+| 3Sum Smaller | Medium | Count triplets < target |
+
+---
+
+# 💡 The Gym Metaphor Summary
+
+| Coding Concept | Gym Equivalent |
+|:---------------|:---------------|
+| Array elements | Exercise intensities |
+| Sum = 0 | Balanced workout |
+| Sorting | Organizing by intensity |
+| Fixed element | Committed exercise choice |
+| Two pointers | Finding complementary pair |
+| Skipping duplicates | Avoiding repeated routines |
+
+---
+
+*"In the gym of algorithms, 3Sum teaches you that sometimes fixing one thing and being flexible with the rest is the key to finding balance!"* 💪⚖️

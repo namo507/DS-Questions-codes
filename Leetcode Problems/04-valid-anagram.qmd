@@ -1,0 +1,563 @@
+---
+title: "Valid Anagram"
+subtitle: "LeetCode #242 | Easy | Strings & Hash Tables"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #242 - Valid Anagram**
+
+Given two strings `s` and `t`, return `true` if `t` is an **anagram** of `s`, and `false` otherwise.
+
+An **anagram** is a word or phrase formed by rearranging the letters of a different word or phrase, using all the original letters exactly once.
+
+## Examples
+
+| Example | String s | String t | Output | Explanation |
+|:--------|:---------|:---------|:-------|:------------|
+| 1 | `"anagram"` | `"nagaram"` | `true` | Same letters, different arrangement |
+| 2 | `"rat"` | `"car"` | `false` | Different letters ('t' vs 'c') |
+
+## Constraints
+
+- $1 \leq s.length, t.length \leq 5 \times 10^4$
+- `s` and `t` consist of lowercase English letters
+
+## Follow-up
+
+What if the inputs contain Unicode characters? How would you adapt your solution?
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Google | ⭐⭐⭐⭐ |
+| Uber | ⭐⭐⭐⭐ |
+| Microsoft | ⭐⭐⭐⭐ |
+| Bloomberg | ⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: Matching Workout Equipment Sets
+
+## Understanding the Problem Through Fitness
+
+Imagine you're a **gym equipment manager** checking if two gyms have **identical equipment**:
+
+> **"Does Gym A and Gym B have the exact same equipment, just arranged differently?"**
+
+**Gym A's Equipment:**
+```
+[Dumbbell, Barbell, Treadmill, Barbell, Mat, Dumbbell, Mat]
+```
+
+**Gym B's Equipment:**
+```
+[Mat, Barbell, Dumbbell, Treadmill, Mat, Dumbbell, Barbell]
+```
+
+**The Question**: Same inventory, different layout?
+
+---
+
+## The Naive Approach: Physically Matching Each Item
+
+Like taking each item from Gym A, walking to Gym B, finding a match, and removing it:
+
+1. Take Dumbbell from A → Find in B, remove ✓
+2. Take Barbell from A → Find in B, remove ✓
+3. ... continue for all items
+
+**Problem**: For each of n items, you search through remaining items → **O(n²)**
+
+---
+
+## The Smart Approach: The Inventory Count System
+
+A professional manager uses an **inventory spreadsheet**:
+
+### Strategy 1: Two Inventory Counts (Compare Counts)
+
+1. **Count all equipment in Gym A**
+2. **Count all equipment in Gym B**
+3. **Compare the two inventories**
+
+### Strategy 2: Single Inventory Balance (Add/Subtract)
+
+1. **Add to inventory for each item in Gym A** (+1)
+2. **Subtract from inventory for each item in Gym B** (-1)
+3. **If inventory is all zeros → Perfect match!**
+
+### Visual Walkthrough
+
+```
+s = "anagram"
+t = "nagaram"
+
+Character Counting for s:
+a: 3, n: 1, g: 1, r: 1, m: 1
+
+Character Counting for t:
+n: 1, a: 3, g: 1, r: 1, m: 1
+
+Comparison:
+a: 3 == 3 ✓
+n: 1 == 1 ✓
+g: 1 == 1 ✓
+r: 1 == 1 ✓
+m: 1 == 1 ✓
+
+Result: TRUE (Same inventory!)
+```
+
+| Character | Count in s | Count in t | Match? |
+|:----------|:-----------|:-----------|:-------|
+| a | 3 | 3 | ✅ |
+| n | 1 | 1 | ✅ |
+| g | 1 | 1 | ✅ |
+| r | 1 | 1 | ✅ |
+| m | 1 | 1 | ✅ |
+
+---
+
+## Non-Anagram Example
+
+```
+s = "rat"
+t = "car"
+
+Count for s: r:1, a:1, t:1
+Count for t: c:1, a:1, r:1
+
+Comparison:
+r: 1 == 1 ✓
+a: 1 == 1 ✓
+t: 1 vs 0 ✗  ← t exists in s but not in t
+c: 0 vs 1 ✗  ← c exists in t but not in s
+
+Result: FALSE
+```
+
+| Character | Count in s | Count in t | Match? |
+|:----------|:-----------|:-----------|:-------|
+| r | 1 | 1 | ✅ |
+| a | 1 | 1 | ✅ |
+| t | 1 | 0 | ❌ |
+| c | 0 | 1 | ❌ |
+
+---
+
+# 💻 Python Solution
+
+```{python}
+def is_anagram(s: str, t: str) -> bool:
+    """
+    Check if t is an anagram of s.
+    
+    The Inventory Count Strategy:
+    - Count equipment in both gyms
+    - Compare inventories
+    
+    Time Complexity: O(n) - Count each character
+    Space Complexity: O(1) - At most 26 letters (fixed alphabet)
+    """
+    # Quick check: different lengths can't be anagrams
+    if len(s) != len(t):
+        return False
+    
+    # Count inventory for both gyms
+    count_s = {}
+    count_t = {}
+    
+    for char in s:
+        count_s[char] = count_s.get(char, 0) + 1
+    
+    for char in t:
+        count_t[char] = count_t.get(char, 0) + 1
+    
+    # Compare inventories
+    return count_s == count_t
+
+
+# Test cases
+print("Example 1:", is_anagram("anagram", "nagaram"))  # True
+print("Example 2:", is_anagram("rat", "car"))          # False
+
+
+# Alternative: Using Counter (most Pythonic)
+from collections import Counter
+
+def is_anagram_counter(s: str, t: str) -> bool:
+    """
+    Using Python's Counter for cleaner code.
+    Counter automatically creates the frequency map.
+    """
+    return Counter(s) == Counter(t)
+
+
+print("\nUsing Counter:")
+print("Example 1:", is_anagram_counter("anagram", "nagaram"))  # True
+print("Example 2:", is_anagram_counter("rat", "car"))          # False
+
+
+# Alternative: Single Count (Add/Subtract method)
+def is_anagram_single_count(s: str, t: str) -> bool:
+    """
+    The Balance Sheet Method:
+    - Add +1 for each char in s
+    - Subtract -1 for each char in t
+    - If all counts are 0 → anagram!
+    
+    Like: "Add equipment from Gym A, remove for Gym B"
+    """
+    if len(s) != len(t):
+        return False
+    
+    count = {}
+    
+    # Add inventory from s (+1)
+    for char in s:
+        count[char] = count.get(char, 0) + 1
+    
+    # Subtract inventory from t (-1)
+    for char in t:
+        count[char] = count.get(char, 0) - 1
+        # Early exit: t has more of this char than s
+        if count[char] < 0:
+            return False
+    
+    # All counts should be 0
+    return all(v == 0 for v in count.values())
+
+
+print("\nUsing Single Count:")
+print("Example 1:", is_anagram_single_count("anagram", "nagaram"))  # True
+print("Example 2:", is_anagram_single_count("rat", "car"))          # False
+
+
+# Alternative: Using fixed-size array (most efficient for lowercase letters)
+def is_anagram_array(s: str, t: str) -> bool:
+    """
+    Using 26-character array for lowercase letters.
+    Most memory-efficient for known alphabet.
+    
+    Like: "26 equipment slots, one for each letter"
+    """
+    if len(s) != len(t):
+        return False
+    
+    # 26 slots for a-z
+    count = [0] * 26
+    
+    for i in range(len(s)):
+        # Add for s, subtract for t
+        count[ord(s[i]) - ord('a')] += 1
+        count[ord(t[i]) - ord('a')] -= 1
+    
+    # Check all counts are 0
+    return all(c == 0 for c in count)
+
+
+print("\nUsing Array:")
+print("Example 1:", is_anagram_array("anagram", "nagaram"))  # True
+print("Example 2:", is_anagram_array("rat", "car"))          # False
+```
+
+---
+
+# 📊 R Solution
+
+```{r}
+is_anagram <- function(s, t) {
+  #' Check if t is an anagram of s.
+  #' 
+  #' The Inventory Count Strategy:
+  #' - Count equipment in both gyms
+  #' - Compare inventories
+  #' 
+  #' Time Complexity: O(n) - Count each character
+  #' Space Complexity: O(k) - k unique characters
+  
+  # Quick check: different lengths can't be anagrams
+  if (nchar(s) != nchar(t)) {
+    return(FALSE)
+  }
+  
+  # Split strings into character vectors
+  chars_s <- strsplit(s, "")[[1]]
+  chars_t <- strsplit(t, "")[[1]]
+  
+  # Count using table()
+  count_s <- table(chars_s)
+  count_t <- table(chars_t)
+  
+  # Compare: same names and same values
+  return(identical(count_s, count_t))
+}
+
+
+# Test cases
+cat("Example 1:", is_anagram("anagram", "nagaram"), "\n")  # TRUE
+cat("Example 2:", is_anagram("rat", "car"), "\n")          # FALSE
+
+
+# Alternative: Sorting approach
+is_anagram_sort <- function(s, t) {
+  #' Sorting Approach:
+  #' If two strings are anagrams, their sorted versions are identical.
+  #' 
+  #' Like: "Line up all equipment alphabetically, compare"
+  
+  if (nchar(s) != nchar(t)) {
+    return(FALSE)
+  }
+  
+  sorted_s <- paste(sort(strsplit(s, "")[[1]]), collapse = "")
+  sorted_t <- paste(sort(strsplit(t, "")[[1]]), collapse = "")
+  
+  return(sorted_s == sorted_t)
+}
+
+
+cat("\nUsing Sorting:\n")
+cat("Example 1:", is_anagram_sort("anagram", "nagaram"), "\n")  # TRUE
+cat("Example 2:", is_anagram_sort("rat", "car"), "\n")          # FALSE
+
+
+# Alternative: Using environment as hash map
+is_anagram_hash <- function(s, t) {
+  #' Single Count Method with Hash:
+  #' - Add for s characters
+  #' - Subtract for t characters
+  #' - All should be zero
+  
+  if (nchar(s) != nchar(t)) {
+    return(FALSE)
+  }
+  
+  count <- new.env(hash = TRUE, parent = emptyenv())
+  
+  chars_s <- strsplit(s, "")[[1]]
+  chars_t <- strsplit(t, "")[[1]]
+  
+  # Add from s
+  for (char in chars_s) {
+    if (is.null(count[[char]])) {
+      count[[char]] <- 0
+    }
+    count[[char]] <- count[[char]] + 1
+  }
+  
+  # Subtract from t
+  for (char in chars_t) {
+    if (is.null(count[[char]])) {
+      return(FALSE)  # char in t but not in s
+    }
+    count[[char]] <- count[[char]] - 1
+    if (count[[char]] < 0) {
+      return(FALSE)  # more of this char in t than s
+    }
+  }
+  
+  # Check all are zero
+  for (key in ls(count)) {
+    if (count[[key]] != 0) {
+      return(FALSE)
+    }
+  }
+  
+  return(TRUE)
+}
+
+
+cat("\nUsing Hash Environment:\n")
+cat("Example 1:", is_anagram_hash("anagram", "nagaram"), "\n")  # TRUE
+cat("Example 2:", is_anagram_hash("rat", "car"), "\n")          # FALSE
+```
+
+---
+
+# 🔍 Solution Breakdown: The Full Gym Session Analysis
+
+## Algorithm Walkthrough with Detailed Table
+
+### Example 1: `s = "anagram"`, `t = "nagaram"` (TRUE case)
+
+**Step 1: Build count for s**
+
+| Index | Char | Count Map |
+|:------|:-----|:----------|
+| 0 | a | {a:1} |
+| 1 | n | {a:1, n:1} |
+| 2 | a | {a:2, n:1} |
+| 3 | g | {a:2, n:1, g:1} |
+| 4 | r | {a:2, n:1, g:1, r:1} |
+| 5 | a | {a:3, n:1, g:1, r:1} |
+| 6 | m | {a:3, n:1, g:1, r:1, m:1} |
+
+**Step 2: Build count for t**
+
+| Index | Char | Count Map |
+|:------|:-----|:----------|
+| 0 | n | {n:1} |
+| 1 | a | {n:1, a:1} |
+| 2 | g | {n:1, a:1, g:1} |
+| 3 | a | {n:1, a:2, g:1} |
+| 4 | r | {n:1, a:2, g:1, r:1} |
+| 5 | a | {n:1, a:3, g:1, r:1} |
+| 6 | m | {n:1, a:3, g:1, r:1, m:1} |
+
+**Step 3: Compare**
+
+| Character | s count | t count | Equal? |
+|:----------|:--------|:--------|:-------|
+| a | 3 | 3 | ✅ |
+| n | 1 | 1 | ✅ |
+| g | 1 | 1 | ✅ |
+| r | 1 | 1 | ✅ |
+| m | 1 | 1 | ✅ |
+
+**Result**: All equal → `TRUE`
+
+---
+
+### Single-Pass Balance Method Trace
+
+For `s = "rat"`, `t = "car"` (FALSE case):
+
+| Step | Source | Char | Operation | Count State |
+|:-----|:-------|:-----|:----------|:------------|
+| 1 | s | r | +1 | {r:1} |
+| 2 | s | a | +1 | {r:1, a:1} |
+| 3 | s | t | +1 | {r:1, a:1, t:1} |
+| 4 | t | c | -1 | {r:1, a:1, t:1, c:-1} ← **Negative!** |
+
+**Early Exit**: `c` count went negative → `FALSE`
+
+---
+
+## The Gym Metaphor Breakdown
+
+| Coding Concept | Gym Equivalent |
+|:---------------|:---------------|
+| String `s` | Gym A's equipment list |
+| String `t` | Gym B's equipment list |
+| Character frequency map | Equipment inventory spreadsheet |
+| Counting characters | Taking inventory of each equipment type |
+| Comparing maps | Checking if both gyms have identical inventories |
+| Length check | "Do both gyms have the same total equipment count?" |
+
+---
+
+# 📈 Complexity Analysis
+
+## Approach Comparison
+
+| Approach | Time | Space | Notes |
+|:---------|:-----|:------|:------|
+| Brute Force | O(n²) | O(1) | Match and remove |
+| **Hash Map** | **O(n)** | **O(k)** | k = unique chars (max 26) |
+| Sorting | O(n log n) | O(n) or O(1) | Depends on sort |
+| Array (26) | O(n) | O(1) | Fixed 26-slot array |
+
+## Hash Map Analysis
+
+### Time Complexity: O(n)
+
+| Operation | Frequency | Cost | Total |
+|:----------|:----------|:-----|:------|
+| Count chars in s | n | O(1) | O(n) |
+| Count chars in t | n | O(1) | O(n) |
+| Compare maps | k unique chars | O(1) | O(k) ≤ O(26) |
+
+**Total**: O(n) where n is string length
+
+### Space Complexity: O(1) for English lowercase
+
+| Storage | Size | Notes |
+|:--------|:-----|:------|
+| Hash Map | At most 26 entries | Fixed alphabet |
+
+For **Unicode** (follow-up): O(k) where k is unique characters
+
+---
+
+# 🎯 Key Takeaways
+
+## Pattern Recognition: Frequency Counting
+
+This problem teaches the fundamental pattern:
+
+> **Count occurrences of elements to compare collections regardless of order.**
+
+## When to Use This Pattern
+
+| Scenario | Example |
+|:---------|:--------|
+| Comparing permutations | Anagram, Permutation in String |
+| Finding duplicates/frequencies | Most Common Character |
+| Matching multisets | Group Anagrams |
+| Window-based comparisons | Sliding Window Anagram |
+
+## Unicode Follow-up Answer
+
+For Unicode characters:
+
+```python
+# Hash map approach naturally handles Unicode!
+def is_anagram_unicode(s: str, t: str) -> bool:
+    return Counter(s) == Counter(t)
+```
+
+The hash map approach works for any characters, while the 26-array approach only works for lowercase English.
+
+## Common Mistakes to Avoid
+
+| Mistake | Why It's Wrong | Correct Approach |
+|:--------|:---------------|:-----------------|
+| Forgetting length check | "ab" and "a" can't be anagrams | Check `len(s) == len(t)` first |
+| Case sensitivity | "Anagram" ≠ "nagaram" | Convert to same case if needed |
+| Using list instead of dict | O(n) lookup vs O(1) | Use hash map for counting |
+
+---
+
+# 🏆 Practice Variations
+
+Build on this concept with these related problems:
+
+| Problem | Difficulty | Key Extension |
+|:--------|:-----------|:--------------|
+| Group Anagrams | Medium | Group strings by anagram |
+| Find All Anagrams in String | Medium | Sliding window + frequency |
+| Permutation in String | Medium | Check if permutation exists |
+| Minimum Window Substring | Hard | Find window containing chars |
+
+---
+
+# 🔧 Interview Tips
+
+## Clarifying Questions to Ask
+
+1. "Are the strings case-sensitive?" (usually yes for this problem)
+2. "Can strings contain spaces or special characters?"
+3. "What character set? ASCII? Unicode?"
+4. "Are empty strings valid input?"
+
+## Optimization Discussion Points
+
+| Point | Explanation |
+|:------|:------------|
+| Early exit on length | O(1) check saves time |
+| Single-pass variant | More efficient than two maps |
+| Array vs Hash Map | Array faster for known alphabet |
+
+---
+
+*"In the gym of strings, frequency counting is your rep counter — essential for tracking what matters."* 💪🔤

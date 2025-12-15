@@ -1,0 +1,580 @@
+---
+title: "Maximum Subarray"
+subtitle: "LeetCode #53 | Medium | Arrays & Dynamic Programming (Kadane's Algorithm)"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #53 - Maximum Subarray**
+
+Given an integer array `nums`, find the **subarray** with the largest sum, and return its **sum**.
+
+A **subarray** is a contiguous non-empty sequence of elements within an array.
+
+## Examples
+
+| Example | Input | Output | Explanation |
+|:--------|:------|:-------|:------------|
+| 1 | `[-2,1,-3,4,-1,2,1,-5,4]` | `6` | Subarray [4,-1,2,1] has max sum 6 |
+| 2 | `[1]` | `1` | Single element |
+| 3 | `[5,4,-1,7,8]` | `23` | Entire array: 5+4-1+7+8=23 |
+
+## Constraints
+
+- $1 \leq \text{nums.length} \leq 10^5$
+- $-10^4 \leq \text{nums}[i] \leq 10^4$
+
+## Follow-up
+
+If you have figured out the O(n) solution, try coding another solution using the **divide and conquer** approach, which is more subtle.
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Microsoft | ⭐⭐⭐⭐⭐ |
+| Google | ⭐⭐⭐⭐⭐ |
+| Meta | ⭐⭐⭐⭐ |
+| Apple | ⭐⭐⭐⭐ |
+| LinkedIn | ⭐⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: Finding Your Best Workout Streak
+
+## Understanding the Problem Through Fitness
+
+Imagine you're tracking your **daily workout performance** over a month, where each day has a **net calorie impact**:
+
+- **Positive days** (+): Burned more than you ate (great workout! 💪)
+- **Negative days** (-): Ate more than you burned (cheat day 🍕)
+
+```
+Daily Impact: [-200, +100, -300, +400, -100, +200, +100, -500, +400]
+               Day1  Day2  Day3  Day4  Day5  Day6  Day7  Day8  Day9
+```
+
+**The Goal**: Find the **consecutive stretch of days** with the **maximum net calorie burn**.
+
+---
+
+## The Challenge
+
+You want to find your **best streak** — but there's a twist:
+
+> **"Should I include yesterday's bad day because today and tomorrow are great? Or start fresh?"**
+
+---
+
+## The Naive Approach: Check Every Possible Streak
+
+Try every possible starting day and ending day:
+
+```
+Days 1-1: -200
+Days 1-2: -200 + 100 = -100
+Days 1-3: -200 + 100 - 300 = -400
+...
+Days 4-7: 400 - 100 + 200 + 100 = 600 ← Best streak!
+...
+```
+
+**Problem**: For each of n days, check subarrays of all lengths → **O(n²)** or **O(n³)**
+
+---
+
+## The Smart Approach: Kadane's Algorithm (The "Fresh Start" Decision)
+
+Every day, ask yourself ONE simple question:
+
+> **"Is it better to EXTEND my current streak, or START FRESH from today?"**
+
+### The Decision Rule
+
+```
+current_streak = max(today's_impact, current_streak + today's_impact)
+```
+
+In gym terms:
+
+- **If previous streak was negative**: Starting fresh is better
+- **If previous streak was positive**: Keep building on it
+
+### Visual Walkthrough
+
+```
+Days:    [-200, +100, -300, +400, -100, +200, +100, -500, +400]
+
+Day 1: Impact = -200
+       Extend (0 + -200 = -200) vs Start Fresh (-200)
+       Best choice: -200 (doesn't matter, same)
+       Current streak: -200, Max seen: -200
+
+Day 2: Impact = +100
+       Extend (-200 + 100 = -100) vs Start Fresh (+100)
+       Best choice: +100 (start fresh!)
+       Current streak: +100, Max seen: +100
+
+Day 3: Impact = -300
+       Extend (+100 + -300 = -200) vs Start Fresh (-300)
+       Best choice: -200 (extend, even though negative)
+       Current streak: -200, Max seen: +100
+
+Day 4: Impact = +400
+       Extend (-200 + 400 = +200) vs Start Fresh (+400)
+       Best choice: +400 (start fresh!)
+       Current streak: +400, Max seen: +400
+
+Day 5: Impact = -100
+       Extend (+400 + -100 = +300) vs Start Fresh (-100)
+       Best choice: +300 (extend!)
+       Current streak: +300, Max seen: +400
+
+Day 6: Impact = +200
+       Extend (+300 + 200 = +500) vs Start Fresh (+200)
+       Best choice: +500 (extend!)
+       Current streak: +500, Max seen: +500
+
+Day 7: Impact = +100
+       Extend (+500 + 100 = +600) vs Start Fresh (+100)
+       Best choice: +600 (extend!)
+       Current streak: +600, Max seen: +600 ⭐
+
+Day 8: Impact = -500
+       Extend (+600 + -500 = +100) vs Start Fresh (-500)
+       Best choice: +100 (extend!)
+       Current streak: +100, Max seen: +600
+
+Day 9: Impact = +400
+       Extend (+100 + 400 = +500) vs Start Fresh (+400)
+       Best choice: +500 (extend!)
+       Current streak: +500, Max seen: +600
+
+ANSWER: 600 (Days 4-7: 400 - 100 + 200 + 100)
+```
+
+| Day | Value | Extend | Fresh | Choice | Current | Max So Far |
+|:----|:------|:-------|:------|:-------|:--------|:-----------|
+| 1 | -2 | -2 | -2 | -2 | -2 | **-2** |
+| 2 | 1 | -1 | 1 | 1 | 1 | **1** |
+| 3 | -3 | -2 | -3 | -2 | -2 | 1 |
+| 4 | 4 | 2 | 4 | 4 | 4 | **4** |
+| 5 | -1 | 3 | -1 | 3 | 3 | 4 |
+| 6 | 2 | 5 | 2 | 5 | 5 | **5** |
+| 7 | 1 | 6 | 1 | 6 | 6 | **6** ⭐ |
+| 8 | -5 | 1 | -5 | 1 | 1 | 6 |
+| 9 | 4 | 5 | 4 | 5 | 5 | 6 |
+
+---
+
+# 💻 Python Solution
+
+```{python}
+def max_subarray(nums: list[int]) -> int:
+    """
+    Find the contiguous subarray with maximum sum.
+    
+    Kadane's Algorithm: The Fresh Start Decision
+    - At each position, decide: extend current streak or start fresh?
+    - Track the maximum sum seen across all positions
+    
+    Time Complexity: O(n) - Single pass
+    Space Complexity: O(1) - Two variables
+    """
+    # Current streak sum (can restart)
+    current_sum = nums[0]
+    
+    # Best streak we've ever seen
+    max_sum = nums[0]
+    
+    # Walk through each day starting from day 2
+    for i in range(1, len(nums)):
+        # Decision: extend current streak or start fresh?
+        current_sum = max(nums[i], current_sum + nums[i])
+        
+        # Update best if current is better
+        max_sum = max(max_sum, current_sum)
+    
+    return max_sum
+
+
+# Test cases
+print("Example 1:", max_subarray([-2,1,-3,4,-1,2,1,-5,4]))  # 6
+print("Example 2:", max_subarray([1]))                       # 1
+print("Example 3:", max_subarray([5,4,-1,7,8]))             # 23
+
+
+# Alternative: More explicit version
+def max_subarray_verbose(nums: list[int]) -> int:
+    """
+    Same algorithm with explicit tracking of subarray bounds.
+    Useful for debugging or if you need to return the actual subarray.
+    """
+    current_sum = nums[0]
+    max_sum = nums[0]
+    
+    # Track indices (optional, for returning actual subarray)
+    current_start = 0
+    max_start = 0
+    max_end = 0
+    
+    for i in range(1, len(nums)):
+        # If starting fresh is better, update start index
+        if nums[i] > current_sum + nums[i]:
+            current_sum = nums[i]
+            current_start = i
+        else:
+            current_sum = current_sum + nums[i]
+        
+        # Update max if current is better
+        if current_sum > max_sum:
+            max_sum = current_sum
+            max_start = current_start
+            max_end = i
+    
+    print(f"Max subarray: {nums[max_start:max_end+1]} with sum {max_sum}")
+    return max_sum
+
+
+print("\nVerbose version:")
+max_subarray_verbose([-2,1,-3,4,-1,2,1,-5,4])
+
+
+# Alternative: Using reduce for functional programming style
+from functools import reduce
+
+def max_subarray_functional(nums: list[int]) -> int:
+    """
+    Functional approach using reduce.
+    Less readable but demonstrates the stateful nature.
+    """
+    def kadane_step(state, num):
+        current_sum, max_sum = state
+        current_sum = max(num, current_sum + num)
+        max_sum = max(max_sum, current_sum)
+        return (current_sum, max_sum)
+    
+    initial = (nums[0], nums[0])
+    _, result = reduce(kadane_step, nums[1:], initial)
+    return result
+
+
+print("\nFunctional version:")
+print("Example 1:", max_subarray_functional([-2,1,-3,4,-1,2,1,-5,4]))  # 6
+```
+
+---
+
+# 📊 R Solution
+
+```{r}
+max_subarray <- function(nums) {
+  #' Find the contiguous subarray with maximum sum.
+  #' 
+  #' Kadane's Algorithm: The Fresh Start Decision
+  #' - At each position, decide: extend current streak or start fresh?
+  #' - Track the maximum sum seen across all positions
+  #' 
+  #' Time Complexity: O(n) - Single pass
+  #' Space Complexity: O(1) - Two variables
+  
+  # Current streak sum
+  current_sum <- nums[1]
+  
+  # Best streak we've ever seen
+  max_sum <- nums[1]
+  
+  # Walk through each day starting from day 2
+  if (length(nums) >= 2) {
+    for (i in 2:length(nums)) {
+      # Decision: extend current streak or start fresh?
+      current_sum <- max(nums[i], current_sum + nums[i])
+      
+      # Update best if current is better
+      max_sum <- max(max_sum, current_sum)
+    }
+  }
+  
+  return(max_sum)
+}
+
+
+# Test cases
+cat("Example 1:", max_subarray(c(-2,1,-3,4,-1,2,1,-5,4)), "\n")  # 6
+cat("Example 2:", max_subarray(c(1)), "\n")                       # 1
+cat("Example 3:", max_subarray(c(5,4,-1,7,8)), "\n")             # 23
+
+
+# Alternative: Vectorized approach with cumsum
+max_subarray_vectorized <- function(nums) {
+  #' Vectorized approach using cumulative sums.
+  #' 
+  #' Key insight: max subarray sum = max(cumsum) - min(cumsum so far)
+  #' This is like finding the best "buy low, sell high" in cumsum space.
+  
+  n <- length(nums)
+  
+  # Cumulative sum (prefix sums)
+  cum_sum <- c(0, cumsum(nums))  # Add 0 for "before any element"
+  
+  # Track running minimum of cumsum
+  running_min <- cummin(cum_sum[-length(cum_sum)])  # Exclude last
+  
+  # Max difference: cum_sum[i] - min(cum_sum[0:i-1])
+  max_diff <- max(cum_sum[-1] - running_min)
+  
+  return(max_diff)
+}
+
+
+cat("\nVectorized version:\n")
+cat("Example 1:", max_subarray_vectorized(c(-2,1,-3,4,-1,2,1,-5,4)), "\n")
+cat("Example 3:", max_subarray_vectorized(c(5,4,-1,7,8)), "\n")
+
+
+# Version that returns the actual subarray
+max_subarray_with_indices <- function(nums) {
+  #' Returns both the max sum and the subarray indices
+  
+  current_sum <- nums[1]
+  max_sum <- nums[1]
+  
+  current_start <- 1
+  max_start <- 1
+  max_end <- 1
+  
+  if (length(nums) >= 2) {
+    for (i in 2:length(nums)) {
+      if (nums[i] > current_sum + nums[i]) {
+        current_sum <- nums[i]
+        current_start <- i
+      } else {
+        current_sum <- current_sum + nums[i]
+      }
+      
+      if (current_sum > max_sum) {
+        max_sum <- current_sum
+        max_start <- current_start
+        max_end <- i
+      }
+    }
+  }
+  
+  cat("Max subarray:", nums[max_start:max_end], "with sum", max_sum, "\n")
+  return(max_sum)
+}
+
+
+cat("\nWith indices:\n")
+max_subarray_with_indices(c(-2,1,-3,4,-1,2,1,-5,4))
+```
+
+---
+
+# 🔍 Solution Breakdown: The Full Gym Session Analysis
+
+## Kadane's Algorithm: Step-by-Step
+
+**Input**: `nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]`
+
+| Index | Value | current_sum Before | Decision | current_sum After | max_sum |
+|:------|:------|:-------------------|:---------|:------------------|:--------|
+| 0 | -2 | — | Initialize | -2 | **-2** |
+| 1 | 1 | -2 | max(1, -2+1=-1) = 1 | 1 | **1** |
+| 2 | -3 | 1 | max(-3, 1-3=-2) = -2 | -2 | 1 |
+| 3 | 4 | -2 | max(4, -2+4=2) = **4** ⭐ | 4 | **4** |
+| 4 | -1 | 4 | max(-1, 4-1=3) = 3 | 3 | 4 |
+| 5 | 2 | 3 | max(2, 3+2=5) = 5 | 5 | **5** |
+| 6 | 1 | 5 | max(1, 5+1=6) = 6 | 6 | **6** ⭐ |
+| 7 | -5 | 6 | max(-5, 6-5=1) = 1 | 1 | 6 |
+| 8 | 4 | 1 | max(4, 1+4=5) = 5 | 5 | 6 |
+
+**Final Answer**: `6` (subarray `[4, -1, 2, 1]`)
+
+---
+
+## The Key Insight Explained
+
+### Why "Start Fresh" When Current Sum is Negative?
+
+If `current_sum < 0`, adding it to ANY future element makes that element smaller:
+
+```
+current_sum = -5
+next element = 10
+
+Extend: -5 + 10 = 5
+Fresh:  10
+
+Fresh is ALWAYS better when current_sum < 0!
+```
+
+### The Core Formula
+
+$$\text{current\_sum}[i] = \max(\text{nums}[i], \text{current\_sum}[i-1] + \text{nums}[i])$$
+
+Simplifies to:
+
+$$\text{current\_sum}[i] = \max(\text{nums}[i], \text{current\_sum}[i-1] + \text{nums}[i])$$
+
+Which means: "Start fresh if previous sum drags me down"
+
+---
+
+## The Gym Metaphor Breakdown
+
+| Coding Concept | Gym Equivalent |
+|:---------------|:---------------|
+| `nums[i]` | Day i's calorie impact |
+| `current_sum` | Current streak's net impact |
+| `max_sum` | Best streak ever achieved |
+| "Extend" decision | "Continue building on my momentum" |
+| "Fresh start" decision | "Yesterday was bad, today I reset" |
+| Negative `current_sum` | "I've been eating more than burning lately" |
+| Finding maximum | "What's my best consecutive workout period?" |
+
+---
+
+# 📈 Complexity Analysis
+
+## Kadane's Algorithm
+
+### Time Complexity: O(n)
+
+| Operation | Frequency | Cost | Total |
+|:----------|:----------|:-----|:------|
+| Iterate array | n times | O(1) | O(n) |
+| Max comparison | n times | O(1) | O(n) |
+| Update variables | n times | O(1) | O(n) |
+
+**Total**: O(n) — Single pass through the gym calendar
+
+### Space Complexity: O(1)
+
+| Variable | Space | Purpose |
+|:---------|:------|:--------|
+| `current_sum` | O(1) | Current streak |
+| `max_sum` | O(1) | Best streak |
+
+**Total**: O(1) — Just a mental notepad!
+
+---
+
+## Comparison with Other Approaches
+
+| Approach | Time | Space | Notes |
+|:---------|:-----|:------|:------|
+| Brute Force (all pairs) | O(n²) | O(1) | Check every subarray |
+| With prefix sums | O(n²) | O(n) | Slightly faster constant |
+| **Kadane's Algorithm** | **O(n)** | **O(1)** | **Optimal** |
+| Divide and Conquer | O(n log n) | O(log n) | Follow-up challenge |
+
+---
+
+# 🎯 Key Takeaways
+
+## Pattern Recognition: Local vs Global Optimum
+
+Kadane's Algorithm teaches:
+
+> **At each step, make the locally optimal choice (extend vs restart), while tracking the global optimum.**
+
+## The "Fresh Start" Principle
+
+This pattern applies beyond arrays:
+
+| Domain | Application |
+|:-------|:------------|
+| Stock trading | Buy low, sell high (similar structure) |
+| Sequence analysis | Maximum scoring segment |
+| Game theory | Optimal subgame decisions |
+| Resource allocation | Best contiguous allocation |
+
+## Dynamic Programming Connection
+
+Kadane's is a simple 1D DP where:
+
+- **State**: `dp[i]` = max sum ending at index i
+- **Transition**: `dp[i] = max(nums[i], dp[i-1] + nums[i])`
+- **Answer**: `max(dp[0..n-1])`
+
+Space optimization: We only need `dp[i-1]`, so use a single variable!
+
+---
+
+## Common Mistakes to Avoid
+
+| Mistake | Why It's Wrong | Correct Approach |
+|:--------|:---------------|:-----------------|
+| Initializing max to 0 | Array might be all negatives | Initialize with `nums[0]` |
+| Skipping single element | `[5]` should return `5` | Handle length-1 case |
+| Not handling all negatives | `[-5,-3,-1]` should return `-1` | Algorithm handles it! |
+
+---
+
+# 🏆 Practice Variations
+
+Build on Kadane's with these related problems:
+
+| Problem | Difficulty | Key Extension |
+|:--------|:-----------|:--------------|
+| Maximum Product Subarray | Medium | Track min too (negatives flip) |
+| Maximum Sum Circular Subarray | Medium | Handle wrap-around |
+| Maximum Subarray Sum After One Removal | Medium | DP with one deletion |
+| Longest Turbulent Subarray | Medium | Alternating increases/decreases |
+| Best Time to Buy and Sell Stock | Easy | Same pattern, different framing |
+
+---
+
+# 🔧 Follow-up: Divide and Conquer
+
+The O(n log n) divide and conquer approach:
+
+```python
+def max_subarray_dc(nums, left, right):
+    if left == right:
+        return nums[left]
+    
+    mid = (left + right) // 2
+    
+    # Max sum in left half
+    left_max = max_subarray_dc(nums, left, mid)
+    
+    # Max sum in right half
+    right_max = max_subarray_dc(nums, mid + 1, right)
+    
+    # Max sum crossing the midpoint
+    cross_max = max_crossing_sum(nums, left, mid, right)
+    
+    return max(left_max, right_max, cross_max)
+```
+
+**Why it works**: Maximum subarray is either:
+1. Entirely in left half
+2. Entirely in right half
+3. Crosses the midpoint
+
+---
+
+# 🧮 Mathematical Formulation
+
+We're finding:
+
+$$\max_{0 \leq i \leq j \leq n-1} \sum_{k=i}^{j} \text{nums}[k]$$
+
+Kadane's reformulates this as:
+
+$$\max_{j=0}^{n-1} \left( \max_{i \leq j} \sum_{k=i}^{j} \text{nums}[k] \right)$$
+
+Where the inner max is computed incrementally!
+
+---
+
+*"In the gym of life, Kadane's Algorithm teaches us: don't let a bad streak hold you back — know when to start fresh."* 💪🔥

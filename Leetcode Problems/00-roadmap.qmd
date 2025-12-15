@@ -1,0 +1,213 @@
+---
+title: "Leetcode Interview Prep Roadmap"
+subtitle: "Data Science | ML Engineer | Data Engineer"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+---
+
+# 🎯 Leetcode Interview Preparation Roadmap
+
+Welcome to your comprehensive Leetcode preparation journey! This roadmap is designed to take you from **beginner to master** with a strategic learning path that builds concepts progressively—just like training in a gym where you start with fundamentals before attempting heavy lifts.
+
+## 📊 Learning Philosophy
+
+> **"You don't build a six-pack by doing random exercises. You follow a structured program."**
+
+This curriculum follows the same principle:
+
+1. **Foundation First** — Master basic data structures before complex algorithms
+2. **Pattern Recognition** — Learn to identify problem patterns (like recognizing exercise forms)
+3. **Progressive Overload** — Gradually increase difficulty
+4. **Compound Movements** — Combine multiple concepts in advanced problems
+
+---
+
+## 🗂️ Question Categories & Learning Order
+
+| Phase | Category | Questions | Difficulty Mix | Est. Time |
+|:------|:---------|:----------|:---------------|:----------|
+| 1 | Arrays & Strings | 8 questions | 4 Easy, 4 Medium | 1 week |
+| 2 | Hash Tables & Sets | 6 questions | 2 Easy, 4 Medium | 5 days |
+| 3 | Two Pointers & Sliding Window | 6 questions | 2 Easy, 4 Medium | 5 days |
+| 4 | Sorting & Searching | 5 questions | 2 Easy, 3 Medium | 4 days |
+| 5 | Linked Lists | 4 questions | 2 Easy, 2 Medium | 3 days |
+| 6 | Trees & Graphs | 8 questions | 2 Easy, 5 Medium, 1 Hard | 1 week |
+| 7 | Dynamic Programming | 6 questions | 2 Easy, 3 Medium, 1 Hard | 1 week |
+| 8 | SQL & Data Manipulation | 6 questions | 3 Easy, 3 Medium | 4 days |
+| 9 | Math & Statistics | 4 questions | 2 Easy, 2 Medium | 3 days |
+
+**Total: ~50 Questions | ~6 Weeks**
+
+---
+
+## 📁 Phase 1: Arrays & Strings (Foundation)
+
+*Like learning proper form before adding weight*
+
+| # | Problem | File | Difficulty | Companies | Key Concept |
+|:--|:--------|:-----|:-----------|:----------|:------------|
+| 1 | Two Sum | `01-two-sum.qmd` | Easy | Google, Amazon, Meta | Hash Map Lookup |
+| 2 | Best Time to Buy & Sell Stock | `02-best-time-buy-sell-stock.qmd` | Easy | Amazon, Meta, Goldman | Kadane's Algorithm |
+| 3 | Contains Duplicate | `03-contains-duplicate.qmd` | Easy | Amazon, Apple, Microsoft | Set Operations |
+| 4 | Valid Anagram | `04-valid-anagram.qmd` | Easy | Amazon, Google, Uber | Character Counting |
+| 5 | Group Anagrams | `05-group-anagrams.qmd` | Medium | Amazon, Meta, Bloomberg | Hash Key Design |
+| 6 | Product of Array Except Self | `06-product-except-self.qmd` | Medium | Amazon, Apple, Meta | Prefix/Suffix |
+| 7 | Maximum Subarray | `07-maximum-subarray.qmd` | Medium | Amazon, Microsoft, Google | Kadane's Algorithm |
+| 8 | Merge Intervals | `08-merge-intervals.qmd` | Medium | Google, Meta, Bloomberg | Sorting + Merging |
+
+---
+
+## 📁 Phase 2: Hash Tables & Sets
+
+*Building your mental gym locker system*
+
+| # | Problem | File | Difficulty | Companies | Key Concept |
+|:--|:--------|:-----|:-----------|:----------|:------------|
+| 9 | Top K Frequent Elements | `09-top-k-frequent.qmd` | Medium | Amazon, Meta, Google | Bucket Sort |
+| 10 | Valid Sudoku | `10-valid-sudoku.qmd` | Medium | Amazon, Apple, Uber | Multi-Set Tracking |
+| 11 | Longest Consecutive Sequence | `11-longest-consecutive.qmd` | Medium | Google, Amazon, Meta | Intelligent Set Use |
+| 12 | LRU Cache | `12-lru-cache.qmd` | Medium | Amazon, Google, Meta | OrderedDict/LinkedList |
+| 13 | First Unique Character | `13-first-unique-char.qmd` | Easy | Amazon, Bloomberg, Goldman | Character Frequency |
+| 14 | Intersection of Two Arrays | `14-intersection-arrays.qmd` | Easy | Meta, Amazon, LinkedIn | Set Intersection |
+
+---
+
+## 📁 Phase 3: Two Pointers & Sliding Window
+
+*Like tracking your workout sets and reps*
+
+| # | Problem | File | Difficulty | Companies | Key Concept |
+|:--|:--------|:-----|:-----------|:----------|:------------|
+| 15 | Valid Palindrome | `15-valid-palindrome.qmd` | Easy | Meta, Microsoft, Amazon | Two Pointers |
+| 16 | 3Sum | `16-three-sum.qmd` | Medium | Amazon, Meta, Google | Sorted + Two Pointers |
+| 17 | Container With Most Water | `17-container-most-water.qmd` | Medium | Amazon, Google, Goldman | Greedy Two Pointers |
+| 18 | Longest Substring Without Repeating | `18-longest-substring.qmd` | Medium | Amazon, Meta, Bloomberg | Sliding Window |
+| 19 | Minimum Window Substring | `19-minimum-window.qmd` | Hard | Meta, Amazon, Google | Sliding Window + Hash |
+| 20 | Trapping Rain Water | `20-trapping-rain-water.qmd` | Hard | Google, Amazon, Goldman | Two Pointers/DP |
+
+---
+
+## 📁 Phase 4: Sorting & Searching
+
+*Organizing your workout routine efficiently*
+
+| # | Problem | File | Difficulty | Companies | Key Concept |
+|:--|:--------|:-----|:-----------|:----------|:------------|
+| 21 | Binary Search | `21-binary-search.qmd` | Easy | Google, Amazon, Microsoft | Basic Binary Search |
+| 22 | Search in Rotated Array | `22-search-rotated-array.qmd` | Medium | Meta, Amazon, Microsoft | Modified Binary Search |
+| 23 | Find Minimum in Rotated Array | `23-find-min-rotated.qmd` | Medium | Amazon, Google, Meta | Binary Search Variant |
+| 24 | Kth Largest Element | `24-kth-largest.qmd` | Medium | Amazon, Meta, Google | QuickSelect/Heap |
+| 25 | Merge Sorted Array | `25-merge-sorted-array.qmd` | Easy | Meta, Amazon, Microsoft | Two Pointers Merge |
+
+---
+
+## 📁 Phase 5: Linked Lists
+
+*Building chains of exercises*
+
+| # | Problem | File | Difficulty | Companies | Key Concept |
+|:--|:--------|:-----|:-----------|:----------|:------------|
+| 26 | Reverse Linked List | `26-reverse-linked-list.qmd` | Easy | Amazon, Google, Meta | Pointer Manipulation |
+| 27 | Merge Two Sorted Lists | `27-merge-sorted-lists.qmd` | Easy | Amazon, Microsoft, Meta | Merge Logic |
+| 28 | Linked List Cycle | `28-linked-list-cycle.qmd` | Easy | Amazon, Microsoft, Bloomberg | Floyd's Algorithm |
+| 29 | Remove Nth Node From End | `29-remove-nth-node.qmd` | Medium | Amazon, Meta, Google | Two Pointers |
+
+---
+
+## 📁 Phase 6: Trees & Graphs
+
+*Navigating complex workout routines*
+
+| # | Problem | File | Difficulty | Companies | Key Concept |
+|:--|:--------|:-----|:-----------|:----------|:------------|
+| 30 | Maximum Depth of Binary Tree | `30-max-depth-tree.qmd` | Easy | Amazon, Google, Meta | DFS Recursion |
+| 31 | Validate BST | `31-validate-bst.qmd` | Medium | Amazon, Meta, Bloomberg | Inorder Traversal |
+| 32 | Level Order Traversal | `32-level-order-traversal.qmd` | Medium | Amazon, Meta, Microsoft | BFS Queue |
+| 33 | Lowest Common Ancestor | `33-lowest-common-ancestor.qmd` | Medium | Amazon, Meta, Google | Tree Recursion |
+| 34 | Number of Islands | `34-number-of-islands.qmd` | Medium | Amazon, Google, Meta | DFS/BFS Grid |
+| 35 | Course Schedule | `35-course-schedule.qmd` | Medium | Amazon, Google, Meta | Topological Sort |
+| 36 | Clone Graph | `36-clone-graph.qmd` | Medium | Meta, Amazon, Google | DFS + HashMap |
+| 37 | Word Ladder | `37-word-ladder.qmd` | Hard | Amazon, Meta, Google | BFS Shortest Path |
+
+---
+
+## 📁 Phase 7: Dynamic Programming
+
+*Progressive overload for your brain*
+
+| # | Problem | File | Difficulty | Companies | Key Concept |
+|:--|:--------|:-----|:-----------|:----------|:------------|
+| 38 | Climbing Stairs | `38-climbing-stairs.qmd` | Easy | Amazon, Google, Apple | Fibonacci Pattern |
+| 39 | House Robber | `39-house-robber.qmd` | Medium | Amazon, Google, Microsoft | Linear DP |
+| 40 | Coin Change | `40-coin-change.qmd` | Medium | Amazon, Google, Bloomberg | Unbounded Knapsack |
+| 41 | Longest Increasing Subsequence | `41-longest-increasing.qmd` | Medium | Amazon, Google, Meta | DP with Binary Search |
+| 42 | Word Break | `42-word-break.qmd` | Medium | Amazon, Meta, Google | String DP |
+| 43 | Edit Distance | `43-edit-distance.qmd` | Medium | Amazon, Google, Microsoft | 2D DP |
+
+---
+
+## 📁 Phase 8: SQL & Data Manipulation
+
+*Essential for all DS/DE roles*
+
+| # | Problem | File | Difficulty | Companies | Key Concept |
+|:--|:--------|:-----|:-----------|:----------|:------------|
+| 44 | Second Highest Salary | `44-second-highest-salary.qmd` | Medium | Amazon, Meta, Bloomberg | Subquery/LIMIT |
+| 45 | Duplicate Emails | `45-duplicate-emails.qmd` | Easy | Amazon, Meta, LinkedIn | GROUP BY + HAVING |
+| 46 | Customers Who Never Order | `46-customers-never-order.qmd` | Easy | Amazon, Meta, Microsoft | LEFT JOIN/NOT IN |
+| 47 | Department Highest Salary | `47-dept-highest-salary.qmd` | Medium | Amazon, Meta, Bloomberg | Window Functions |
+| 48 | Rank Scores | `48-rank-scores.qmd` | Medium | Amazon, Google, Meta | DENSE_RANK |
+| 49 | Consecutive Numbers | `49-consecutive-numbers.qmd` | Medium | Amazon, Meta, Bloomberg | Self Join/LAG |
+
+---
+
+## 📁 Phase 9: Math & Statistics
+
+*The science behind the training*
+
+| # | Problem | File | Difficulty | Companies | Key Concept |
+|:--|:--------|:-----|:-----------|:----------|:------------|
+| 50 | Sqrt(x) | `50-sqrt-x.qmd` | Easy | Amazon, Google, Meta | Binary Search Math |
+| 51 | Pow(x, n) | `51-pow-x-n.qmd` | Medium | Amazon, Meta, Google | Fast Exponentiation |
+| 52 | Missing Number | `52-missing-number.qmd` | Easy | Amazon, Microsoft, Meta | XOR/Math |
+| 53 | Single Number | `53-single-number.qmd` | Easy | Amazon, Google, Apple | XOR Trick |
+
+---
+
+## 🎓 Study Tips
+
+### Daily Routine (Recommended)
+1. **Warm-up (10 min)**: Review yesterday's problem
+2. **Main Set (45 min)**: Solve new problem(s)
+3. **Cool-down (15 min)**: Document learnings, review patterns
+
+### Per Problem Approach
+1. Read problem carefully (understand the "exercise")
+2. Think of examples and edge cases (visualize the movement)
+3. Plan approach before coding (design your workout)
+4. Implement solution (execute)
+5. Test with examples (check form)
+6. Analyze complexity (measure gains)
+
+---
+
+## 📈 Progress Tracker
+
+| Phase | Status | Completion Date | Notes |
+|:------|:-------|:----------------|:------|
+| 1. Arrays & Strings | ⬜ Not Started | | |
+| 2. Hash Tables | ⬜ Not Started | | |
+| 3. Two Pointers | ⬜ Not Started | | |
+| 4. Sorting & Searching | ⬜ Not Started | | |
+| 5. Linked Lists | ⬜ Not Started | | |
+| 6. Trees & Graphs | ⬜ Not Started | | |
+| 7. Dynamic Programming | ⬜ Not Started | | |
+| 8. SQL | ⬜ Not Started | | |
+| 9. Math & Statistics | ⬜ Not Started | | |
+
+---
+
+*"Consistency beats intensity. Solve one problem daily, and you'll be interview-ready in 6 weeks."*

@@ -1,0 +1,605 @@
+---
+title: "Reverse Linked List"
+subtitle: "LeetCode #206 | Easy | Linked Lists"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #206 - Reverse Linked List**
+
+Given the `head` of a singly linked list, reverse the list, and return the reversed list.
+
+## Examples
+
+| Example | Input | Output |
+|:--------|:------|:-------|
+| 1 | `[1,2,3,4,5]` | `[5,4,3,2,1]` |
+| 2 | `[1,2]` | `[2,1]` |
+| 3 | `[]` | `[]` |
+
+## Visual Example
+
+```
+Input:   1 → 2 → 3 → 4 → 5 → NULL
+Output:  5 → 4 → 3 → 2 → 1 → NULL
+```
+
+## Constraints
+
+- The number of nodes is in range `[0, 5000]`
+- $-5000 \leq \text{Node.val} \leq 5000$
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Microsoft | ⭐⭐⭐⭐⭐ |
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Bloomberg | ⭐⭐⭐⭐ |
+| Meta | ⭐⭐⭐⭐ |
+| Apple | ⭐⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: The Conga Line Reversal
+
+## Understanding the Problem Through Fitness
+
+Imagine a **conga line** in a fitness class that needs to reverse direction:
+
+```
+Original Conga Line (heading right →):
+┌─────┐    ┌─────┐    ┌─────┐    ┌─────┐    ┌─────┐
+│  1  │ →  │  2  │ →  │  3  │ →  │  4  │ →  │  5  │ → END
+└─────┘    └─────┘    └─────┘    └─────┘    └─────┘
+ LEADER                                       LAST
+
+After Reversal (now heading left ←):
+┌─────┐    ┌─────┐    ┌─────┐    ┌─────┐    ┌─────┐
+│  5  │ →  │  4  │ →  │  3  │ →  │  2  │ →  │  1  │ → END
+└─────┘    └─────┘    └─────┘    └─────┘    └─────┘
+ NEW LEADER                                   NOW LAST
+```
+
+**Goal**: Change who each person follows — everyone now follows the person who was behind them!
+
+---
+
+## The Reversal Process: The Dance Move 💃
+
+```
+Step-by-Step Reversal:
+
+Original:    1 → 2 → 3 → 4 → 5 → NULL
+
+Process:     NULL ← 1    2 → 3 → 4 → 5 → NULL
+             NULL ← 1 ← 2    3 → 4 → 5 → NULL
+             NULL ← 1 ← 2 ← 3    4 → 5 → NULL
+             NULL ← 1 ← 2 ← 3 ← 4    5 → NULL
+             NULL ← 1 ← 2 ← 3 ← 4 ← 5
+
+Final:       5 → 4 → 3 → 2 → 1 → NULL
+```
+
+---
+
+## Two Approaches
+
+### Approach 1: Iterative (Three-Pointer Dance)
+
+```
+Use three pointers:
+- prev: Person I'll now follow (starts as nobody/NULL)
+- curr: Current person being processed
+- next: Save the next person before changing direction
+
+Time: O(n), Space: O(1)
+```
+
+### Approach 2: Recursive (Trust the Process)
+
+```
+Reverse the rest of the list first
+Then adjust the current node's pointer
+
+Time: O(n), Space: O(n) for call stack
+```
+
+---
+
+# 💻 Python Solutions
+
+## Linked List Node Definition
+
+```{python}
+class ListNode:
+    """Definition for singly-linked list node."""
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+    
+    def __repr__(self):
+        """String representation for debugging."""
+        result = []
+        node = self
+        while node:
+            result.append(str(node.val))
+            node = node.next
+        return " → ".join(result) + " → NULL"
+
+
+def list_to_linked(arr):
+    """Convert array to linked list."""
+    if not arr:
+        return None
+    head = ListNode(arr[0])
+    current = head
+    for val in arr[1:]:
+        current.next = ListNode(val)
+        current = current.next
+    return head
+
+
+def linked_to_list(head):
+    """Convert linked list to array."""
+    result = []
+    while head:
+        result.append(head.val)
+        head = head.next
+    return result
+```
+
+## Approach 1: Iterative (Recommended)
+
+```{python}
+def reverseList_iterative(head: ListNode) -> ListNode:
+    """
+    Iterative reversal using three pointers.
+    
+    The "Conga Line Reversal" Strategy:
+    1. prev = who you'll now follow (starts as NULL)
+    2. curr = current person being processed
+    3. next = save the next person before changing direction
+    
+    Time: O(n) - Visit each node once
+    Space: O(1) - Only three pointers
+    """
+    prev = None
+    curr = head
+    
+    while curr:
+        # Save next before we change the pointer
+        next_temp = curr.next
+        
+        # Reverse the link
+        curr.next = prev
+        
+        # Move prev and curr one step forward
+        prev = curr
+        curr = next_temp
+    
+    return prev  # prev is now the new head
+
+
+# Test
+head = list_to_linked([1, 2, 3, 4, 5])
+print("Original:", head)
+reversed_head = reverseList_iterative(head)
+print("Reversed:", reversed_head)
+
+
+# Test edge cases
+print("\nEmpty list:", reverseList_iterative(None))
+print("Single node:", reverseList_iterative(list_to_linked([1])))
+print("Two nodes:", reverseList_iterative(list_to_linked([1, 2])))
+```
+
+## Approach 2: Recursive
+
+```{python}
+def reverseList_recursive(head: ListNode) -> ListNode:
+    """
+    Recursive reversal - elegant but uses O(n) space.
+    
+    The "Trust the Team" Strategy:
+    1. If at the end, you're the new leader
+    2. Otherwise, let the rest reverse themselves
+    3. Then make the next person point back to you
+    
+    Time: O(n) - Process each node
+    Space: O(n) - Recursion call stack
+    """
+    # Base case: empty list or single node
+    if not head or not head.next:
+        return head
+    
+    # Recursively reverse the rest
+    new_head = reverseList_recursive(head.next)
+    
+    # Make the next node point back to current
+    head.next.next = head
+    
+    # Current node now points to nothing
+    head.next = None
+    
+    return new_head
+
+
+# Test
+head = list_to_linked([1, 2, 3, 4, 5])
+print("Recursive reversal:")
+reversed_head = reverseList_recursive(head)
+print("Reversed:", reversed_head)
+```
+
+## Verbose Iterative Version
+
+```{python}
+def reverseList_verbose(head: ListNode) -> ListNode:
+    """Verbose version showing each step."""
+    prev = None
+    curr = head
+    step = 0
+    
+    print("\nStep-by-step reversal:")
+    print("=" * 50)
+    
+    while curr:
+        step += 1
+        print(f"\nStep {step}:")
+        print(f"  prev = {prev.val if prev else 'NULL'}")
+        print(f"  curr = {curr.val}")
+        print(f"  curr.next = {curr.next.val if curr.next else 'NULL'}")
+        
+        # Save next
+        next_temp = curr.next
+        print(f"  Saved next: {next_temp.val if next_temp else 'NULL'}")
+        
+        # Reverse
+        curr.next = prev
+        print(f"  Reversed: {curr.val} now points to {prev.val if prev else 'NULL'}")
+        
+        # Move forward
+        prev = curr
+        curr = next_temp
+        print(f"  Move: prev={prev.val}, curr={curr.val if curr else 'NULL'}")
+    
+    print(f"\nDone! New head: {prev.val}")
+    return prev
+
+
+head = list_to_linked([1, 2, 3, 4, 5])
+reverseList_verbose(head)
+```
+
+---
+
+# 📊 R Solutions
+
+```{r}
+# R6 class for ListNode
+library(R6)
+
+ListNode <- R6Class("ListNode",
+  public = list(
+    val = NULL,
+    next_node = NULL,
+    
+    initialize = function(val = 0, next_node = NULL) {
+      self$val <- val
+      self$next_node <- next_node
+    },
+    
+    print = function() {
+      result <- c()
+      node <- self
+      while (!is.null(node)) {
+        result <- c(result, node$val)
+        node <- node$next_node
+      }
+      cat(paste(result, collapse = " → "), "→ NULL\n")
+    }
+  )
+)
+
+
+# Helper functions
+list_to_linked <- function(arr) {
+  if (length(arr) == 0) return(NULL)
+  
+  head <- ListNode$new(arr[1])
+  current <- head
+  
+  for (i in seq_along(arr)[-1]) {
+    current$next_node <- ListNode$new(arr[i])
+    current <- current$next_node
+  }
+  
+  return(head)
+}
+
+
+linked_to_list <- function(head) {
+  result <- c()
+  while (!is.null(head)) {
+    result <- c(result, head$val)
+    head <- head$next_node
+  }
+  return(result)
+}
+
+
+# Approach 1: Iterative
+reverse_list_iterative <- function(head) {
+  #' Iterative reversal using three pointers.
+  #' 
+  #' Time: O(n)
+  #' Space: O(1)
+  
+  prev <- NULL
+  curr <- head
+  
+  while (!is.null(curr)) {
+    # Save next before changing pointer
+    next_temp <- curr$next_node
+    
+    # Reverse the link
+    curr$next_node <- prev
+    
+    # Move pointers forward
+    prev <- curr
+    curr <- next_temp
+  }
+  
+  return(prev)
+}
+
+
+# Test iterative
+cat("Iterative approach:\n")
+head <- list_to_linked(c(1, 2, 3, 4, 5))
+cat("Original: ")
+head$print()
+
+reversed <- reverse_list_iterative(head)
+cat("Reversed: ")
+reversed$print()
+
+
+# Approach 2: Recursive
+reverse_list_recursive <- function(head) {
+  #' Recursive reversal.
+  #' 
+  #' Time: O(n)
+  #' Space: O(n) for call stack
+  
+  # Base case
+  if (is.null(head) || is.null(head$next_node)) {
+    return(head)
+  }
+  
+  # Recursively reverse the rest
+  new_head <- reverse_list_recursive(head$next_node)
+  
+  # Make next node point back to current
+  head$next_node$next_node <- head
+  
+  # Current points to nothing
+  head$next_node <- NULL
+  
+  return(new_head)
+}
+
+
+# Test recursive
+cat("\nRecursive approach:\n")
+head <- list_to_linked(c(1, 2, 3, 4, 5))
+cat("Original: ")
+head$print()
+
+reversed <- reverse_list_recursive(head)
+cat("Reversed: ")
+reversed$print()
+```
+
+---
+
+# 🔍 Solution Breakdown: Full Gym Analysis
+
+## Iterative Approach: Step-by-Step
+
+**Input**: `1 → 2 → 3 → 4 → 5 → NULL`
+
+| Step | prev | curr | next | Action | List State |
+|:-----|:-----|:-----|:-----|:-------|:-----------|
+| Init | NULL | 1 | — | Start | 1→2→3→4→5→NULL |
+| 1 | NULL | 1 | 2 | 1→NULL | NULL←1  2→3→4→5→NULL |
+| 2 | 1 | 2 | 3 | 2→1 | NULL←1←2  3→4→5→NULL |
+| 3 | 2 | 3 | 4 | 3→2 | NULL←1←2←3  4→5→NULL |
+| 4 | 3 | 4 | 5 | 4→3 | NULL←1←2←3←4  5→NULL |
+| 5 | 4 | 5 | NULL | 5→4 | NULL←1←2←3←4←5 |
+| End | 5 | NULL | — | Return prev=5 | 5→4→3→2→1→NULL |
+
+### Visual Representation
+
+```
+Initial State:
+   prev     curr
+    ↓        ↓
+   NULL     [1] → [2] → [3] → [4] → [5] → NULL
+
+Step 1: Reverse 1's pointer
+        prev     curr    next
+         ↓        ↓       ↓
+        [1] →   [2] →   [3] → [4] → [5] → NULL
+         ↓
+        NULL
+
+Step 2: Move pointers, reverse 2
+               prev    curr    next
+                ↓       ↓       ↓
+   NULL ← [1] ← [2]   [3] →   [4] → [5] → NULL
+
+... (continue until curr is NULL)
+
+Final:
+   NULL ← [1] ← [2] ← [3] ← [4] ← [5]
+                                    ↑
+                                  prev (new head)
+```
+
+---
+
+## Recursive Approach: Call Stack
+
+**Input**: `1 → 2 → 3 → 4 → 5 → NULL`
+
+```
+reverseList(1)
+  └── reverseList(2)
+        └── reverseList(3)
+              └── reverseList(4)
+                    └── reverseList(5)  ← Base case, return 5
+                    5.next.next = 4  →  5 → 4
+                    4.next = NULL        (4 detaches from 5)
+              5 → 4, and 4.next.next = 3  →  4 → 3
+              3.next = NULL
+        5 → 4 → 3, and 3.next.next = 2  →  3 → 2
+        2.next = NULL
+  5 → 4 → 3 → 2, and 2.next.next = 1  →  2 → 1
+  1.next = NULL
+
+Result: 5 → 4 → 3 → 2 → 1 → NULL
+```
+
+### The Key Recursive Trick
+
+```python
+head.next.next = head  # Make next node point back to me
+head.next = None       # Break my forward pointer
+```
+
+```
+Before:     1 → 2 → (rest reversed: 5→4→3→2)
+            |
+            ↓
+            1 → 2
+
+After:      1 ← 2 ← 3 ← 4 ← 5
+            |
+            ↓
+            NULL
+```
+
+---
+
+# 📈 Complexity Analysis
+
+## Iterative Approach
+
+| Metric | Value | Explanation |
+|:-------|:------|:------------|
+| Time | O(n) | Visit each node once |
+| Space | O(1) | Only 3 pointers |
+
+## Recursive Approach
+
+| Metric | Value | Explanation |
+|:-------|:------|:------------|
+| Time | O(n) | Process each node once |
+| Space | O(n) | Call stack depth |
+
+---
+
+# 🎯 Key Takeaways
+
+## The Three-Pointer Pattern
+
+For linked list reversal (and many other operations):
+
+```
+prev = previous node
+curr = current node  
+next = save next before modifying
+```
+
+## Why Save Next?
+
+```python
+# WRONG - loses reference to rest of list!
+curr.next = prev
+curr = curr.next  # This is now prev, not the original next!
+
+# CORRECT - save next first
+next_temp = curr.next  # Save reference
+curr.next = prev       # Now safe to modify
+curr = next_temp       # Move to saved next
+```
+
+## Iterative vs Recursive
+
+| Aspect | Iterative | Recursive |
+|:-------|:----------|:----------|
+| Space | O(1) ✓ | O(n) |
+| Readability | Moderate | More elegant |
+| Stack overflow risk | None | Yes, for long lists |
+| Interview preference | Usually preferred | Good to know |
+
+---
+
+# 🔧 Interview Tips
+
+## Common Mistakes
+
+| Mistake | Solution |
+|:--------|:---------|
+| Not saving next | Always save before modifying |
+| Returning head | Return prev (new head) |
+| Null handling | Check for empty list |
+| Off-by-one | Walk through with example |
+
+## Follow-up Questions
+
+**Q: Reverse nodes in k-group?**
+A: Reverse k nodes at a time, reconnect groups
+
+**Q: Reverse from position m to n?**
+A: Navigate to m, reverse until n, reconnect
+
+**Q: Check if palindrome?**
+A: Find middle, reverse second half, compare
+
+---
+
+# 🏆 Related Problems
+
+| Problem | Difficulty | Key Variation |
+|:--------|:-----------|:--------------|
+| Reverse Linked List II | Medium | Reverse m to n |
+| Reverse Nodes in k-Group | Hard | Reverse every k nodes |
+| Palindrome Linked List | Easy | Reverse + compare |
+| Swap Nodes in Pairs | Medium | Swap every 2 nodes |
+
+---
+
+# 💡 The Gym Metaphor Summary
+
+| Coding Concept | Gym Equivalent |
+|:---------------|:---------------|
+| Linked List | Conga line of people |
+| Node | Person in line |
+| next pointer | Who you're following |
+| Reversal | Everyone follows the person behind |
+| prev pointer | New person to follow |
+| head | Line leader |
+| NULL | End of line |
+
+---
+
+*"In the gym of data structures, reversing a linked list is like doing the conga line backwards — you just need to remember who was behind you!"* 💪🔄

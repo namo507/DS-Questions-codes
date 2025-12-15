@@ -1,0 +1,312 @@
+---
+title: "Two Sum"
+subtitle: "LeetCode #1 | Easy | Arrays & Hash Tables"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #1 - Two Sum**
+
+Given an array of integers `nums` and an integer `target`, return the **indices** of the two numbers such that they add up to `target`.
+
+You may assume that each input would have **exactly one solution**, and you may not use the same element twice.
+
+You can return the answer in any order.
+
+## Examples
+
+| Example | Input | Target | Output | Explanation |
+|:--------|:------|:-------|:-------|:------------|
+| 1 | `[2, 7, 11, 15]` | `9` | `[0, 1]` | nums[0] + nums[1] = 2 + 7 = 9 |
+| 2 | `[3, 2, 4]` | `6` | `[1, 2]` | nums[1] + nums[2] = 2 + 4 = 6 |
+| 3 | `[3, 3]` | `6` | `[0, 1]` | nums[0] + nums[1] = 3 + 3 = 6 |
+
+## Constraints
+
+- $2 \leq \text{nums.length} \leq 10^4$
+- $-10^9 \leq \text{nums}[i] \leq 10^9$
+- $-10^9 \leq \text{target} \leq 10^9$
+- Only one valid answer exists.
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Google | ⭐⭐⭐⭐⭐ |
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Meta | ⭐⭐⭐⭐⭐ |
+| Apple | ⭐⭐⭐⭐ |
+| Microsoft | ⭐⭐⭐⭐ |
+| Bloomberg | ⭐⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: Finding Your Workout Buddy
+
+## Understanding the Problem Through Fitness
+
+Imagine you're at a gym and the trainer says:
+
+> **"I need two people whose combined bench press weight equals exactly 100 kg for a team competition."**
+
+You're standing in a line with other gym members, each wearing a shirt that shows their max bench press:
+
+```
+[25 kg] [75 kg] [45 kg] [55 kg] [30 kg] [70 kg]
+         Target Team Total: 100 kg
+```
+
+**The Challenge**: Find two people whose weights add up to 100 kg.
+
+---
+
+## The Naive Approach: Checking Every Pair (Brute Force)
+
+Like a trainer who walks up to each person and then checks every other person:
+
+1. Go to Person 1 (25 kg) → Check Person 2 (75 kg): 25 + 75 = 100 ✅ **FOUND!**
+
+But what if the match was at the end? You'd check:
+- Person 1 with Person 2, 3, 4, 5, 6...
+- Person 2 with Person 3, 4, 5, 6...
+- And so on...
+
+**This is exhausting!** It's like doing $n \times n$ burpees. 😫
+
+---
+
+## The Smart Approach: The Gym Locker System (Hash Map)
+
+Now imagine the gym has a **smart locker system**:
+
+1. **Each locker is labeled with a weight number**
+2. **When you check in, you put your locker number (index) in the locker matching your weight**
+
+Here's the genius insight:
+
+> **"If I bench 25 kg and need a partner for 100 kg total, I'm looking for someone who benches 75 kg."**
+
+So instead of checking everyone, you:
+
+1. **Calculate what you need**: `100 - 25 = 75 kg`
+2. **Check the 75 kg locker**: Is anyone there?
+   - **YES** → Found your partner!
+   - **NO** → Put yourself in the 25 kg locker and move on
+
+### Visual Walkthrough
+
+```
+Target: 9
+Array: [2, 7, 11, 15]
+
+Step 1: Person at index 0 has value 2
+        Looking for: 9 - 2 = 7
+        Locker 7: Empty ❌
+        → Store: Locker[2] = index 0
+
+Step 2: Person at index 1 has value 7
+        Looking for: 9 - 7 = 2
+        Locker 2: Has index 0! ✅
+        → Return [0, 1]
+```
+
+| Step | Current Value | Looking For | Locker Check | Action | Locker State |
+|:-----|:--------------|:------------|:-------------|:-------|:-------------|
+| 1 | nums[0] = 2 | 9 - 2 = 7 | Not found | Store index 0 at key 2 | {2: 0} |
+| 2 | nums[1] = 7 | 9 - 7 = 2 | **Found at index 0!** | Return [0, 1] | {2: 0} |
+
+---
+
+# 💻 Python Solution
+
+```{python}
+def two_sum(nums: list[int], target: int) -> list[int]:
+    """
+    Find two indices whose values sum to target.
+    
+    The Gym Locker Strategy:
+    - Use a dictionary as our "locker system"
+    - For each person, check if their "workout partner" exists
+    - If not, register yourself in the locker
+    
+    Time Complexity: O(n) - One pass through the gym line
+    Space Complexity: O(n) - Worst case, everyone registers before finding a match
+    """
+    # Our gym locker system: weight -> person's position in line
+    locker = {}
+    
+    for index, weight in enumerate(nums):
+        # What weight do I need in a partner?
+        partner_weight = target - weight
+        
+        # Check if that partner already registered in a locker
+        if partner_weight in locker:
+            # Found my workout buddy!
+            return [locker[partner_weight], index]
+        
+        # No partner yet, register myself in my weight's locker
+        locker[weight] = index
+    
+    # No valid pair found (shouldn't happen per problem constraints)
+    return []
+
+
+# Test cases
+print("Example 1:", two_sum([2, 7, 11, 15], 9))  # [0, 1]
+print("Example 2:", two_sum([3, 2, 4], 6))       # [1, 2]
+print("Example 3:", two_sum([3, 3], 6))          # [0, 1]
+```
+
+---
+
+# 📊 R Solution
+
+```{r}
+two_sum <- function(nums, target) {
+  #' Find two indices whose values sum to target.
+  #' 
+  #' The Gym Locker Strategy:
+  #' - Use an environment as our "locker system" (R's hash table)
+  #' - For each person, check if their "workout partner" exists
+  #' - If not, register yourself in the locker
+  #' 
+  #' Time Complexity: O(n) - One pass through the gym line
+  #' Space Complexity: O(n) - Worst case, everyone registers
+  
+  # Create our gym locker system (environment acts as hash map in R)
+  locker <- new.env(hash = TRUE, parent = emptyenv())
+  
+  for (i in seq_along(nums)) {
+    weight <- nums[i]
+    partner_weight <- target - weight
+    
+    # Convert to string for environment key lookup
+    partner_key <- as.character(partner_weight)
+    
+    # Check if workout partner already registered
+    if (!is.null(locker[[partner_key]])) {
+      # Found my workout buddy! (R uses 1-indexing)
+      return(c(locker[[partner_key]], i))
+    }
+    
+    # No partner yet, register myself
+    locker[[as.character(weight)]] <- i
+  }
+  
+  # No valid pair found
+  return(NULL)
+}
+
+
+# Test cases
+cat("Example 1:", two_sum(c(2, 7, 11, 15), 9), "\n")  # 1, 2 (R is 1-indexed)
+cat("Example 2:", two_sum(c(3, 2, 4), 6), "\n")       # 2, 3
+cat("Example 3:", two_sum(c(3, 3), 6), "\n")          # 1, 2
+```
+
+---
+
+# 🔍 Solution Breakdown: The Full Gym Session Analysis
+
+## Algorithm Walkthrough with Detailed Table
+
+Let's trace through **Example 1**: `nums = [2, 7, 11, 15]`, `target = 9`
+
+| Iteration | Index (i) | Current Weight | Partner Needed | Locker Check | Found? | Action | Locker State After |
+|:----------|:----------|:---------------|:---------------|:-------------|:-------|:-------|:-------------------|
+| 1 | 0 | 2 | 9 - 2 = 7 | Is 7 in locker? | ❌ No | Store locker[2] = 0 | {2: 0} |
+| 2 | 1 | 7 | 9 - 7 = 2 | Is 2 in locker? | ✅ Yes (index 0) | Return [0, 1] | {2: 0} |
+
+**Result**: `[0, 1]` because `nums[0] + nums[1] = 2 + 7 = 9` ✅
+
+---
+
+## The Gym Metaphor Breakdown
+
+| Coding Concept | Gym Equivalent |
+|:---------------|:---------------|
+| Array `nums` | Line of gym members, each with a bench press max |
+| `target` | The team weight goal for the competition |
+| Hash Map/Dictionary | The gym's smart locker system |
+| Key (weight) | Locker label (what weight this person lifts) |
+| Value (index) | Person's position in the gym line |
+| `complement = target - current` | "What partner do I need to hit our goal?" |
+| Hash lookup | Checking if someone's already in that locker |
+| Return indices | "These two people form the winning team!" |
+
+---
+
+## Why This Works: The Fitness Logic
+
+1. **One Pass Efficiency**: Like a trainer walking down the line once, checking lockers as they go
+2. **Hash Map = O(1) Lookup**: Checking a locker is instant (like a digital key card)
+3. **Complement Logic**: If I lift X and we need Y total, my partner must lift Y - X
+
+---
+
+# 📈 Complexity Analysis
+
+## Time Complexity: O(n)
+
+| Operation | Frequency | Cost | Total |
+|:----------|:----------|:-----|:------|
+| Iterate through array | n times | O(1) | O(n) |
+| Hash map lookup | n times | O(1) average | O(n) |
+| Hash map insertion | At most n times | O(1) average | O(n) |
+
+**Total**: O(n) — Like walking through the gym line once
+
+## Space Complexity: O(n)
+
+| Storage | Worst Case | Explanation |
+|:--------|:-----------|:------------|
+| Hash Map | n entries | If the matching pair is at the very end, we store n-1 entries first |
+
+---
+
+# 🎯 Key Takeaways
+
+## Pattern Recognition
+
+This problem teaches the **"Complement Pattern"**:
+
+> **When looking for pairs that satisfy a condition, store what you've seen and look for what you need.**
+
+## When to Use This Pattern
+
+| Scenario | Example |
+|:---------|:--------|
+| Finding pairs with a specific sum | Two Sum, Four Sum |
+| Finding pairs with a specific difference | Two Sum variants |
+| Finding complements in any sense | Pairs, triplets, etc. |
+
+## Common Mistakes to Avoid
+
+| Mistake | Why It's Wrong | Correct Approach |
+|:--------|:---------------|:-----------------|
+| Using the same element twice | Problem says "may not use same element" | Check complement exists at different index |
+| Returning values instead of indices | Problem asks for indices | Store and return indices |
+| Not handling duplicates | `[3, 3]` with target 6 | Hash map naturally handles this |
+
+---
+
+# 🏆 Practice Variations
+
+Once you master Two Sum, try these progressively harder problems:
+
+| Problem | Difficulty | Key Difference |
+|:--------|:-----------|:---------------|
+| Two Sum II (Sorted Array) | Easy | Use two pointers instead |
+| 3Sum | Medium | Sort + Two pointers for pairs |
+| 4Sum | Medium | Two loops + Two Sum |
+| Two Sum Less Than K | Easy | Closest pair, not exact |
+
+---
+
+*"In the gym, the first exercise sets the foundation. Two Sum is your first rep in algorithmic training."* 💪

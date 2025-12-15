@@ -1,0 +1,516 @@
+---
+title: "Valid Palindrome"
+subtitle: "LeetCode #125 | Easy | Two Pointers"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #125 - Valid Palindrome**
+
+A phrase is a **palindrome** if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward. Alphanumeric characters include letters and numbers.
+
+Given a string `s`, return `true` if it is a **palindrome**, or `false` otherwise.
+
+## Examples
+
+| Example | Input | Output | Explanation |
+|:--------|:------|:-------|:------------|
+| 1 | `"A man, a plan, a canal: Panama"` | `true` | `"amanaplanacanalpanama"` is palindrome |
+| 2 | `"race a car"` | `false` | `"raceacar"` is not palindrome |
+| 3 | `" "` | `true` | Empty string is palindrome |
+
+## Constraints
+
+- $1 \leq \text{s.length} \leq 2 \times 10^5$
+- `s` consists only of printable ASCII characters
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Meta | ⭐⭐⭐⭐⭐ |
+| Microsoft | ⭐⭐⭐⭐ |
+| Amazon | ⭐⭐⭐⭐ |
+| Apple | ⭐⭐⭐ |
+| Google | ⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: Mirror Workout Check
+
+## Understanding the Problem Through Fitness
+
+Imagine you're a **fitness instructor** checking if a workout is **symmetrically balanced**:
+
+```
+The Workout Mirror Test:
+┌────────────────────────────────────────┐
+│                                        │
+│    Left Side     │    Right Side       │
+│    Exercises     │    Exercises        │
+│                  │                     │
+│    Push-ups      │      Push-ups       │
+│    Lunges        │      Lunges         │
+│    Squats        │      Squats         │
+│                  │                     │
+│    ← Start       │      End →          │
+└────────────────────────────────────────┘
+```
+
+**A Palindromic Workout**: Reads the same from start-to-end and end-to-start!
+
+---
+
+## The Two-Pointer Technique: Partner Workout 🤝
+
+Think of two gym partners checking your form:
+
+```
+Partner A: Starts at LEFT end →
+Partner B: Starts at RIGHT end ←
+
+They move toward each other, comparing exercises!
+
+String: "A man, a plan, a canal: Panama"
+
+Step 1: Clean up (remove punctuation, lowercase)
+        → "amanaplanacanalpanama"
+
+Step 2: Two-pointer check
+        
+        ↓ Left pointer                Right pointer ↓
+        a m a n a p l a n a c a n a l p a n a m a
+        └─────────────────────────────────────────┘
+                    Meet in middle? ✓
+```
+
+---
+
+## Two Approaches
+
+### Approach 1: Clean First, Then Check
+
+```
+1. Remove all non-alphanumeric characters
+2. Convert to lowercase
+3. Compare with reversed string (or two-pointer)
+
+Simple but uses O(n) extra space
+```
+
+### Approach 2: Two Pointers (In-Place)
+
+```
+1. Use left and right pointers
+2. Skip non-alphanumeric characters
+3. Compare characters (case-insensitive)
+4. Move pointers toward center
+
+Efficient: O(1) extra space!
+```
+
+---
+
+# 💻 Python Solutions
+
+## Approach 1: Clean and Compare
+
+```{python}
+def isPalindrome_simple(s: str) -> bool:
+    """
+    Simple approach: Clean first, then compare.
+    
+    The "Clean the Gym Floor" Strategy:
+    1. Remove all equipment (non-alphanumeric)
+    2. Make everything lowercase
+    3. Check if it mirrors itself
+    
+    Time: O(n)
+    Space: O(n) - for cleaned string
+    """
+    # Clean the string: keep only alphanumeric, lowercase
+    cleaned = ''.join(char.lower() for char in s if char.isalnum())
+    
+    # Check if palindrome
+    return cleaned == cleaned[::-1]
+
+
+# Test cases
+print("Simple approach:")
+print(isPalindrome_simple("A man, a plan, a canal: Panama"))  # True
+print(isPalindrome_simple("race a car"))                       # False
+print(isPalindrome_simple(" "))                                # True
+```
+
+## Approach 2: Two Pointers (Optimal)
+
+```{python}
+def isPalindrome(s: str) -> bool:
+    """
+    Two-pointer approach: O(1) space.
+    
+    The "Partner Workout Check" Strategy:
+    - Partner A starts at the beginning
+    - Partner B starts at the end
+    - They skip non-exercises (punctuation)
+    - They compare exercises moving inward
+    - If they meet in the middle = balanced workout!
+    
+    Time: O(n)
+    Space: O(1) - no extra string created!
+    """
+    left = 0
+    right = len(s) - 1
+    
+    while left < right:
+        # Skip non-alphanumeric characters (skip rest periods)
+        while left < right and not s[left].isalnum():
+            left += 1
+        while left < right and not s[right].isalnum():
+            right -= 1
+        
+        # Compare characters (case-insensitive)
+        if s[left].lower() != s[right].lower():
+            return False
+        
+        # Move pointers toward center
+        left += 1
+        right -= 1
+    
+    return True
+
+
+# Test cases
+print("\nTwo-pointer approach:")
+print(isPalindrome("A man, a plan, a canal: Panama"))  # True
+print(isPalindrome("race a car"))                       # False
+print(isPalindrome(" "))                                # True
+print(isPalindrome("0P"))                               # False
+
+
+# Verbose version for tracing
+def isPalindrome_verbose(s: str) -> bool:
+    """Verbose version with step-by-step output."""
+    left = 0
+    right = len(s) - 1
+    step = 0
+    
+    print(f"\nChecking: '{s}'")
+    print("-" * 50)
+    
+    while left < right:
+        # Skip non-alphanumeric on left
+        while left < right and not s[left].isalnum():
+            print(f"Skip left: '{s[left]}' at index {left}")
+            left += 1
+            
+        # Skip non-alphanumeric on right
+        while left < right and not s[right].isalnum():
+            print(f"Skip right: '{s[right]}' at index {right}")
+            right -= 1
+        
+        if left >= right:
+            break
+            
+        step += 1
+        left_char = s[left].lower()
+        right_char = s[right].lower()
+        
+        print(f"Step {step}: Compare '{left_char}' (pos {left}) with '{right_char}' (pos {right})")
+        
+        if left_char != right_char:
+            print(f"MISMATCH! '{left_char}' ≠ '{right_char}'")
+            return False
+        
+        print(f"  Match! ✓")
+        left += 1
+        right -= 1
+    
+    print(f"\nAll characters matched! It's a palindrome. ✓")
+    return True
+
+
+isPalindrome_verbose("A man, a plan, a canal: Panama")
+```
+
+---
+
+# 📊 R Solutions
+
+```{r}
+# Approach 1: Clean and Compare
+is_palindrome_simple <- function(s) {
+  #' Simple approach: Clean first, then compare.
+  #' 
+  #' Time: O(n)
+  #' Space: O(n)
+  
+  # Remove non-alphanumeric and convert to lowercase
+  cleaned <- tolower(gsub("[^a-zA-Z0-9]", "", s))
+  
+  # Check if palindrome
+  reversed <- paste(rev(strsplit(cleaned, "")[[1]]), collapse = "")
+  
+  return(cleaned == reversed)
+}
+
+
+cat("Simple approach:\n")
+print(is_palindrome_simple("A man, a plan, a canal: Panama"))  # TRUE
+print(is_palindrome_simple("race a car"))                       # FALSE
+print(is_palindrome_simple(" "))                                # TRUE
+
+
+# Approach 2: Two Pointers
+is_palindrome_two_pointer <- function(s) {
+  #' Two-pointer approach: O(1) extra space conceptually.
+  #' 
+  #' The "Partner Workout Check" Strategy:
+  #' Compare from both ends, skipping non-alphanumeric.
+  #' 
+  #' Time: O(n)
+  #' Space: O(1) extra (O(n) for string storage in R)
+  
+  chars <- strsplit(s, "")[[1]]
+  left <- 1
+  right <- length(chars)
+  
+  is_alnum <- function(c) {
+    grepl("[a-zA-Z0-9]", c)
+  }
+  
+  while (left < right) {
+    # Skip non-alphanumeric on left
+    while (left < right && !is_alnum(chars[left])) {
+      left <- left + 1
+    }
+    
+    # Skip non-alphanumeric on right
+    while (left < right && !is_alnum(chars[right])) {
+      right <- right - 1
+    }
+    
+    # Compare (case-insensitive)
+    if (tolower(chars[left]) != tolower(chars[right])) {
+      return(FALSE)
+    }
+    
+    left <- left + 1
+    right <- right - 1
+  }
+  
+  return(TRUE)
+}
+
+
+cat("\nTwo-pointer approach:\n")
+print(is_palindrome_two_pointer("A man, a plan, a canal: Panama"))
+print(is_palindrome_two_pointer("race a car"))
+print(is_palindrome_two_pointer(" "))
+
+
+# Using stringr (tidyverse style)
+library(stringr)
+
+is_palindrome_tidy <- function(s) {
+  #' Tidyverse approach using stringr
+  
+  # Clean: remove non-alphanumeric, lowercase
+  cleaned <- s %>%
+    str_to_lower() %>%
+    str_replace_all("[^a-z0-9]", "")
+  
+  # Check palindrome
+  reversed <- str_c(rev(str_split(cleaned, "")[[1]]), collapse = "")
+  
+  return(cleaned == reversed)
+}
+
+
+cat("\nTidyverse approach:\n")
+print(is_palindrome_tidy("A man, a plan, a canal: Panama"))
+print(is_palindrome_tidy("Was it a car or a cat I saw"))
+```
+
+---
+
+# 🔍 Solution Breakdown: The Full Workout Analysis
+
+## Step-by-Step Trace
+
+**Input**: `"A man, a plan, a canal: Panama"`
+
+### Step 1: Initialize Pointers
+
+```
+String: "A man, a plan, a canal: Panama"
+Index:   0 1 2 3 4 5 6 7 ...         31
+         ↑                           ↑
+        left=0                    right=31
+```
+
+### Step 2: Two-Pointer Dance
+
+| Step | Left | Right | Left Char | Right Char | Action |
+|:-----|:-----|:------|:----------|:-----------|:-------|
+| 1 | 0 | 31 | 'A' | 'a' | Compare 'a' = 'a' ✓ |
+| 2 | 1 | 30 | ' ' | 'm' | Skip left space |
+| 3 | 2 | 30 | 'm' | 'm' | Compare 'm' = 'm' ✓ |
+| 4 | 3 | 29 | 'a' | 'a' | Compare 'a' = 'a' ✓ |
+| 5 | 4 | 28 | 'n' | 'n' | Compare 'n' = 'n' ✓ |
+| ... | ... | ... | ... | ... | Continue... |
+| Final | 15 | 16 | 'c' | 'a' | Pointers cross! Done |
+
+### Visual Representation
+
+```
+"A man, a plan, a canal: Panama"
+ ↑                            ↑   A = a ✓
+   ↑                        ↑     m = m ✓
+    ↑                      ↑      a = a ✓
+     ↑                    ↑       n = n ✓
+      (skip comma)
+       ↑                ↑         a = a ✓
+        (skip space)
+         ↑            ↑           p = p ✓
+          ↑          ↑            l = l ✓
+           ↑        ↑             a = a ✓
+            ↑      ↑              n = n ✓
+             ↑    ↑               a = a ✓
+        (pointers meet)           PALINDROME! ✓
+```
+
+---
+
+## Edge Cases
+
+### Case 1: Empty/Whitespace Only
+
+```
+Input: " "
+Cleaned: ""
+Result: True (empty is palindrome)
+```
+
+### Case 2: Single Character
+
+```
+Input: "a"
+Result: True (single char is palindrome)
+```
+
+### Case 3: Numbers Included
+
+```
+Input: "1a2"
+Cleaned: "1a2"
+Reversed: "2a1"
+Result: False
+```
+
+---
+
+# 📈 Complexity Analysis
+
+## Approach 1: Clean and Compare
+
+| Operation | Time | Space |
+|:----------|:-----|:------|
+| Clean string | O(n) | O(n) |
+| Reverse | O(n) | O(n) |
+| Compare | O(n) | O(1) |
+| **Total** | **O(n)** | **O(n)** |
+
+## Approach 2: Two Pointers
+
+| Operation | Time | Space |
+|:----------|:-----|:------|
+| Single pass | O(n) | O(1) |
+| **Total** | **O(n)** | **O(1)** |
+
+---
+
+# 🎯 Key Takeaways
+
+## The Two-Pointer Pattern
+
+Two pointers moving toward each other is ideal for:
+
+1. **Palindrome checking** (this problem)
+2. **Two Sum in sorted array**
+3. **Container with most water**
+4. **Removing duplicates**
+
+## When to Skip Characters
+
+```python
+while left < right and not s[left].isalnum():
+    left += 1
+```
+
+**Key insight**: Always check `left < right` before accessing characters to avoid index errors!
+
+## Case Sensitivity
+
+Always normalize case for comparison:
+```python
+if s[left].lower() != s[right].lower():
+```
+
+---
+
+# 🔧 Interview Tips
+
+## Common Follow-ups
+
+**Q: What counts as alphanumeric?**
+A: Letters (a-z, A-Z) and digits (0-9). No spaces, punctuation.
+
+**Q: Is empty string a palindrome?**
+A: Yes! By definition, empty reads same forward and backward.
+
+**Q: What about Unicode characters?**
+A: In Python 3, `isalnum()` handles Unicode. Clarify with interviewer.
+
+## Code Cleanliness
+
+```python
+# Clean one-liner (less efficient but readable)
+def isPalindrome_oneliner(s: str) -> bool:
+    s = ''.join(c.lower() for c in s if c.isalnum())
+    return s == s[::-1]
+```
+
+---
+
+# 🏆 Related Problems
+
+| Problem | Difficulty | Key Variation |
+|:--------|:-----------|:--------------|
+| Valid Palindrome II | Easy | Allow one deletion |
+| Palindrome Linked List | Easy | Linked list version |
+| Longest Palindromic Substring | Medium | Find longest within |
+| Palindrome Partitioning | Medium | Split into palindromes |
+
+---
+
+# 💡 The Gym Metaphor Breakdown
+
+| Coding Concept | Gym Equivalent |
+|:---------------|:---------------|
+| String | Workout routine |
+| Characters | Individual exercises |
+| Non-alphanumeric | Rest periods (skip) |
+| Case-insensitive | Equipment brand doesn't matter |
+| Palindrome | Symmetrical workout |
+| Two pointers | Partner verification |
+
+---
+
+*"In the gym of strings, palindromes are like perfectly balanced workouts — they look the same from every direction!"* 💪🔄

@@ -1,0 +1,585 @@
+---
+title: "Number of Islands"
+subtitle: "LeetCode #200 | Medium | Graphs & BFS/DFS"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #200 - Number of Islands**
+
+Given an `m x n` 2D binary grid `grid` which represents a map of `'1's` (land) and `'0's` (water), return the **number of islands**.
+
+An **island** is surrounded by water and is formed by connecting adjacent lands **horizontally or vertically**. You may assume all four edges of the grid are surrounded by water.
+
+## Examples
+
+### Example 1
+
+**Input:**
+```
+grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+```
+
+**Output:** `1`
+
+### Example 2
+
+**Input:**
+```
+grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+```
+
+**Output:** `3`
+
+## Constraints
+
+- `m == grid.length`
+- `n == grid[i].length`
+- $1 \leq m, n \leq 300$
+- `grid[i][j]` is `'0'` or `'1'`
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Google | ⭐⭐⭐⭐⭐ |
+| Meta | ⭐⭐⭐⭐⭐ |
+| Microsoft | ⭐⭐⭐⭐ |
+| Bloomberg | ⭐⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: Counting Separate Training Zones
+
+## Understanding the Problem Through Fitness
+
+Imagine you're the **gym floor manager** looking at a floor plan:
+
+```
+Floor Plan (bird's eye view):
+┌───┬───┬───┬───┬───┐
+│ W │ W │ T │ T │ W │   W = Walking area (water/0)
+├───┼───┼───┼───┼───┤   T = Training zone (land/1)
+│ W │ T │ T │ W │ W │
+├───┼───┼───┼───┼───┤
+│ W │ W │ W │ T │ W │
+├───┼───┼───┼───┼───┤
+│ T │ T │ W │ T │ T │
+└───┴───┴───┴───┴───┘
+```
+
+**Your Task**: Count how many **separate** training zones exist (connected equipment areas).
+
+**Key Rules**:
+
+- Training zones connect **up, down, left, right** (not diagonally)
+- Walking areas separate training zones
+- Connected training tiles = ONE zone
+
+---
+
+## The Approach: The "Mark Every Machine in a Zone" Strategy
+
+Imagine you're painting each training zone a different color:
+
+1. **Walk the floor** from top-left to bottom-right
+2. **When you find an unpainted training tile**:
+   - Start painting (new zone found!)
+   - Paint ALL connected training tiles the same color
+   - Increment zone counter
+3. **Skip** tiles that are already painted or are walking areas
+
+### Visual Walkthrough
+
+```
+Original:           After Zone 1:        After Zone 2:        After Zone 3:
+1 1 0 0 0          A A 0 0 0            A A 0 0 0            A A 0 0 0
+1 1 0 0 0    →     A A 0 0 0      →     A A 0 0 0      →     A A 0 0 0
+0 0 1 0 0          0 0 1 0 0            0 0 B 0 0            0 0 B 0 0
+0 0 0 1 1          0 0 0 1 1            0 0 0 1 1            0 0 0 C C
+
+Count: 0           Count: 1             Count: 2             Count: 3
+```
+
+---
+
+## The Exploration: DFS vs BFS
+
+### DFS (Depth-First Search): "Follow One Path Deep"
+
+Like a **trainer exploring a zone by always going deeper** before backtracking:
+
+```
+Start at (0,0): Go RIGHT → Go RIGHT → Stuck → Backtrack → Go DOWN → ...
+```
+
+### BFS (Breadth-First Search): "Explore in Waves"
+
+Like **ripples in water** spreading outward from a point:
+
+```
+Start at (0,0): Check all neighbors first → Then their neighbors → ...
+```
+
+Both work! DFS is usually simpler to implement.
+
+---
+
+# 💻 Python Solution
+
+```{python}
+def num_islands(grid: list[list[str]]) -> int:
+    """
+    Count the number of islands (connected components of '1's).
+    
+    The Training Zone Discovery Strategy (DFS):
+    - Scan the floor grid
+    - When finding an unmarked training zone, explore & mark it
+    - Count how many times we start a new exploration
+    
+    Time Complexity: O(m × n) - Visit each cell once
+    Space Complexity: O(m × n) - Recursion stack in worst case
+    """
+    if not grid or not grid[0]:
+        return 0
+    
+    rows, cols = len(grid), len(grid[0])
+    island_count = 0
+    
+    def dfs(r, c):
+        """Explore and mark all connected land (training zone)."""
+        # Boundary check
+        if r < 0 or r >= rows or c < 0 or c >= cols:
+            return
+        
+        # Not land, or already visited
+        if grid[r][c] != '1':
+            return
+        
+        # Mark as visited (paint this tile)
+        grid[r][c] = '2'  # or '#' or any non-'1' marker
+        
+        # Explore all 4 directions (up, down, left, right)
+        dfs(r - 1, c)  # Up
+        dfs(r + 1, c)  # Down
+        dfs(r, c - 1)  # Left
+        dfs(r, c + 1)  # Right
+    
+    # Scan the entire floor
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == '1':
+                # Found new training zone!
+                island_count += 1
+                # Explore & mark entire zone
+                dfs(r, c)
+    
+    return island_count
+
+
+# Test cases
+grid1 = [
+    ["1","1","1","1","0"],
+    ["1","1","0","1","0"],
+    ["1","1","0","0","0"],
+    ["0","0","0","0","0"]
+]
+print("Example 1:", num_islands([row[:] for row in grid1]))  # 1
+
+grid2 = [
+    ["1","1","0","0","0"],
+    ["1","1","0","0","0"],
+    ["0","0","1","0","0"],
+    ["0","0","0","1","1"]
+]
+print("Example 2:", num_islands([row[:] for row in grid2]))  # 3
+
+
+# Alternative: BFS approach
+from collections import deque
+
+def num_islands_bfs(grid: list[list[str]]) -> int:
+    """
+    BFS approach - explore in waves like ripples.
+    """
+    if not grid or not grid[0]:
+        return 0
+    
+    rows, cols = len(grid), len(grid[0])
+    island_count = 0
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    
+    def bfs(start_r, start_c):
+        """Explore using BFS (level by level)."""
+        queue = deque([(start_r, start_c)])
+        grid[start_r][start_c] = '2'
+        
+        while queue:
+            r, c = queue.popleft()
+            
+            for dr, dc in directions:
+                nr, nc = r + dr, c + dc
+                
+                if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == '1':
+                    grid[nr][nc] = '2'
+                    queue.append((nr, nc))
+    
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == '1':
+                island_count += 1
+                bfs(r, c)
+    
+    return island_count
+
+
+grid3 = [
+    ["1","1","0","0","0"],
+    ["1","1","0","0","0"],
+    ["0","0","1","0","0"],
+    ["0","0","0","1","1"]
+]
+print("BFS Example:", num_islands_bfs(grid3))  # 3
+```
+
+---
+
+# 📊 R Solution
+
+```{r}
+num_islands <- function(grid) {
+  #' Count the number of islands (connected components of '1's).
+  #' 
+  #' The Training Zone Discovery Strategy (DFS):
+  #' - Scan the floor grid
+  #' - When finding an unmarked training zone, explore & mark it
+  #' - Count how many times we start a new exploration
+  #' 
+  #' Time Complexity: O(m × n)
+  #' Space Complexity: O(m × n)
+  
+  if (is.null(grid) || length(grid) == 0) {
+    return(0)
+  }
+  
+  # Convert to matrix if needed
+  if (is.list(grid)) {
+    grid <- do.call(rbind, lapply(grid, as.character))
+  }
+  
+  rows <- nrow(grid)
+  cols <- ncol(grid)
+  island_count <- 0
+  
+  # DFS function using iterative approach (R has limited recursion depth)
+  dfs <- function(start_r, start_c) {
+    stack <- list(c(start_r, start_c))
+    
+    while (length(stack) > 0) {
+      current <- stack[[length(stack)]]
+      stack <- stack[-length(stack)]
+      
+      r <- current[1]
+      c <- current[2]
+      
+      # Boundary check
+      if (r < 1 || r > rows || c < 1 || c > cols) {
+        next
+      }
+      
+      # Not land or already visited
+      if (grid[r, c] != "1") {
+        next
+      }
+      
+      # Mark as visited
+      grid[r, c] <<- "2"
+      
+      # Add neighbors to stack
+      stack <- c(stack, list(
+        c(r - 1, c),  # Up
+        c(r + 1, c),  # Down
+        c(r, c - 1),  # Left
+        c(r, c + 1)   # Right
+      ))
+    }
+  }
+  
+  # Scan entire grid
+  for (r in 1:rows) {
+    for (c in 1:cols) {
+      if (grid[r, c] == "1") {
+        island_count <- island_count + 1
+        dfs(r, c)
+      }
+    }
+  }
+  
+  return(island_count)
+}
+
+
+# Test cases
+grid1 <- list(
+  c("1","1","1","1","0"),
+  c("1","1","0","1","0"),
+  c("1","1","0","0","0"),
+  c("0","0","0","0","0")
+)
+cat("Example 1:", num_islands(grid1), "\n")  # 1
+
+grid2 <- list(
+  c("1","1","0","0","0"),
+  c("1","1","0","0","0"),
+  c("0","0","1","0","0"),
+  c("0","0","0","1","1")
+)
+cat("Example 2:", num_islands(grid2), "\n")  # 3
+
+
+# BFS approach in R
+num_islands_bfs <- function(grid) {
+  #' BFS approach using a queue
+  
+  if (is.null(grid) || length(grid) == 0) {
+    return(0)
+  }
+  
+  if (is.list(grid)) {
+    grid <- do.call(rbind, lapply(grid, as.character))
+  }
+  
+  rows <- nrow(grid)
+  cols <- ncol(grid)
+  island_count <- 0
+  
+  bfs <- function(start_r, start_c) {
+    queue <- list(c(start_r, start_c))
+    grid[start_r, start_c] <<- "2"
+    head_idx <- 1
+    
+    while (head_idx <= length(queue)) {
+      current <- queue[[head_idx]]
+      head_idx <- head_idx + 1
+      
+      r <- current[1]
+      c <- current[2]
+      
+      # Check all 4 directions
+      directions <- list(c(-1, 0), c(1, 0), c(0, -1), c(0, 1))
+      
+      for (dir in directions) {
+        nr <- r + dir[1]
+        nc <- c + dir[2]
+        
+        if (nr >= 1 && nr <= rows && nc >= 1 && nc <= cols && grid[nr, nc] == "1") {
+          grid[nr, nc] <<- "2"
+          queue <- c(queue, list(c(nr, nc)))
+        }
+      }
+    }
+  }
+  
+  for (r in 1:rows) {
+    for (c in 1:cols) {
+      if (grid[r, c] == "1") {
+        island_count <- island_count + 1
+        bfs(r, c)
+      }
+    }
+  }
+  
+  return(island_count)
+}
+
+
+grid3 <- list(
+  c("1","1","0","0","0"),
+  c("1","1","0","0","0"),
+  c("0","0","1","0","0"),
+  c("0","0","0","1","1")
+)
+cat("BFS Example:", num_islands_bfs(grid3), "\n")  # 3
+```
+
+---
+
+# 🔍 Solution Breakdown: The Full Gym Session Analysis
+
+## DFS Walkthrough for Example 2
+
+**Grid:**
+```
+1 1 0 0 0
+1 1 0 0 0
+0 0 1 0 0
+0 0 0 1 1
+```
+
+| Step | Position | Action | Grid State | Count |
+|:-----|:---------|:-------|:-----------|:------|
+| 1 | (0,0) | Found '1', start DFS, count++ | Exploring... | 1 |
+| 2 | DFS | Mark (0,0), (0,1), (1,0), (1,1) as visited | Zone A marked | 1 |
+| 3 | (0,2)-(1,4) | Skip '0's and visited | — | 1 |
+| 4 | (2,2) | Found '1', start DFS, count++ | Exploring... | 2 |
+| 5 | DFS | Mark (2,2) as visited | Zone B marked | 2 |
+| 6 | (2,3)-(3,2) | Skip '0's | — | 2 |
+| 7 | (3,3) | Found '1', start DFS, count++ | Exploring... | 3 |
+| 8 | DFS | Mark (3,3), (3,4) as visited | Zone C marked | 3 |
+
+**Final Answer**: 3 islands
+
+---
+
+## DFS vs BFS Comparison
+
+| Aspect | DFS | BFS |
+|:-------|:----|:----|
+| Data Structure | Stack (recursion/explicit) | Queue |
+| Exploration Pattern | Go deep, then backtrack | Spread in waves |
+| Space (worst case) | O(m × n) | O(min(m, n)) |
+| Implementation | Simpler (recursion) | More code |
+| Real-world analogy | Following one path | Ripples in water |
+
+---
+
+## The Gym Metaphor Breakdown
+
+| Coding Concept | Gym Equivalent |
+|:---------------|:---------------|
+| Grid | Gym floor plan |
+| '1' (land) | Training zone tile |
+| '0' (water) | Walking area tile |
+| Island | Connected training zone |
+| DFS exploration | Walking through connected equipment |
+| Marking visited | "Already checked this machine" |
+| Island count | Number of separate workout areas |
+
+---
+
+# 📈 Complexity Analysis
+
+## Time Complexity: O(m × n)
+
+| Operation | Frequency | Cost |
+|:----------|:----------|:-----|
+| Outer loop (scan grid) | m × n | O(1) per cell |
+| DFS/BFS visits | Each cell at most once | O(1) per visit |
+| **Total** | | **O(m × n)** |
+
+**Why O(m × n)?** Each cell is visited at most twice:
+1. Once during the grid scan
+2. Once during DFS/BFS exploration
+
+## Space Complexity: O(m × n)
+
+| Component | Space | Notes |
+|:----------|:------|:------|
+| DFS recursion stack | O(m × n) | Worst case: all land |
+| BFS queue | O(min(m, n)) | Level-by-level exploration |
+| Visited marking | O(1)* | Modify grid in-place |
+
+*If we can't modify the grid, we need O(m × n) for a visited set.
+
+---
+
+# 🎯 Key Takeaways
+
+## Pattern Recognition: Connected Components
+
+This problem teaches the fundamental graph pattern:
+
+> **Use DFS/BFS to explore and count connected components in a grid.**
+
+## When to Use This Pattern
+
+| Problem Type | Example |
+|:-------------|:--------|
+| Count connected regions | Number of Islands, Provinces |
+| Flood fill | Paint bucket tool |
+| Path existence | Maze solving |
+| Region marking | Image segmentation |
+
+## The Four-Direction Template
+
+```python
+# Standard 4-directional exploration
+directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+for dr, dc in directions:
+    nr, nc = r + dr, c + dc
+    if valid(nr, nc):
+        explore(nr, nc)
+```
+
+---
+
+# 🏆 Practice Variations
+
+Build on this concept:
+
+| Problem | Difficulty | Key Extension |
+|:--------|:-----------|:--------------|
+| Max Area of Island | Medium | Track size during DFS |
+| Surrounded Regions | Medium | Boundary-connected regions |
+| Pacific Atlantic Water Flow | Medium | Two-source BFS |
+| Number of Closed Islands | Medium | Islands not touching edge |
+| Count Sub Islands | Medium | Compare two grids |
+
+---
+
+# 🔧 Interview Discussion Points
+
+## Why Modify the Grid?
+
+**Option 1**: Modify grid in-place (mark as '2')
+- Pros: O(1) extra space
+- Cons: Modifies input
+
+**Option 2**: Separate visited set
+- Pros: Preserves input
+- Cons: O(m × n) extra space
+
+Ask interviewer which is preferred!
+
+## Edge Cases
+
+| Case | Grid | Output | Notes |
+|:-----|:-----|:-------|:------|
+| Empty grid | `[]` | 0 | Handle null check |
+| All water | `[["0"]]` | 0 | No islands |
+| All land | `[["1"]]` | 1 | One big island |
+| Diagonal only | `[["1","0"],["0","1"]]` | 2 | Diagonals don't connect |
+
+## Follow-up: 8-Direction Islands
+
+If diagonals count as connected:
+
+```python
+directions = [
+    (-1, -1), (-1, 0), (-1, 1),
+    (0, -1),           (0, 1),
+    (1, -1),  (1, 0),  (1, 1)
+]
+```
+
+---
+
+*"In the gym of graphs, DFS and BFS are your exploration techniques — essential for mapping any training ground."* 💪🗺️

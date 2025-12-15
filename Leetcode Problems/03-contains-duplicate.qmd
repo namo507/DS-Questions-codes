@@ -1,0 +1,403 @@
+---
+title: "Contains Duplicate"
+subtitle: "LeetCode #217 | Easy | Arrays & Hash Sets"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #217 - Contains Duplicate**
+
+Given an integer array `nums`, return `true` if any value appears **at least twice** in the array, and return `false` if every element is distinct.
+
+## Examples
+
+| Example | Input | Output | Explanation |
+|:--------|:------|:-------|:------------|
+| 1 | `[1, 2, 3, 1]` | `true` | 1 appears twice |
+| 2 | `[1, 2, 3, 4]` | `false` | All elements are distinct |
+| 3 | `[1, 1, 1, 3, 3, 4, 3, 2, 4, 2]` | `true` | Multiple duplicates |
+
+## Constraints
+
+- $1 \leq \text{nums.length} \leq 10^5$
+- $-10^9 \leq \text{nums}[i] \leq 10^9$
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Apple | ⭐⭐⭐⭐ |
+| Microsoft | ⭐⭐⭐⭐ |
+| Google | ⭐⭐⭐ |
+| Adobe | ⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: Checking for Repeat Visitors
+
+## Understanding the Problem Through Fitness
+
+Imagine you're the **front desk manager** at a gym with a **unique visitor policy**:
+
+> **"Today is a special one-time-only event. Each member can only check in ONCE."**
+
+Your job: Detect if **anyone has already checked in** when they try to enter again.
+
+```
+Check-in sequence: [Member#1, Member#2, Member#3, Member#1]
+                                                    ↑
+                                                  DUPLICATE!
+```
+
+---
+
+## The Naive Approach: Checking the Entire Sign-in Sheet
+
+When Member #1 tries to check in a second time, you'd flip through every name on the sign-in sheet:
+
+```
+"Is Member#1 here? Let me check..."
+*flips through 3 names*
+"Yes! They already signed in!"
+```
+
+For each of n members, you might check up to n names → **O(n²)** — like reading the entire guest list for every new person!
+
+---
+
+## The Smart Approach: The Digital Check-in System (Hash Set)
+
+A modern gym uses a **digital check-in system** (Hash Set):
+
+1. When someone checks in, their ID is **instantly recorded**
+2. Before checking in anyone, the system **instantly knows** if they're already logged
+
+### How It Works:
+
+| Action | Hash Set Query | Time |
+|:-------|:---------------|:-----|
+| "Is Member#5 checked in?" | Lookup in set | O(1) ⚡ |
+| "Add Member#5 to system" | Insert to set | O(1) ⚡ |
+
+### Visual Walkthrough
+
+```
+Input: [1, 2, 3, 1]
+
+Step 1: Member 1 checks in
+        System: Is 1 already here? NO
+        → Add 1 to system
+        System: {1}
+
+Step 2: Member 2 checks in
+        System: Is 2 already here? NO
+        → Add 2 to system
+        System: {1, 2}
+
+Step 3: Member 3 checks in
+        System: Is 3 already here? NO
+        → Add 3 to system
+        System: {1, 2, 3}
+
+Step 4: Member 1 tries to check in again
+        System: Is 1 already here? YES! 🚨
+        → DUPLICATE DETECTED! Return TRUE
+```
+
+| Step | Incoming Member | Already in Set? | Action | Set State |
+|:-----|:----------------|:----------------|:-------|:----------|
+| 1 | 1 | ❌ No | Add 1 | {1} |
+| 2 | 2 | ❌ No | Add 2 | {1, 2} |
+| 3 | 3 | ❌ No | Add 3 | {1, 2, 3} |
+| 4 | 1 | ✅ **Yes!** | Return `true` | {1, 2, 3} |
+
+---
+
+# 💻 Python Solution
+
+```{python}
+def contains_duplicate(nums: list[int]) -> bool:
+    """
+    Detect if array contains duplicate values.
+    
+    The Digital Check-in Strategy:
+    - Use a set as our "checked-in members system"
+    - For each member, check if they've already checked in
+    - If yes → duplicate found; If no → add them to system
+    
+    Time Complexity: O(n) - Check each member once
+    Space Complexity: O(n) - Store up to n unique members
+    """
+    # Our digital check-in system
+    checked_in = set()
+    
+    for member_id in nums:
+        # Has this member already checked in today?
+        if member_id in checked_in:
+            # Duplicate detected!
+            return True
+        
+        # First time checking in, add to system
+        checked_in.add(member_id)
+    
+    # All members were unique
+    return False
+
+
+# Test cases
+print("Example 1:", contains_duplicate([1, 2, 3, 1]))     # True
+print("Example 2:", contains_duplicate([1, 2, 3, 4]))     # False
+print("Example 3:", contains_duplicate([1,1,1,3,3,4,3,2,4,2]))  # True
+
+
+# Alternative: Pythonic one-liner using set length comparison
+def contains_duplicate_oneliner(nums: list[int]) -> bool:
+    """
+    If the number of unique elements (set) is less than total elements,
+    there must be duplicates!
+    
+    Like counting: "We have 10 check-ins but only 7 unique member IDs"
+    """
+    return len(nums) != len(set(nums))
+
+
+print("\nOne-liner approach:")
+print("Example 1:", contains_duplicate_oneliner([1, 2, 3, 1]))  # True
+print("Example 2:", contains_duplicate_oneliner([1, 2, 3, 4]))  # False
+```
+
+---
+
+# 📊 R Solution
+
+```{r}
+contains_duplicate <- function(nums) {
+  #' Detect if array contains duplicate values.
+  #' 
+  #' The Digital Check-in Strategy:
+  #' - Use an environment as our "checked-in members system"
+  #' - For each member, check if they've already checked in
+  #' - If yes → duplicate found; If no → add them to system
+  #' 
+  #' Time Complexity: O(n) - Check each member once
+  #' Space Complexity: O(n) - Store up to n unique members
+  
+  # Our digital check-in system (environment as hash set)
+  checked_in <- new.env(hash = TRUE, parent = emptyenv())
+  
+  for (member_id in nums) {
+    # Convert to string for environment key
+    key <- as.character(member_id)
+    
+    # Has this member already checked in today?
+    if (!is.null(checked_in[[key]])) {
+      # Duplicate detected!
+      return(TRUE)
+    }
+    
+    # First time checking in, add to system
+    checked_in[[key]] <- TRUE
+  }
+  
+  # All members were unique
+  return(FALSE)
+}
+
+
+# Test cases
+cat("Example 1:", contains_duplicate(c(1, 2, 3, 1)), "\n")     # TRUE
+cat("Example 2:", contains_duplicate(c(1, 2, 3, 4)), "\n")     # FALSE
+cat("Example 3:", contains_duplicate(c(1,1,1,3,3,4,3,2,4,2)), "\n")  # TRUE
+
+
+# Alternative: R's built-in duplicated() or unique()
+contains_duplicate_builtin <- function(nums) {
+  #' Using R's vectorized approach:
+  #' If unique count < total count → duplicates exist
+  #' 
+  #' Like: "7 unique locker assignments for 10 members? Someone's sharing!"
+  
+  return(length(nums) != length(unique(nums)))
+}
+
+
+cat("\nBuilt-in approach:\n")
+cat("Example 1:", contains_duplicate_builtin(c(1, 2, 3, 1)), "\n")  # TRUE
+cat("Example 2:", contains_duplicate_builtin(c(1, 2, 3, 4)), "\n")  # FALSE
+
+
+# Using any() with duplicated()
+contains_duplicate_any <- function(nums) {
+  return(any(duplicated(nums)))
+}
+
+
+cat("\nUsing duplicated():\n")
+cat("Example 1:", contains_duplicate_any(c(1, 2, 3, 1)), "\n")  # TRUE
+```
+
+---
+
+# 🔍 Solution Breakdown: The Full Gym Session Analysis
+
+## Algorithm Walkthrough with Detailed Table
+
+Let's trace through **Example 3**: `nums = [1, 1, 1, 3, 3, 4, 3, 2, 4, 2]`
+
+| Index | Value | In Set? | Action | Set After | Result |
+|:------|:------|:--------|:-------|:----------|:-------|
+| 0 | 1 | ❌ | Add | {1} | Continue |
+| 1 | 1 | ✅ | — | — | **Return TRUE** |
+
+**Early termination!** We found a duplicate at index 1.
+
+### Full Example Without Duplicates
+
+Let's trace **Example 2**: `nums = [1, 2, 3, 4]`
+
+| Index | Value | In Set? | Action | Set After |
+|:------|:------|:--------|:-------|:----------|
+| 0 | 1 | ❌ | Add | {1} |
+| 1 | 2 | ❌ | Add | {1, 2} |
+| 2 | 3 | ❌ | Add | {1, 2, 3} |
+| 3 | 4 | ❌ | Add | {1, 2, 3, 4} |
+
+**Result**: `false` — All members had unique IDs!
+
+---
+
+## The Gym Metaphor Breakdown
+
+| Coding Concept | Gym Equivalent |
+|:---------------|:---------------|
+| Array `nums` | List of member IDs checking in |
+| Hash Set | Digital check-in database |
+| `if num in set` | "Is this member already logged?" |
+| `set.add(num)` | "Log this member's check-in" |
+| Return `true` | "Alert! Repeat visitor detected!" |
+| Return `false` | "All clear, everyone is unique" |
+
+---
+
+## Why Hash Set Works
+
+### The Key Property
+
+A **Hash Set** stores **unique elements** and provides:
+
+| Operation | Average Time | Worst Case |
+|:----------|:-------------|:-----------|
+| Lookup (`in`) | O(1) | O(n) |
+| Insert (`add`) | O(1) | O(n) |
+
+### Gym Translation
+
+| Operation | Gym Action | Speed |
+|:----------|:-----------|:------|
+| Lookup | "Scan member card" | Instant ⚡ |
+| Insert | "Register check-in" | Instant ⚡ |
+
+---
+
+# 📈 Complexity Analysis
+
+## Approach Comparison
+
+| Approach | Time | Space | Description |
+|:---------|:-----|:------|:------------|
+| Brute Force | O(n²) | O(1) | Compare every pair |
+| Sorting | O(n log n) | O(1)* | Sort, check adjacent |
+| **Hash Set** | **O(n)** | **O(n)** | **Track seen elements** |
+
+*Sorting can be O(1) space if done in-place
+
+## Hash Set Analysis
+
+### Time Complexity: O(n)
+
+| Operation | Frequency | Cost | Total |
+|:----------|:----------|:-----|:------|
+| Iterate array | n times | O(1) | O(n) |
+| Set lookup | n times | O(1) avg | O(n) |
+| Set insert | At most n | O(1) avg | O(n) |
+
+**Best Case**: O(1) — duplicate at index 1
+**Worst Case**: O(n) — no duplicates, or duplicate at end
+
+### Space Complexity: O(n)
+
+| Storage | Size | When |
+|:--------|:-----|:-----|
+| Hash Set | Up to n | No duplicates (worst case) |
+| Hash Set | k < n | k unique elements before duplicate |
+
+---
+
+# 🎯 Key Takeaways
+
+## Pattern Recognition: Seen/Visited Tracking
+
+This problem introduces the fundamental pattern:
+
+> **Use a Set to track "what you've seen" for O(1) duplicate detection.**
+
+## When to Use This Pattern
+
+| Scenario | Example Problems |
+|:---------|:-----------------|
+| Detecting duplicates | Contains Duplicate, First Duplicate |
+| Tracking visited nodes | Graph BFS/DFS, Cycle Detection |
+| Checking membership | Valid Sudoku, Word Search |
+| Ensuring uniqueness | Unique characters, Distinct values |
+
+## Three Approaches Summary
+
+| Method | Pros | Cons | Use When |
+|:-------|:-----|:-----|:---------|
+| Hash Set | O(n) time | O(n) space | Default choice |
+| Sorting | O(1) space | O(n log n) time, modifies input | Space-constrained |
+| Brute Force | O(1) space | O(n²) time | Never (for interviews) |
+
+## Common Mistakes to Avoid
+
+| Mistake | Why It's Wrong | Correct Approach |
+|:--------|:---------------|:-----------------|
+| Using list instead of set | O(n) lookup vs O(1) | Use set for lookups |
+| Sorting when not asked | Modifies original array | Only if explicitly allowed |
+| Not returning early | Processes more than needed | Return on first duplicate |
+
+---
+
+# 🏆 Practice Variations
+
+Build on this concept with these related problems:
+
+| Problem | Difficulty | Key Extension |
+|:--------|:-----------|:--------------|
+| Contains Duplicate II | Easy | Duplicates within k distance |
+| Contains Duplicate III | Hard | Duplicates within k with value diff t |
+| Find All Duplicates | Medium | Find all duplicate numbers |
+| Single Number | Easy | Every element appears twice except one |
+| First Unique Character | Easy | First char that appears once |
+
+---
+
+# 🧮 Mathematical Insight
+
+The **Pigeonhole Principle** applies here:
+
+> If you have n items and fewer than n unique values are possible, there must be duplicates.
+
+For the one-liner solution:
+$$\text{Has Duplicates} = (\text{len}(nums) \neq \text{len}(\text{set}(nums)))$$
+
+---
+
+*"In the gym of algorithms, the hash set is your membership card scanner — fast, reliable, and essential."* 💪🏋️

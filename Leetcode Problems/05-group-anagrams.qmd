@@ -1,0 +1,520 @@
+---
+title: "Group Anagrams"
+subtitle: "LeetCode #49 | Medium | Strings & Hash Tables"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #49 - Group Anagrams**
+
+Given an array of strings `strs`, group **the anagrams** together. You can return the answer in **any order**.
+
+An **anagram** is a word or phrase formed by rearranging the letters of a different word or phrase, using all the original letters exactly once.
+
+## Examples
+
+| Example | Input | Output |
+|:--------|:------|:-------|
+| 1 | `["eat","tea","tan","ate","nat","bat"]` | `[["bat"],["nat","tan"],["ate","eat","tea"]]` |
+| 2 | `[""]` | `[[""]]` |
+| 3 | `["a"]` | `[["a"]]` |
+
+## Constraints
+
+- $1 \leq \text{strs.length} \leq 10^4$
+- $0 \leq \text{strs}[i].length \leq 100$
+- `strs[i]` consists of lowercase English letters
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Meta | ⭐⭐⭐⭐⭐ |
+| Bloomberg | ⭐⭐⭐⭐ |
+| Google | ⭐⭐⭐⭐ |
+| Microsoft | ⭐⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: Organizing Workout Classes by Muscle Groups
+
+## Understanding the Problem Through Fitness
+
+Imagine you're the **head trainer** organizing fitness classes. Each class has a **specific set of exercises**, but the order varies by instructor:
+
+**Class Schedule:**
+```
+Class A: [Squats, Lunges, Deadlift]     → Instructor: "eat"
+Class B: [Lunges, Squats, Deadlift]     → Instructor: "tea"  
+Class C: [Bicep Curl, Tricep Dip, Rows] → Instructor: "tan"
+Class D: [Deadlift, Lunges, Squats]     → Instructor: "ate"
+Class E: [Tricep Dip, Rows, Bicep Curl] → Instructor: "nat"
+Class F: [Bench Press, Chest Fly, Dips] → Instructor: "bat"
+```
+
+**Your Task**: Group classes that work the **same muscles** (same exercises, different order).
+
+---
+
+## The Challenge: Finding a Common "Muscle Group ID"
+
+How do you know two classes work the same muscles?
+
+**Key Insight**: Classes with the **same exercises** (anagrams) should get the **same muscle group ID**.
+
+### Strategy 1: Sort the Exercises (Canonical Form)
+
+If you **alphabetically sort** the exercises in each class, matching classes will have identical sorted lists:
+
+```
+"eat" → sorted → "aet"
+"tea" → sorted → "aet"  ← Same!
+"ate" → sorted → "aet"  ← Same!
+
+"tan" → sorted → "ant"
+"nat" → sorted → "ant"  ← Same!
+
+"bat" → sorted → "abt"  ← Different
+```
+
+### Strategy 2: Count Exercise Types (Character Frequency)
+
+Create a **frequency profile** (how many of each exercise):
+
+```
+"eat" → a:1, e:1, t:1 → key: "#1#0#0#0#1...#1#0..."
+"tea" → a:1, e:1, t:1 → key: "#1#0#0#0#1...#1#0..."  ← Same!
+```
+
+---
+
+## Visual Walkthrough
+
+```
+Input: ["eat", "tea", "tan", "ate", "nat", "bat"]
+
+Step 1: Compute signature for each string (using sorted method)
+"eat" → "aet"
+"tea" → "aet"
+"tan" → "ant"
+"ate" → "aet"
+"nat" → "ant"
+"bat" → "abt"
+
+Step 2: Group by signature
+{
+  "aet": ["eat", "tea", "ate"],
+  "ant": ["tan", "nat"],
+  "abt": ["bat"]
+}
+
+Step 3: Return values
+[["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]
+```
+
+| String | Sorted Key | Group Assignment |
+|:-------|:-----------|:-----------------|
+| "eat" | "aet" | Group 1 |
+| "tea" | "aet" | Group 1 |
+| "tan" | "ant" | Group 2 |
+| "ate" | "aet" | Group 1 |
+| "nat" | "ant" | Group 2 |
+| "bat" | "abt" | Group 3 |
+
+---
+
+# 💻 Python Solution
+
+```{python}
+def group_anagrams(strs: list[str]) -> list[list[str]]:
+    """
+    Group strings that are anagrams of each other.
+    
+    The Muscle Group ID Strategy:
+    - Create a "signature" for each string (sorted form)
+    - Group strings with matching signatures
+    
+    Time Complexity: O(n * k log k) where n=number of strings, k=max string length
+    Space Complexity: O(n * k) - storing all strings in groups
+    """
+    from collections import defaultdict
+    
+    # Our class groupings: signature → list of classes
+    groups = defaultdict(list)
+    
+    for string in strs:
+        # Create muscle group ID (sorted signature)
+        signature = ''.join(sorted(string))
+        
+        # Add to appropriate group
+        groups[signature].append(string)
+    
+    # Return all groups as a list
+    return list(groups.values())
+
+
+# Test cases
+print("Example 1:", group_anagrams(["eat","tea","tan","ate","nat","bat"]))
+print("Example 2:", group_anagrams([""]))
+print("Example 3:", group_anagrams(["a"]))
+
+
+# Alternative: Using character count as key (O(n * k) time)
+def group_anagrams_count(strs: list[str]) -> list[list[str]]:
+    """
+    Using character frequency as signature.
+    
+    Faster for long strings since counting is O(k) vs sorting O(k log k)
+    """
+    from collections import defaultdict
+    
+    groups = defaultdict(list)
+    
+    for string in strs:
+        # Count each character (26 lowercase letters)
+        count = [0] * 26
+        for char in string:
+            count[ord(char) - ord('a')] += 1
+        
+        # Use tuple of counts as dictionary key
+        # (can't use list as key since lists are mutable)
+        signature = tuple(count)
+        
+        groups[signature].append(string)
+    
+    return list(groups.values())
+
+
+print("\nUsing character count:")
+print("Example 1:", group_anagrams_count(["eat","tea","tan","ate","nat","bat"]))
+```
+
+---
+
+# 📊 R Solution
+
+```{r}
+group_anagrams <- function(strs) {
+  #' Group strings that are anagrams of each other.
+  #' 
+  #' The Muscle Group ID Strategy:
+  #' - Create a "signature" for each string (sorted form)
+  #' - Group strings with matching signatures
+  #' 
+  #' Time Complexity: O(n * k log k)
+  #' Space Complexity: O(n * k)
+  
+  # Use environment as hash map: signature → list of strings
+  groups <- new.env(hash = TRUE, parent = emptyenv())
+  
+  for (string in strs) {
+    # Create muscle group ID (sorted signature)
+    chars <- strsplit(string, "")[[1]]
+    signature <- paste(sort(chars), collapse = "")
+    
+    # Add to appropriate group
+    if (is.null(groups[[signature]])) {
+      groups[[signature]] <- c()
+    }
+    groups[[signature]] <- c(groups[[signature]], string)
+  }
+  
+  # Return all groups as a list
+  result <- list()
+  for (key in ls(groups)) {
+    result <- append(result, list(groups[[key]]))
+  }
+  
+  return(result)
+}
+
+
+# Test cases
+cat("Example 1:\n")
+print(group_anagrams(c("eat","tea","tan","ate","nat","bat")))
+
+cat("\nExample 2:\n")
+print(group_anagrams(c("")))
+
+cat("\nExample 3:\n")
+print(group_anagrams(c("a")))
+
+
+# Alternative: Using data.frame approach (more R-idiomatic)
+group_anagrams_df <- function(strs) {
+  #' R-idiomatic approach using data frames and split
+  
+  # Create data frame with original string and sorted version
+  df <- data.frame(
+    original = strs,
+    signature = sapply(strs, function(s) {
+      paste(sort(strsplit(s, "")[[1]]), collapse = "")
+    }),
+    stringsAsFactors = FALSE
+  )
+  
+  # Group by signature
+  groups <- split(df$original, df$signature)
+  
+  # Return as unnamed list
+  return(unname(groups))
+}
+
+
+cat("\nUsing data.frame approach:\n")
+print(group_anagrams_df(c("eat","tea","tan","ate","nat","bat")))
+
+
+# Alternative: Using character count signature
+group_anagrams_count <- function(strs) {
+  #' Using character frequency as signature
+  
+  groups <- new.env(hash = TRUE, parent = emptyenv())
+  
+  for (string in strs) {
+    # Count characters
+    chars <- strsplit(string, "")[[1]]
+    count <- integer(26)
+    for (char in chars) {
+      idx <- as.integer(charToRaw(char)) - as.integer(charToRaw("a")) + 1
+      count[idx] <- count[idx] + 1
+    }
+    
+    # Create signature from counts
+    signature <- paste(count, collapse = "#")
+    
+    # Add to group
+    if (is.null(groups[[signature]])) {
+      groups[[signature]] <- c()
+    }
+    groups[[signature]] <- c(groups[[signature]], string)
+  }
+  
+  result <- list()
+  for (key in ls(groups)) {
+    result <- append(result, list(groups[[key]]))
+  }
+  return(result)
+}
+
+
+cat("\nUsing count signature:\n")
+print(group_anagrams_count(c("eat","tea","tan","ate","nat","bat")))
+```
+
+---
+
+# 🔍 Solution Breakdown: The Full Gym Session Analysis
+
+## Algorithm Walkthrough with Detailed Table
+
+### Sorting-Based Approach
+
+**Input**: `["eat", "tea", "tan", "ate", "nat", "bat"]`
+
+| Step | String | Sorted Signature | Action | Groups State |
+|:-----|:-------|:-----------------|:-------|:-------------|
+| 1 | "eat" | "aet" | New group | {"aet": ["eat"]} |
+| 2 | "tea" | "aet" | Add to existing | {"aet": ["eat", "tea"]} |
+| 3 | "tan" | "ant" | New group | {"aet": [...], "ant": ["tan"]} |
+| 4 | "ate" | "aet" | Add to existing | {"aet": ["eat", "tea", "ate"], "ant": [...]} |
+| 5 | "nat" | "ant" | Add to existing | {"aet": [...], "ant": ["tan", "nat"]} |
+| 6 | "bat" | "abt" | New group | {"aet": [...], "ant": [...], "abt": ["bat"]} |
+
+**Final Output**: `[["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]`
+
+---
+
+### Character Count Approach (Detailed)
+
+For string `"eat"`:
+
+| Character | ASCII | Index (0-25) | Count Array |
+|:----------|:------|:-------------|:------------|
+| e | 101 | 4 | [0,0,0,0,1,0,0,...] |
+| a | 97 | 0 | [1,0,0,0,1,0,0,...] |
+| t | 116 | 19 | [1,0,0,0,1,0,...,1,...] |
+
+**Signature**: `(1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0)`
+
+This tuple becomes the hash key!
+
+---
+
+## The Gym Metaphor Breakdown
+
+| Coding Concept | Gym Equivalent |
+|:---------------|:---------------|
+| Input array `strs` | List of fitness classes |
+| Each string | A class's exercise routine |
+| Sorted signature | Standardized "muscle group ID" |
+| Character count | Exercise type inventory |
+| Hash map grouping | Organizing classes by muscle groups |
+| Output groups | Classes that target same muscles |
+
+---
+
+## Why Sorting Works as a Key
+
+**Mathematical Property**:
+
+> Two strings are anagrams if and only if their sorted versions are identical.
+
+**Proof**:
+
+- Anagrams have the same characters with the same frequencies
+- Sorting arranges characters in a canonical (standard) order
+- Same characters + same frequencies + same order = identical strings
+
+**Gym Translation**:
+
+> Two classes work the same muscles if and only if their sorted exercise lists are identical.
+
+---
+
+# 📈 Complexity Analysis
+
+## Approach Comparison
+
+| Approach | Time | Space | Best For |
+|:---------|:-----|:------|:---------|
+| **Sorted Key** | O(n × k log k) | O(n × k) | General use, simple |
+| **Count Key** | O(n × k) | O(n × k) | Very long strings |
+| Brute Force | O(n² × k) | O(n × k) | Never use |
+
+Where:
+- n = number of strings
+- k = maximum length of a string
+
+---
+
+## Sorted Key Analysis
+
+### Time Complexity: O(n × k log k)
+
+| Operation | Frequency | Cost | Total |
+|:----------|:----------|:-----|:------|
+| Iterate strings | n | O(1) | O(n) |
+| Sort each string | n | O(k log k) | O(n × k log k) |
+| Hash map operations | n | O(k) avg | O(n × k) |
+
+**Dominant term**: O(n × k log k)
+
+### Space Complexity: O(n × k)
+
+| Storage | Size | Purpose |
+|:--------|:-----|:--------|
+| Hash map keys | O(n × k) | Sorted signatures |
+| Hash map values | O(n × k) | Original strings |
+| Output | O(n × k) | All grouped strings |
+
+---
+
+## Character Count Analysis
+
+### Time Complexity: O(n × k)
+
+| Operation | Frequency | Cost | Total |
+|:----------|:----------|:-----|:------|
+| Iterate strings | n | O(1) | O(n) |
+| Count chars | n | O(k) | O(n × k) |
+| Create tuple key | n | O(26) | O(n) |
+
+**Dominant term**: O(n × k) — better for long strings!
+
+### When to Use Which?
+
+| Condition | Better Approach |
+|:----------|:----------------|
+| k is small (≤ 10) | Sorting (simpler) |
+| k is large (> 100) | Character count |
+| Unicode support needed | Character count with hash map |
+
+---
+
+# 🎯 Key Takeaways
+
+## Pattern Recognition: Canonical Form Grouping
+
+This problem teaches a fundamental pattern:
+
+> **To group equivalent items, convert them to a canonical (standard) form and use it as a hash key.**
+
+## Applications of This Pattern
+
+| Problem Domain | Canonical Form |
+|:---------------|:---------------|
+| Anagram grouping | Sorted string |
+| Equivalent equations | Sorted operands |
+| Isomorphic strings | Character mapping pattern |
+| Equivalent binary trees | Serialized form |
+
+## Key Design Decisions
+
+| Decision | Options | Trade-off |
+|:---------|:--------|:----------|
+| Signature method | Sort vs Count | Time vs Simplicity |
+| Hash key type | String vs Tuple | Language-dependent |
+| Output order | Any vs Specific | Problem constraints |
+
+## Common Mistakes to Avoid
+
+| Mistake | Why It's Wrong | Correct Approach |
+|:--------|:---------------|:-----------------|
+| Using list as dict key | Lists are mutable | Use tuple or string |
+| O(n²) pairwise comparison | Too slow | Use hash map grouping |
+| Forgetting empty string | "" is valid input | Handle edge case |
+
+---
+
+# 🏆 Practice Variations
+
+Build on this concept with these related problems:
+
+| Problem | Difficulty | Key Extension |
+|:--------|:-----------|:--------------|
+| Valid Anagram | Easy | Two-string comparison |
+| Find All Anagrams in String | Medium | Sliding window approach |
+| Minimum Window Substring | Hard | Character frequency window |
+| Isomorphic Strings | Easy | Pattern-based grouping |
+| Group Shifted Strings | Medium | Difference-based grouping |
+
+---
+
+# 🔧 Interview Discussion Points
+
+## Why Not Compare All Pairs?
+
+**Brute Force Analysis**:
+
+- For each string, compare with all others: O(n²)
+- Each comparison: O(k)
+- Total: O(n² × k)
+
+**Hash Map Analysis**:
+
+- Process each string once: O(n)
+- Each processing: O(k log k) or O(k)
+- Total: O(n × k log k) or O(n × k)
+
+**Speedup**: From O(n²) to O(n) in terms of string count!
+
+## Edge Cases to Consider
+
+| Case | Input | Output | Notes |
+|:-----|:------|:-------|:------|
+| Single string | `["a"]` | `[["a"]]` | One group of one |
+| Empty string | `[""]` | `[[""]]` | Empty is valid |
+| All same | `["aa","aa"]` | `[["aa","aa"]]` | Duplicates allowed |
+| All different | `["a","b","c"]` | `[["a"],["b"],["c"]]` | Each in own group |
+
+---
+
+*"In the gym of algorithms, grouping by pattern is like organizing classes by muscle groups — efficient, logical, and powerful."* 💪🏋️

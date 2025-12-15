@@ -1,0 +1,535 @@
+---
+title: "Longest Substring Without Repeating Characters"
+subtitle: "LeetCode #3 | Medium | Sliding Window"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #3 - Longest Substring Without Repeating Characters**
+
+Given a string `s`, find the length of the **longest substring** without repeating characters.
+
+## Examples
+
+| Example | Input | Output | Explanation |
+|:--------|:------|:-------|:------------|
+| 1 | `"abcabcbb"` | 3 | `"abc"` (no repeating) |
+| 2 | `"bbbbb"` | 1 | `"b"` (all same) |
+| 3 | `"pwwkew"` | 3 | `"wke"` or `"kew"` |
+
+## Constraints
+
+- $0 \leq \text{s.length} \leq 5 \times 10^4$
+- `s` consists of English letters, digits, symbols, and spaces
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Google | ⭐⭐⭐⭐⭐ |
+| Bloomberg | ⭐⭐⭐⭐⭐ |
+| Meta | ⭐⭐⭐⭐ |
+| Microsoft | ⭐⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: The Unique Exercise Streak
+
+## Understanding the Problem Through Fitness
+
+Imagine you're a **fitness instructor** tracking the longest streak of **unique exercises** without repeating any:
+
+```
+Today's Workout Log:
+┌─────────────────────────────────────────────────────┐
+│  Pushups → Squats → Lunges → Pushups → Planks     │
+│     P        S        L        P         K         │
+│                                                     │
+│  Question: What's the longest streak of unique     │
+│            exercises?                               │
+│                                                     │
+│  Answer: 3 (Squats → Lunges → Pushups)             │
+│             OR (Lunges → Pushups → Planks)         │
+└─────────────────────────────────────────────────────┘
+```
+
+**Key Rule**: Once you repeat an exercise, your streak resets!
+
+---
+
+## The Sliding Window: Your Workout Window 🪟
+
+Think of a **sliding window** as the exercises visible on your tracking board:
+
+```
+String: "abcabcbb"
+
+Window slides through:
+
+Step 1: [a] b c a b c b b     Window = "a", size = 1
+Step 2: [a b] c a b c b b     Window = "ab", size = 2
+Step 3: [a b c] a b c b b     Window = "abc", size = 3 ✓ (max so far)
+Step 4: a [b c a] b c b b     Window = "bca", size = 3 (reset because 'a' repeated)
+Step 5: a b [c a b] c b b     Window = "cab", size = 3
+Step 6: a b c [a b c] b b     Window = "abc", size = 3
+Step 7: a b c a [b c] b b     Window shrinks (repeated 'b')
+...
+
+Maximum unique streak: 3
+```
+
+---
+
+## Two Approaches
+
+### Approach 1: Set with Sliding Window
+
+```
+Use a set to track characters in current window
+When duplicate found, shrink window from left until valid
+```
+
+### Approach 2: HashMap with Last Index
+
+```
+Store last seen index of each character
+Jump left pointer directly to avoid the duplicate
+More efficient!
+```
+
+---
+
+# 💻 Python Solutions
+
+## Approach 1: Set + Sliding Window
+
+```{python}
+def lengthOfLongestSubstring_set(s: str) -> int:
+    """
+    Sliding window with set.
+    
+    The "Unique Exercise Tracker" Strategy:
+    1. Expand window by adding new exercise
+    2. If duplicate found, shrink from left until unique
+    3. Track maximum window size
+    
+    Time: O(2n) = O(n) - each char visited at most twice
+    Space: O(min(n, m)) where m = character set size
+    """
+    char_set = set()
+    left = 0
+    max_length = 0
+    
+    for right in range(len(s)):
+        # Shrink window until no duplicate
+        while s[right] in char_set:
+            char_set.remove(s[left])
+            left += 1
+        
+        # Add current character
+        char_set.add(s[right])
+        
+        # Update maximum
+        max_length = max(max_length, right - left + 1)
+    
+    return max_length
+
+
+# Test cases
+print("Set approach:")
+print(lengthOfLongestSubstring_set("abcabcbb"))  # 3
+print(lengthOfLongestSubstring_set("bbbbb"))     # 1
+print(lengthOfLongestSubstring_set("pwwkew"))    # 3
+print(lengthOfLongestSubstring_set(""))          # 0
+```
+
+## Approach 2: HashMap with Last Index (Optimal)
+
+```{python}
+def lengthOfLongestSubstring(s: str) -> int:
+    """
+    Sliding window with hash map for O(n) time.
+    
+    The "Exercise Log Book" Strategy:
+    1. Keep a log of last position for each exercise
+    2. When duplicate found, jump left pointer past the duplicate
+    3. No need to shrink character by character!
+    
+    Time: O(n) - each char visited exactly once
+    Space: O(min(n, m)) where m = character set size
+    """
+    last_seen = {}  # char -> last index
+    left = 0
+    max_length = 0
+    
+    for right, char in enumerate(s):
+        # If char was seen and is within current window
+        if char in last_seen and last_seen[char] >= left:
+            # Jump left pointer past the duplicate
+            left = last_seen[char] + 1
+        
+        # Update last seen index
+        last_seen[char] = right
+        
+        # Update maximum length
+        max_length = max(max_length, right - left + 1)
+    
+    return max_length
+
+
+# Test cases
+print("\nHashMap approach:")
+print(lengthOfLongestSubstring("abcabcbb"))  # 3
+print(lengthOfLongestSubstring("bbbbb"))     # 1
+print(lengthOfLongestSubstring("pwwkew"))    # 3
+print(lengthOfLongestSubstring(""))          # 0
+print(lengthOfLongestSubstring("abba"))      # 2
+
+
+# Verbose version for understanding
+def lengthOfLongestSubstring_verbose(s: str) -> int:
+    """Verbose version with step-by-step output."""
+    last_seen = {}
+    left = 0
+    max_length = 0
+    
+    print(f"\nProcessing: '{s}'")
+    print("-" * 60)
+    
+    for right, char in enumerate(s):
+        old_left = left
+        
+        if char in last_seen and last_seen[char] >= left:
+            left = last_seen[char] + 1
+            print(f"Step {right + 1}: char='{char}' DUPLICATE! "
+                  f"Jump left {old_left}→{left}")
+        else:
+            print(f"Step {right + 1}: char='{char}' unique")
+        
+        last_seen[char] = right
+        window_size = right - left + 1
+        window = s[left:right + 1]
+        
+        print(f"         Window: '{window}' (size={window_size})")
+        
+        if window_size > max_length:
+            max_length = window_size
+            print(f"         NEW MAX: {max_length}")
+        print()
+    
+    return max_length
+
+
+lengthOfLongestSubstring_verbose("abcabcbb")
+```
+
+---
+
+# 📊 R Solutions
+
+```{r}
+# Approach 1: Set-like approach using vector
+longest_substring_set <- function(s) {
+  #' Sliding window with character tracking.
+  #' 
+  #' Time: O(2n) = O(n)
+  #' Space: O(min(n, charset))
+  
+  if (nchar(s) == 0) return(0)
+  
+  chars <- strsplit(s, "")[[1]]
+  n <- length(chars)
+  
+  char_set <- character(0)
+  left <- 1
+  max_length <- 0
+  
+  for (right in 1:n) {
+    # Shrink window until no duplicate
+    while (chars[right] %in% char_set) {
+      char_set <- char_set[char_set != chars[left]]
+      left <- left + 1
+    }
+    
+    # Add current character
+    char_set <- c(char_set, chars[right])
+    
+    # Update maximum
+    max_length <- max(max_length, right - left + 1)
+  }
+  
+  return(max_length)
+}
+
+
+cat("Set approach:\n")
+print(longest_substring_set("abcabcbb"))  # 3
+print(longest_substring_set("bbbbb"))     # 1
+print(longest_substring_set("pwwkew"))    # 3
+
+
+# Approach 2: HashMap with last index
+longest_substring_map <- function(s) {
+  #' Sliding window with hash map for O(n) time.
+  #' 
+  #' Time: O(n)
+  #' Space: O(min(n, charset))
+  
+  if (nchar(s) == 0) return(0)
+  
+  chars <- strsplit(s, "")[[1]]
+  n <- length(chars)
+  
+  # Use named list as hash map
+  last_seen <- list()
+  left <- 1
+  max_length <- 0
+  
+  for (right in 1:n) {
+    char <- chars[right]
+    
+    # If char was seen and is within current window
+    if (!is.null(last_seen[[char]]) && last_seen[[char]] >= left) {
+      left <- last_seen[[char]] + 1
+    }
+    
+    # Update last seen index
+    last_seen[[char]] <- right
+    
+    # Update maximum length
+    max_length <- max(max_length, right - left + 1)
+  }
+  
+  return(max_length)
+}
+
+
+cat("\nHashMap approach:\n")
+print(longest_substring_map("abcabcbb"))  # 3
+print(longest_substring_map("bbbbb"))     # 1
+print(longest_substring_map("pwwkew"))    # 3
+print(longest_substring_map("abba"))      # 2
+
+
+# Using data.table for efficiency with large strings
+library(data.table)
+
+longest_substring_dt <- function(s) {
+  #' Data.table approach for potentially better performance
+  
+  if (nchar(s) == 0) return(0)
+  
+  chars <- strsplit(s, "")[[1]]
+  n <- length(chars)
+  
+  # Create data.table with positions
+  dt <- data.table(pos = 1:n, char = chars)
+  
+  # For each position, find previous occurrence
+  dt[, prev_pos := shift(pos, 1L), by = char]
+  
+  # Sliding window simulation
+  left <- 1
+  max_len <- 0
+  
+  for (i in 1:n) {
+    prev <- dt$prev_pos[i]
+    if (!is.na(prev) && prev >= left) {
+      left <- prev + 1
+    }
+    max_len <- max(max_len, i - left + 1)
+  }
+  
+  return(max_len)
+}
+
+
+cat("\nData.table approach:\n")
+print(longest_substring_dt("abcabcbb"))
+```
+
+---
+
+# 🔍 Solution Breakdown: Full Workout Analysis
+
+## Detailed Trace: "abcabcbb"
+
+### Step-by-Step with HashMap
+
+| Step | Char | Last Seen | Left | Window | Size | Max |
+|:-----|:-----|:----------|:-----|:-------|:-----|:----|
+| 1 | 'a' | a:0 | 0 | "a" | 1 | 1 |
+| 2 | 'b' | a:0, b:1 | 0 | "ab" | 2 | 2 |
+| 3 | 'c' | a:0, b:1, c:2 | 0 | "abc" | 3 | **3** |
+| 4 | 'a' | a:**3**, b:1, c:2 | **1** | "bca" | 3 | 3 |
+| 5 | 'b' | a:3, b:**4**, c:2 | **2** | "cab" | 3 | 3 |
+| 6 | 'c' | a:3, b:4, c:**5** | **3** | "abc" | 3 | 3 |
+| 7 | 'b' | a:3, b:**6**, c:5 | **5** | "cb" | 2 | 3 |
+| 8 | 'b' | a:3, b:**7**, c:5 | **7** | "b" | 1 | 3 |
+
+**Result**: 3 (longest unique substring is "abc")
+
+---
+
+## Visual Window Sliding
+
+```
+Input: "abcabcbb"
+        01234567
+
+Step 1: [a]bcabcbb    Window="a"      left=0, right=0
+Step 2: [ab]cabcbb    Window="ab"     left=0, right=1
+Step 3: [abc]abcbb    Window="abc"    left=0, right=2  ⭐ MAX=3
+Step 4: a[bca]bcbb    Window="bca"    left=1, right=3  (jumped past 'a')
+Step 5: ab[cab]cbb    Window="cab"    left=2, right=4  (jumped past 'b')
+Step 6: abc[abc]bb    Window="abc"    left=3, right=5  (jumped past 'c')
+Step 7: abcab[cb]b    Window="cb"     left=5, right=6  (jumped past 'b')
+Step 8: abcabc[b]b    Window="b"      left=7, right=7  (jumped past 'b')
+```
+
+---
+
+## Edge Case: "abba"
+
+This case tests the importance of checking `last_seen[char] >= left`:
+
+```
+Step 1: [a]bba       last_seen = {a:0}           left=0, max=1
+Step 2: [ab]ba       last_seen = {a:0, b:1}     left=0, max=2
+Step 3: a[bb]a       last_seen = {a:0, b:2}     left=2, max=2 (jumped)
+Step 4: ab[ba]       last_seen = {a:3, b:2}     left=2, max=2
+
+Wait! 'a' was seen at index 0, but left=2
+So 'a' at index 0 is OUTSIDE our window!
+We should NOT jump based on stale data.
+
+Correct: last_seen['a']=0, but 0 < left=2, so don't jump!
+Window remains valid: "ba" (size 2)
+```
+
+---
+
+# 📈 Complexity Analysis
+
+## Set Approach
+
+| Operation | Complexity |
+|:----------|:-----------|
+| Add to set | O(1) average |
+| Remove from set | O(1) average |
+| Each char visited | At most twice |
+| **Total Time** | **O(2n) = O(n)** |
+| **Space** | **O(min(n, m))** |
+
+## HashMap Approach
+
+| Operation | Complexity |
+|:----------|:-----------|
+| HashMap lookup | O(1) average |
+| HashMap update | O(1) average |
+| Each char visited | Exactly once |
+| **Total Time** | **O(n)** |
+| **Space** | **O(min(n, m))** |
+
+Where m = size of character set (26 for lowercase, 128 for ASCII, etc.)
+
+---
+
+# 🎯 Key Takeaways
+
+## The Sliding Window Pattern
+
+```
+1. Initialize: left = 0, right = 0
+2. Expand: Move right to include new element
+3. Contract: Move left to restore validity
+4. Track: Update result at each valid state
+```
+
+## When to Use Sliding Window
+
+| Scenario | Example |
+|:---------|:--------|
+| Longest/shortest substring | This problem |
+| Subarray with constraint | Max sum of size k |
+| Substring with at most K | Longest with K distinct |
+| Minimum window containing | Minimum Window Substring |
+
+## The HashMap Optimization
+
+> Instead of shrinking one character at a time, **jump directly** past the duplicate!
+
+```python
+# Slow: O(2n)
+while s[right] in char_set:
+    char_set.remove(s[left])
+    left += 1
+
+# Fast: O(n)
+if char in last_seen and last_seen[char] >= left:
+    left = last_seen[char] + 1
+```
+
+---
+
+# 🔧 Interview Tips
+
+## Common Mistakes
+
+| Mistake | Solution |
+|:--------|:---------|
+| Not handling empty string | Return 0 early |
+| Using stale last_seen data | Check `last_seen[char] >= left` |
+| Off-by-one in window size | Use `right - left + 1` |
+| Forgetting to update max | Update after every step |
+
+## Follow-up Questions
+
+**Q: What if we want the actual substring, not just length?**
+A: Track `start_index` when updating max
+
+```python
+if right - left + 1 > max_length:
+    max_length = right - left + 1
+    start_index = left
+return s[start_index:start_index + max_length]
+```
+
+**Q: What about Unicode characters?**
+A: Python handles it naturally; space becomes O(n) in worst case
+
+---
+
+# 🏆 Related Problems
+
+| Problem | Difficulty | Key Difference |
+|:--------|:-----------|:---------------|
+| Longest Substring with At Most Two Distinct | Medium | Allow 2 repeats |
+| Longest Substring with At Most K Distinct | Medium | Allow k repeats |
+| Minimum Window Substring | Hard | Must contain all |
+| Find All Anagrams | Medium | Fixed window size |
+| Longest Repeating Character Replacement | Medium | Can replace k chars |
+
+---
+
+# 💡 The Gym Metaphor Summary
+
+| Coding Concept | Gym Equivalent |
+|:---------------|:---------------|
+| String | Workout sequence |
+| Characters | Individual exercises |
+| Sliding window | Current workout streak |
+| Duplicate | Repeated exercise |
+| HashMap | Exercise log book |
+| Max length | Personal best streak |
+
+---
+
+*"In the gym of algorithms, the sliding window is like your workout streak tracker — it expands when you're crushing it and contracts when you need to reset!"* 💪🪟

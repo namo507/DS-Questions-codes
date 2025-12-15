@@ -1,0 +1,679 @@
+---
+title: "Binary Tree Level Order Traversal"
+subtitle: "LeetCode #102 | Medium | Trees & BFS"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #102 - Binary Tree Level Order Traversal**
+
+Given the `root` of a binary tree, return the **level order traversal** of its nodes' values. (i.e., from left to right, level by level).
+
+## Examples
+
+| Example | Input | Output |
+|:--------|:------|:-------|
+| 1 | `[3,9,20,null,null,15,7]` | `[[3],[9,20],[15,7]]` |
+| 2 | `[1]` | `[[1]]` |
+| 3 | `[]` | `[]` |
+
+### Visual: Example 1
+
+```
+        3          ← Level 0: [3]
+       / \
+      9   20       ← Level 1: [9, 20]
+         /  \
+        15   7     ← Level 2: [15, 7]
+
+Output: [[3], [9, 20], [15, 7]]
+```
+
+## Constraints
+
+- Number of nodes is in range `[0, 2000]`
+- $-1000 \leq \text{Node.val} \leq 1000$
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Meta | ⭐⭐⭐⭐⭐ |
+| Microsoft | ⭐⭐⭐⭐ |
+| Bloomberg | ⭐⭐⭐⭐ |
+| Google | ⭐⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: Gym Floor Inspection
+
+## Understanding the Problem Through Fitness
+
+Imagine you're the **gym manager** doing a **floor-by-floor inspection**:
+
+```
+                    GYM BUILDING
+                    
+    Floor 0:            [Manager's Office]
+    (Top Floor)                 3
+                              /   \
+    Floor 1:          [Cardio]   [Weights]
+                          9          20
+                                   /    \
+    Floor 2:               [Yoga]     [HIIT]
+                             15          7
+```
+
+**Task**: Report all rooms on each floor, from top to bottom, left to right!
+
+```
+Floor Report:
+- Floor 0: [Manager's Office (3)]
+- Floor 1: [Cardio (9), Weights (20)]
+- Floor 2: [Yoga (15), HIIT (7)]
+```
+
+---
+
+## BFS: The Elevator Strategy 🛗
+
+Think of a **queue** like an elevator inspection list:
+
+```
+Strategy: Use a queue to process floor by floor
+
+Step 1: Start at top floor
+        Queue: [3]
+        Processing Floor 0...
+        
+Step 2: Visit room 3, add its children (next floor)
+        Queue: [9, 20]
+        Floor 0 result: [3]
+        
+Step 3: Process entire Floor 1
+        Queue: [15, 7]  (20's children)
+        Floor 1 result: [9, 20]
+        
+Step 4: Process Floor 2
+        Queue: []  (no more children)
+        Floor 2 result: [15, 7]
+        
+Final: [[3], [9, 20], [15, 7]]
+```
+
+---
+
+## The Key Insight: Level Separation
+
+```
+How do we know when one floor ends and the next begins?
+
+Answer: Count nodes at each level before processing!
+
+Queue: [3]           ← Level has 1 node
+Process 3, add 9, 20
+Queue: [9, 20]       ← Level has 2 nodes
+Process 9, 20, add 15, 7
+Queue: [15, 7]       ← Level has 2 nodes
+Process 15, 7 (no children)
+Queue: []            ← Done!
+```
+
+---
+
+# 💻 Python Solutions
+
+## Tree Node Definition
+
+```{python}
+from collections import deque
+from typing import Optional
+
+class TreeNode:
+    """Definition for a binary tree node."""
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
+def build_tree(values):
+    """Build tree from level-order list representation."""
+    if not values:
+        return None
+    
+    root = TreeNode(values[0])
+    queue = deque([root])
+    i = 1
+    
+    while queue and i < len(values):
+        node = queue.popleft()
+        
+        # Add left child
+        if i < len(values) and values[i] is not None:
+            node.left = TreeNode(values[i])
+            queue.append(node.left)
+        i += 1
+        
+        # Add right child
+        if i < len(values) and values[i] is not None:
+            node.right = TreeNode(values[i])
+            queue.append(node.right)
+        i += 1
+    
+    return root
+```
+
+## BFS Solution (Standard)
+
+```{python}
+def levelOrder(root: Optional[TreeNode]) -> list[list[int]]:
+    """
+    Level order traversal using BFS.
+    
+    The "Floor-by-Floor Inspection" Strategy:
+    1. Use a queue to process nodes level by level
+    2. At each level, count how many nodes are in the queue
+    3. Process exactly that many nodes (they're all on same floor)
+    4. Add their children (next floor) to the queue
+    
+    Time: O(n) - Visit each node once
+    Space: O(w) - Queue holds at most one level, w = max width
+    """
+    if not root:
+        return []
+    
+    result = []
+    queue = deque([root])
+    
+    while queue:
+        level_size = len(queue)  # Number of nodes at current level
+        current_level = []
+        
+        # Process all nodes at current level
+        for _ in range(level_size):
+            node = queue.popleft()
+            current_level.append(node.val)
+            
+            # Add children (next level) to queue
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+        
+        result.append(current_level)
+    
+    return result
+
+
+# Test cases
+root1 = build_tree([3, 9, 20, None, None, 15, 7])
+print("Example 1:", levelOrder(root1))  # [[3], [9, 20], [15, 7]]
+
+root2 = build_tree([1])
+print("Example 2:", levelOrder(root2))  # [[1]]
+
+root3 = None
+print("Example 3:", levelOrder(root3))  # []
+```
+
+## Verbose Version with Visualization
+
+```{python}
+def levelOrder_verbose(root: Optional[TreeNode]) -> list[list[int]]:
+    """Verbose version showing each step."""
+    if not root:
+        return []
+    
+    result = []
+    queue = deque([root])
+    level = 0
+    
+    print("Level Order Traversal")
+    print("=" * 50)
+    
+    while queue:
+        level_size = len(queue)
+        current_level = []
+        
+        print(f"\n📊 Processing Level {level}:")
+        print(f"   Nodes in queue: {level_size}")
+        
+        for i in range(level_size):
+            node = queue.popleft()
+            current_level.append(node.val)
+            
+            children = []
+            if node.left:
+                queue.append(node.left)
+                children.append(f"L:{node.left.val}")
+            if node.right:
+                queue.append(node.right)
+                children.append(f"R:{node.right.val}")
+            
+            children_str = ", ".join(children) if children else "none"
+            print(f"   Visited {node.val}, added children: [{children_str}]")
+        
+        result.append(current_level)
+        print(f"   Level {level} complete: {current_level}")
+        level += 1
+    
+    print(f"\n✅ Final result: {result}")
+    return result
+
+
+root = build_tree([3, 9, 20, None, None, 15, 7])
+levelOrder_verbose(root)
+```
+
+## DFS Alternative (Recursive)
+
+```{python}
+def levelOrder_dfs(root: Optional[TreeNode]) -> list[list[int]]:
+    """
+    Level order using DFS with level tracking.
+    
+    The "Report by Floor Number" Strategy:
+    - Each node knows its floor number
+    - Add value to the correct floor's list
+    - DFS order doesn't matter since we organize by level
+    
+    Time: O(n)
+    Space: O(h) for recursion stack, where h = height
+    """
+    result = []
+    
+    def dfs(node, level):
+        if not node:
+            return
+        
+        # Ensure result has a list for this level
+        if level >= len(result):
+            result.append([])
+        
+        # Add current node to its level
+        result[level].append(node.val)
+        
+        # Recursively process children (next level)
+        dfs(node.left, level + 1)
+        dfs(node.right, level + 1)
+    
+    dfs(root, 0)
+    return result
+
+
+root = build_tree([3, 9, 20, None, None, 15, 7])
+print("\nDFS approach:", levelOrder_dfs(root))
+```
+
+---
+
+# 📊 R Solutions
+
+```{r}
+# R6 class for TreeNode
+library(R6)
+
+TreeNode <- R6Class("TreeNode",
+  public = list(
+    val = NULL,
+    left = NULL,
+    right = NULL,
+    
+    initialize = function(val = 0, left = NULL, right = NULL) {
+      self$val <- val
+      self$left <- left
+      self$right <- right
+    }
+  )
+)
+
+
+# Build tree from vector
+build_tree <- function(values) {
+  if (length(values) == 0 || is.na(values[1])) return(NULL)
+  
+  root <- TreeNode$new(values[1])
+  queue <- list(root)
+  i <- 2
+  
+  while (length(queue) > 0 && i <= length(values)) {
+    node <- queue[[1]]
+    queue <- queue[-1]
+    
+    # Left child
+    if (i <= length(values) && !is.na(values[i])) {
+      node$left <- TreeNode$new(values[i])
+      queue <- c(queue, list(node$left))
+    }
+    i <- i + 1
+    
+    # Right child
+    if (i <= length(values) && !is.na(values[i])) {
+      node$right <- TreeNode$new(values[i])
+      queue <- c(queue, list(node$right))
+    }
+    i <- i + 1
+  }
+  
+  return(root)
+}
+
+
+# BFS Solution
+level_order <- function(root) {
+  #' Level order traversal using BFS.
+  #' 
+  #' Time: O(n)
+  #' Space: O(w) where w = max width
+  
+  if (is.null(root)) return(list())
+  
+  result <- list()
+  queue <- list(root)
+  
+  while (length(queue) > 0) {
+    level_size <- length(queue)
+    current_level <- c()
+    
+    for (i in 1:level_size) {
+      node <- queue[[1]]
+      queue <- queue[-1]
+      
+      current_level <- c(current_level, node$val)
+      
+      if (!is.null(node$left)) {
+        queue <- c(queue, list(node$left))
+      }
+      if (!is.null(node$right)) {
+        queue <- c(queue, list(node$right))
+      }
+    }
+    
+    result <- c(result, list(current_level))
+  }
+  
+  return(result)
+}
+
+
+# Test
+cat("Level Order Traversal:\n")
+root <- build_tree(c(3, 9, 20, NA, NA, 15, 7))
+print(level_order(root))
+
+cat("\nSingle node:\n")
+root2 <- build_tree(c(1))
+print(level_order(root2))
+
+
+# DFS Alternative
+level_order_dfs <- function(root) {
+  #' Level order using DFS with level tracking.
+  #' 
+  #' Time: O(n)
+  #' Space: O(h) where h = height
+  
+  result <- list()
+  
+  dfs <- function(node, level) {
+    if (is.null(node)) return()
+    
+    # Ensure list has entry for this level
+    if (level > length(result)) {
+      result[[level]] <<- c()
+    }
+    
+    # Add to level
+    result[[level]] <<- c(result[[level]], node$val)
+    
+    # Recurse on children
+    dfs(node$left, level + 1)
+    dfs(node$right, level + 1)
+  }
+  
+  dfs(root, 1)
+  return(result)
+}
+
+
+cat("\nDFS approach:\n")
+root <- build_tree(c(3, 9, 20, NA, NA, 15, 7))
+print(level_order_dfs(root))
+```
+
+---
+
+# 🔍 Solution Breakdown: Full Gym Analysis
+
+## BFS Step-by-Step Trace
+
+**Input Tree**:
+```
+        3
+       / \
+      9   20
+         /  \
+        15   7
+```
+
+### Complete Trace
+
+| Step | Queue Before | Level Size | Processing | Queue After | Level Result |
+|:-----|:-------------|:-----------|:-----------|:------------|:-------------|
+| 1 | [3] | 1 | 3 | [9, 20] | [3] |
+| 2 | [9, 20] | 2 | 9, 20 | [15, 7] | [9, 20] |
+| 3 | [15, 7] | 2 | 15, 7 | [] | [15, 7] |
+
+**Final Result**: `[[3], [9, 20], [15, 7]]`
+
+---
+
+## Visual BFS Process
+
+```
+Initial State:
+Queue: [3]                    Result: []
+
+════════════════════════════════════════════
+Level 0 (size = 1):
+════════════════════════════════════════════
+Process: 3
+         3        ← Visited ✓
+        / \
+       9   20
+Queue: [9, 20]                Result: [[3]]
+
+════════════════════════════════════════════
+Level 1 (size = 2):
+════════════════════════════════════════════
+Process: 9, 20
+         3
+        / \
+       9   20     ← Visited ✓
+          / \
+        15   7
+Queue: [15, 7]                Result: [[3], [9, 20]]
+
+════════════════════════════════════════════
+Level 2 (size = 2):
+════════════════════════════════════════════
+Process: 15, 7
+         3
+        / \
+       9   20
+          / \
+        15   7    ← Visited ✓
+Queue: []                     Result: [[3], [9, 20], [15, 7]]
+
+Queue empty → Done!
+```
+
+---
+
+## DFS vs BFS Comparison
+
+```
+BFS Order: 3 → 9 → 20 → 15 → 7 (level by level)
+
+        3 (1st)
+       / \
+   (2nd)9   20(3rd)
+          / \
+     (4th)15  7(5th)
+
+
+DFS Order: 3 → 9 → 20 → 15 → 7 (depth first, but level tracked)
+
+        3 (1st)
+       / \
+   (2nd)9   20(3rd)
+          / \
+     (4th)15  7(5th)
+     
+Both produce same result because we track levels!
+```
+
+---
+
+# 📈 Complexity Analysis
+
+## BFS Approach
+
+| Metric | Complexity | Explanation |
+|:-------|:-----------|:------------|
+| Time | O(n) | Visit each node exactly once |
+| Space | O(w) | Queue holds max one level |
+
+Where `w` = maximum width of tree (up to n/2 for balanced tree)
+
+## DFS Approach
+
+| Metric | Complexity | Explanation |
+|:-------|:-----------|:------------|
+| Time | O(n) | Visit each node exactly once |
+| Space | O(h) | Recursion stack depth |
+
+Where `h` = height of tree
+
+### Space Comparison
+
+| Tree Type | BFS Space | DFS Space |
+|:----------|:----------|:----------|
+| Balanced | O(n/2) = O(n) | O(log n) |
+| Skewed | O(1) | O(n) |
+
+---
+
+# 🎯 Key Takeaways
+
+## The BFS Template for Trees
+
+```python
+def bfs_level_order(root):
+    result = []
+    queue = deque([root])
+    
+    while queue:
+        level_size = len(queue)  # KEY: Save level size!
+        current_level = []
+        
+        for _ in range(level_size):
+            node = queue.popleft()
+            current_level.append(node.val)
+            
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+        
+        result.append(current_level)
+    
+    return result
+```
+
+## Why Level Size Matters
+
+```
+Without saving level_size:
+  - Can't tell when one level ends and next begins
+  - Would just get all nodes in one list
+
+With level_size:
+  - Process exactly that many nodes
+  - Children added during processing are for NEXT level
+```
+
+---
+
+# 🔧 Interview Tips
+
+## Common Variations
+
+| Variation | Modification |
+|:----------|:-------------|
+| Bottom-up order | Reverse result at end |
+| Zigzag order | Alternate left/right per level |
+| Right side view | Take last element of each level |
+| Average of levels | Sum and divide by level_size |
+
+## Follow-up Code: Zigzag
+
+```python
+def zigzagLevelOrder(root):
+    result = []
+    queue = deque([root]) if root else deque()
+    left_to_right = True
+    
+    while queue:
+        level = []
+        for _ in range(len(queue)):
+            node = queue.popleft()
+            level.append(node.val)
+            if node.left: queue.append(node.left)
+            if node.right: queue.append(node.right)
+        
+        if not left_to_right:
+            level.reverse()
+        result.append(level)
+        left_to_right = not left_to_right
+    
+    return result
+```
+
+---
+
+# 🏆 Related Problems
+
+| Problem | Difficulty | Key Variation |
+|:--------|:-----------|:--------------|
+| Binary Tree Zigzag Level Order | Medium | Alternate direction |
+| Binary Tree Level Order II | Medium | Bottom to top |
+| Binary Tree Right Side View | Medium | Rightmost each level |
+| Average of Levels | Easy | Calculate average |
+| N-ary Tree Level Order | Medium | More than 2 children |
+
+---
+
+# 💡 The Gym Metaphor Summary
+
+| Coding Concept | Gym Equivalent |
+|:---------------|:---------------|
+| Binary Tree | Multi-floor gym building |
+| Level | Floor of the building |
+| Node | Room on a floor |
+| BFS | Elevator inspection (floor by floor) |
+| Queue | Inspection to-do list |
+| Level size | Rooms per floor |
+| Children | Rooms on floor below |
+
+---
+
+*"In the gym of algorithms, level order traversal is like inspecting every floor — you start at the top and work your way down, making sure no room is left unchecked!"* 💪🏢

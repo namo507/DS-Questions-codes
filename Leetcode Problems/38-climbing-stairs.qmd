@@ -1,0 +1,541 @@
+---
+title: "Climbing Stairs"
+subtitle: "LeetCode #70 | Easy | Dynamic Programming"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    code-block-bg: "#f5f5f5"
+---
+
+# 🏋️ Problem Statement
+
+**LeetCode #70 - Climbing Stairs**
+
+You are climbing a staircase. It takes `n` steps to reach the top.
+
+Each time you can either climb **1 or 2 steps**. In how many **distinct ways** can you climb to the top?
+
+## Examples
+
+| Example | n (stairs) | Output | Explanation |
+|:--------|:-----------|:-------|:------------|
+| 1 | 2 | 2 | (1+1) or (2) |
+| 2 | 3 | 3 | (1+1+1), (1+2), or (2+1) |
+| 3 | 4 | 5 | (1+1+1+1), (1+1+2), (1+2+1), (2+1+1), (2+2) |
+
+## Constraints
+
+- $1 \leq n \leq 45$
+
+## Companies That Ask This
+
+| Company | Frequency |
+|:--------|:----------|
+| Amazon | ⭐⭐⭐⭐⭐ |
+| Google | ⭐⭐⭐⭐ |
+| Apple | ⭐⭐⭐⭐ |
+| Microsoft | ⭐⭐⭐⭐ |
+| Adobe | ⭐⭐⭐ |
+
+---
+
+# 🏋️ The Gym Metaphor: Stair Climbing Machine Workout
+
+## Understanding the Problem Through Fitness
+
+Imagine you're using a **stair climbing machine** at the gym:
+
+```
+    ┌─────┐
+    │ TOP │  ← Goal: Reach here!
+    └──┬──┘
+       │
+    [Step 5]
+       │
+    [Step 4]
+       │
+    [Step 3]
+       │
+    [Step 2]
+       │
+    [Step 1]
+       │
+    ┌──┴──┐
+    │START│
+    └─────┘
+```
+
+**The Rules**:
+
+- You start at the bottom
+- Each move, you can step up **1 step** (normal step) or **2 steps** (power jump)
+- **Question**: How many different workout patterns get you to the top?
+
+---
+
+## The Key Insight: Where Did You Come From?
+
+To reach **Step n**, you must have come from either:
+
+1. **Step (n-1)** — took a 1-step from there
+2. **Step (n-2)** — took a 2-step from there
+
+So the number of ways to reach Step n is:
+
+$$\text{ways}(n) = \text{ways}(n-1) + \text{ways}(n-2)$$
+
+**This is the Fibonacci sequence!** 🎯
+
+---
+
+## Visual Walkthrough
+
+### For n = 4 (4 steps)
+
+```
+Ways to reach Step 4:
+├── From Step 3 (take 1-step): 3 ways to reach Step 3
+└── From Step 2 (take 2-step): 2 ways to reach Step 2
+
+Total: 3 + 2 = 5 ways
+```
+
+### Building Up (Bottom-Up DP)
+
+| Step | Ways to Reach | How? |
+|:-----|:--------------|:-----|
+| 0 | 1 | Already there (base case) |
+| 1 | 1 | Only: (1) |
+| 2 | 2 | (1,1) or (2) |
+| 3 | 3 | (1,1,1), (1,2), (2,1) |
+| 4 | 5 | dp[3] + dp[2] = 3 + 2 |
+| 5 | 8 | dp[4] + dp[3] = 5 + 3 |
+
+### All 5 Ways to Climb 4 Steps
+
+| Way # | Pattern | Steps Taken |
+|:------|:--------|:------------|
+| 1 | 1+1+1+1 | Four 1-steps |
+| 2 | 1+1+2 | Two 1-steps, one 2-step |
+| 3 | 1+2+1 | 1-step, 2-step, 1-step |
+| 4 | 2+1+1 | 2-step, two 1-steps |
+| 5 | 2+2 | Two 2-steps |
+
+---
+
+## Gym Metaphor: Building Strength Progressively
+
+Think of it like **progressive overload** in training:
+
+- **Step 1**: Only one way to do a 1-rep max
+- **Step 2**: Two approaches (two singles, or one double)
+- **Step 3 onwards**: Build on what you learned for steps 1 and 2
+
+Just like muscle memory, you **build new skills from previous ones**!
+
+---
+
+# 💻 Python Solution
+
+```{python}
+def climb_stairs(n: int) -> int:
+    """
+    Count distinct ways to climb n stairs (1 or 2 steps at a time).
+    
+    The Progressive Overload Strategy (Dynamic Programming):
+    - Ways to reach step i = ways from (i-1) + ways from (i-2)
+    - This is the Fibonacci sequence!
+    
+    Time Complexity: O(n) - Calculate each step once
+    Space Complexity: O(1) - Only track last two values
+    """
+    if n <= 2:
+        return n
+    
+    # Track only the last two values (like remembering your last two workouts)
+    prev2 = 1  # Ways to reach step 1
+    prev1 = 2  # Ways to reach step 2
+    
+    for i in range(3, n + 1):
+        # Current = sum of previous two (like combining two workout patterns)
+        current = prev1 + prev2
+        
+        # Slide the window forward
+        prev2 = prev1
+        prev1 = current
+    
+    return prev1
+
+
+# Test cases
+print("n=2:", climb_stairs(2))   # 2
+print("n=3:", climb_stairs(3))   # 3
+print("n=4:", climb_stairs(4))   # 5
+print("n=5:", climb_stairs(5))   # 8
+print("n=10:", climb_stairs(10)) # 89
+
+
+# Alternative: Using an array (clearer but O(n) space)
+def climb_stairs_array(n: int) -> int:
+    """
+    Array-based DP for clearer visualization.
+    """
+    if n <= 2:
+        return n
+    
+    # dp[i] = number of ways to reach step i
+    dp = [0] * (n + 1)
+    dp[1] = 1
+    dp[2] = 2
+    
+    for i in range(3, n + 1):
+        dp[i] = dp[i-1] + dp[i-2]
+    
+    return dp[n]
+
+
+print("\nArray version:")
+print("n=5:", climb_stairs_array(5))  # 8
+
+
+# Alternative: Recursive with memoization
+def climb_stairs_memo(n: int, memo: dict = None) -> int:
+    """
+    Top-down recursive approach with memoization.
+    Like asking: "How many ways from here to the top?"
+    """
+    if memo is None:
+        memo = {}
+    
+    if n in memo:
+        return memo[n]
+    
+    if n <= 2:
+        return n
+    
+    memo[n] = climb_stairs_memo(n-1, memo) + climb_stairs_memo(n-2, memo)
+    return memo[n]
+
+
+print("\nMemoization version:")
+print("n=5:", climb_stairs_memo(5))  # 8
+```
+
+---
+
+# 📊 R Solution
+
+```{r}
+climb_stairs <- function(n) {
+  #' Count distinct ways to climb n stairs (1 or 2 steps at a time).
+  #' 
+  #' The Progressive Overload Strategy (Dynamic Programming):
+  #' - Ways to reach step i = ways from (i-1) + ways from (i-2)
+  #' - This is the Fibonacci sequence!
+  #' 
+  #' Time Complexity: O(n)
+  #' Space Complexity: O(1)
+  
+  if (n <= 2) {
+    return(n)
+  }
+  
+  # Track only the last two values
+  prev2 <- 1  # Ways to reach step 1
+  prev1 <- 2  # Ways to reach step 2
+  
+  for (i in 3:n) {
+    # Current = sum of previous two
+    current <- prev1 + prev2
+    
+    # Slide the window forward
+    prev2 <- prev1
+    prev1 <- current
+  }
+  
+  return(prev1)
+}
+
+
+# Test cases
+cat("n=2:", climb_stairs(2), "\n")   # 2
+cat("n=3:", climb_stairs(3), "\n")   # 3
+cat("n=4:", climb_stairs(4), "\n")   # 5
+cat("n=5:", climb_stairs(5), "\n")   # 8
+cat("n=10:", climb_stairs(10), "\n") # 89
+
+
+# Alternative: Using a vector (clearer)
+climb_stairs_vector <- function(n) {
+  #' Vector-based DP for clearer visualization.
+  
+  if (n <= 2) {
+    return(n)
+  }
+  
+  # dp[i] = number of ways to reach step i
+  dp <- integer(n)
+  dp[1] <- 1
+  dp[2] <- 2
+  
+  for (i in 3:n) {
+    dp[i] <- dp[i-1] + dp[i-2]
+  }
+  
+  return(dp[n])
+}
+
+
+cat("\nVector version:\n")
+cat("n=5:", climb_stairs_vector(5), "\n")  # 8
+
+
+# Alternative: Recursive with memoization using environment
+climb_stairs_memo <- function(n, memo = NULL) {
+  #' Top-down recursive approach with memoization.
+  
+  if (is.null(memo)) {
+    memo <- new.env(hash = TRUE, parent = emptyenv())
+  }
+  
+  key <- as.character(n)
+  
+  if (!is.null(memo[[key]])) {
+    return(memo[[key]])
+  }
+  
+  if (n <= 2) {
+    return(n)
+  }
+  
+  result <- climb_stairs_memo(n-1, memo) + climb_stairs_memo(n-2, memo)
+  memo[[key]] <- result
+  return(result)
+}
+
+
+cat("\nMemoization version:\n")
+cat("n=5:", climb_stairs_memo(5), "\n")  # 8
+
+
+# Bonus: Generate first n Fibonacci numbers (stairs solutions)
+generate_stair_ways <- function(max_n) {
+  #' Generate ways for stairs 1 to max_n
+  
+  ways <- integer(max_n)
+  ways[1] <- 1
+  if (max_n >= 2) ways[2] <- 2
+  
+  for (i in 3:max_n) {
+    ways[i] <- ways[i-1] + ways[i-2]
+  }
+  
+  result <- data.frame(
+    stairs = 1:max_n,
+    ways = ways
+  )
+  return(result)
+}
+
+
+cat("\nWays for stairs 1-10:\n")
+print(generate_stair_ways(10))
+```
+
+---
+
+# 🔍 Solution Breakdown: The Full Gym Session Analysis
+
+## Dynamic Programming Table
+
+Building up the solution for **n = 5**:
+
+| Step | dp[step] | Calculation | Meaning |
+|:-----|:---------|:------------|:--------|
+| 0 | 1 | Base case | 1 way to stay at ground |
+| 1 | 1 | Base case | 1 way: (1) |
+| 2 | 2 | 1 + 1 | 2 ways: (1,1), (2) |
+| 3 | 3 | 2 + 1 | 3 ways from steps 2 and 1 |
+| 4 | 5 | 3 + 2 | 5 ways from steps 3 and 2 |
+| 5 | 8 | 5 + 3 | **8 ways** ⭐ |
+
+---
+
+## Why This is Fibonacci
+
+| n | Climbing Stairs | Fibonacci | Same? |
+|:--|:----------------|:----------|:------|
+| 1 | 1 | F(2) = 1 | ✓ |
+| 2 | 2 | F(3) = 2 | ✓ |
+| 3 | 3 | F(4) = 3 | ✓ |
+| 4 | 5 | F(5) = 5 | ✓ |
+| 5 | 8 | F(6) = 8 | ✓ |
+
+**Relationship**: `climb(n) = Fibonacci(n+1)`
+
+---
+
+## The Gym Metaphor Breakdown
+
+| Coding Concept | Gym Equivalent |
+|:---------------|:---------------|
+| n stairs | Total steps on the stair machine |
+| 1-step move | Normal step (easy pace) |
+| 2-step move | Power jump (skip a step) |
+| dp[i] | Number of workout patterns to reach step i |
+| dp[i-1] + dp[i-2] | "I can finish with a normal step OR a power jump" |
+| Space optimization | "I only need to remember my last two achievements" |
+
+---
+
+## Recursion Tree (Why Memoization Helps)
+
+Without memoization, calculating `climb(5)`:
+
+```
+                    climb(5)
+                   /        \
+              climb(4)      climb(3)
+             /      \       /      \
+        climb(3)  climb(2) climb(2) climb(1)
+        /     \
+   climb(2) climb(1)
+```
+
+**Problem**: `climb(2)` and `climb(3)` are calculated multiple times!
+
+**Solution**: Memoization stores results → each subproblem solved only once.
+
+---
+
+# 📈 Complexity Analysis
+
+## Optimized Solution (O(1) Space)
+
+### Time Complexity: O(n)
+
+| Operation | Frequency | Cost | Total |
+|:----------|:----------|:-----|:------|
+| Loop iterations | n-2 | O(1) | O(n) |
+| Additions | n-2 | O(1) | O(n) |
+| Variable swaps | n-2 | O(1) | O(n) |
+
+### Space Complexity: O(1)
+
+| Variable | Space | Purpose |
+|:---------|:------|:--------|
+| prev1 | O(1) | Previous step's ways |
+| prev2 | O(1) | Two steps ago |
+| current | O(1) | Current calculation |
+
+---
+
+## Comparison of Approaches
+
+| Approach | Time | Space | Notes |
+|:---------|:-----|:------|:------|
+| Naive Recursion | O(2^n) | O(n) | Exponential! |
+| Memoization | O(n) | O(n) | Top-down DP |
+| Bottom-up Array | O(n) | O(n) | Tabulation |
+| **Space-optimized** | **O(n)** | **O(1)** | **Best** |
+| Matrix Exponentiation | O(log n) | O(1) | Advanced |
+
+---
+
+# 🎯 Key Takeaways
+
+## Pattern Recognition: Fibonacci Pattern
+
+This problem teaches the classic DP pattern:
+
+> **Current state depends on a fixed number of previous states.**
+
+## When to Use This Pattern
+
+| Problem Type | Example |
+|:-------------|:--------|
+| Count paths/ways | Climbing Stairs, Unique Paths |
+| Fibonacci variants | House Robber, Decode Ways |
+| Sequence counting | Tribonacci, N-th Tribonacci |
+
+## The DP Formula
+
+$$f(n) = f(n-1) + f(n-2)$$
+
+With base cases:
+$$f(1) = 1, \quad f(2) = 2$$
+
+## Space Optimization Trick
+
+When DP depends on only **k previous states**, you can reduce O(n) space to O(k):
+
+```python
+# Instead of: dp = [0] * (n+1)
+# Use: prev1, prev2 (sliding window of size 2)
+```
+
+---
+
+# 🏆 Practice Variations
+
+Build on this concept:
+
+| Problem | Difficulty | Key Extension |
+|:--------|:-----------|:--------------|
+| Min Cost Climbing Stairs | Easy | Add cost to each step |
+| House Robber | Medium | Can't pick adjacent |
+| Decode Ways | Medium | Variable choices |
+| Fibonacci Number | Easy | Pure Fibonacci |
+| N-th Tribonacci Number | Easy | Three previous states |
+| Unique Paths | Medium | 2D grid version |
+
+---
+
+# 🔧 Interview Discussion Points
+
+## Common Follow-up Questions
+
+**Q: What if you could take 1, 2, or 3 steps?**
+
+```python
+def climb_stairs_k(n, k=3):
+    if n <= 1:
+        return 1
+    dp = [0] * (n + 1)
+    dp[0] = 1
+    for i in range(1, n + 1):
+        for j in range(1, min(k, i) + 1):
+            dp[i] += dp[i - j]
+    return dp[n]
+```
+
+**Q: What if certain steps are broken (can't land on)?**
+
+```python
+def climb_with_broken(n, broken_steps):
+    broken = set(broken_steps)
+    dp = [0] * (n + 1)
+    dp[0] = 1
+    for i in range(1, n + 1):
+        if i in broken:
+            continue
+        if i >= 1:
+            dp[i] += dp[i-1]
+        if i >= 2:
+            dp[i] += dp[i-2]
+    return dp[n]
+```
+
+## Edge Cases
+
+| Case | n | Output | Notes |
+|:-----|:--|:-------|:------|
+| Single step | 1 | 1 | Only (1) |
+| Two steps | 2 | 2 | (1,1) or (2) |
+| Zero steps | 0 | 1 | Already at top |
+
+---
+
+*"In the gym of algorithms, Climbing Stairs teaches us that every big achievement is built from small, consistent steps."* 💪🪜
