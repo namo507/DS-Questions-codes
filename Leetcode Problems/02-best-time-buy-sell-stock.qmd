@@ -22,27 +22,27 @@ Return the **maximum profit** you can achieve from this transaction. If you cann
 ## Examples
 
 | Example | Input | Output | Explanation |
-|:--------|:------|:-------|:------------|
+|:---------------|:---------------|:---------------|:----------------------|
 | 1 | `[7, 1, 5, 3, 6, 4]` | `5` | Buy on day 2 (price=1), sell on day 5 (price=6), profit = 6-1 = 5 |
 | 2 | `[7, 6, 4, 3, 1]` | `0` | Prices only decrease, no profitable transaction possible |
 
 ## Constraints
 
-- $1 \leq \text{prices.length} \leq 10^5$
-- $0 \leq \text{prices}[i] \leq 10^4$
+-   $1 \leq \text{prices.length} \leq 10^5$
+-   $0 \leq \text{prices}[i] \leq 10^4$
 
 ## Companies That Ask This
 
-| Company | Frequency |
-|:--------|:----------|
-| Amazon | ⭐⭐⭐⭐⭐ |
-| Meta | ⭐⭐⭐⭐⭐ |
+| Company       | Frequency  |
+|:--------------|:-----------|
+| Amazon        | ⭐⭐⭐⭐⭐ |
+| Meta          | ⭐⭐⭐⭐⭐ |
 | Goldman Sachs | ⭐⭐⭐⭐⭐ |
-| Microsoft | ⭐⭐⭐⭐ |
-| Google | ⭐⭐⭐⭐ |
-| Bloomberg | ⭐⭐⭐⭐ |
+| Microsoft     | ⭐⭐⭐⭐   |
+| Google        | ⭐⭐⭐⭐   |
+| Bloomberg     | ⭐⭐⭐⭐   |
 
----
+------------------------------------------------------------------------
 
 # 🏋️ The Gym Metaphor: Tracking Your Fitness Journey
 
@@ -50,7 +50,7 @@ Return the **maximum profit** you can achieve from this transaction. If you cann
 
 Imagine you're tracking your **body weight** over several weeks to find the **best transformation period**:
 
-```
+```         
 Week:     1    2    3    4    5    6
 Weight: [85kg, 78kg, 82kg, 80kg, 75kg, 77kg]
 ```
@@ -59,17 +59,17 @@ Weight: [85kg, 78kg, 82kg, 80kg, 75kg, 77kg]
 
 **Key Rules**:
 
-1. You can only calculate loss from an **earlier** week to a **later** week (time only moves forward!)
-2. You want the **biggest drop** possible
-3. If you only gained weight throughout, your "best loss" is 0 (no negative results)
+1.  You can only calculate loss from an **earlier** week to a **later** week (time only moves forward!)
+2.  You want the **biggest drop** possible
+3.  If you only gained weight throughout, your "best loss" is 0 (no negative results)
 
----
+------------------------------------------------------------------------
 
 ## The Naive Approach: Comparing Every Pair of Weeks
 
 Like obsessively comparing every possible combination:
 
-```
+```         
 Week 1 to Week 2: 85 - 78 = 7 kg loss ✓
 Week 1 to Week 3: 85 - 82 = 3 kg loss ✓
 Week 1 to Week 4: 85 - 80 = 5 kg loss ✓
@@ -80,7 +80,7 @@ Week 2 to Week 3: 78 - 82 = -4 (gained weight, ignore)
 
 This requires checking every pair → **O(n²) comparisons** — exhausting!
 
----
+------------------------------------------------------------------------
 
 ## The Smart Approach: The Personal Best Tracker
 
@@ -90,13 +90,13 @@ Here's how a smart fitness coach would think:
 
 ### The Coach's Strategy:
 
-1. **Track the minimum price seen so far** (your "personal best low")
-2. **At each day, calculate profit if you sold today** (current price - min so far)
-3. **Keep track of maximum profit seen** (your best transformation)
+1.  **Track the minimum price seen so far** (your "personal best low")
+2.  **At each day, calculate profit if you sold today** (current price - min so far)
+3.  **Keep track of maximum profit seen** (your best transformation)
 
 ### Visual Walkthrough
 
-```
+```         
 Prices: [7, 1, 5, 3, 6, 4]
 Day:     0  1  2  3  4  5
 
@@ -110,16 +110,16 @@ Day 5: Price=4, Min so far=1, Profit if sell=3,  Max profit=5
 Answer: 5
 ```
 
-| Day | Price | Min So Far | Potential Profit | Max Profit | Notes |
-|:----|:------|:-----------|:-----------------|:-----------|:------|
-| 0 | 7 | 7 | 7 - 7 = 0 | 0 | Starting point |
-| 1 | 1 | 1 | 1 - 1 = 0 | 0 | New lowest! 📉 |
-| 2 | 5 | 1 | 5 - 1 = 4 | 4 | Good profit! |
-| 3 | 3 | 1 | 3 - 1 = 2 | 4 | Not better |
-| 4 | 6 | 1 | 6 - 1 = 5 | **5** | Best profit! 🏆 |
-| 5 | 4 | 1 | 4 - 1 = 3 | 5 | Stay at best |
+| Day | Price | Min So Far | Potential Profit | Max Profit | Notes           |
+|:----|:------|:-----------|:-----------------|:-----------|:----------------|
+| 0   | 7     | 7          | 7 - 7 = 0        | 0          | Starting point  |
+| 1   | 1     | 1          | 1 - 1 = 0        | 0          | New lowest! 📉  |
+| 2   | 5     | 1          | 5 - 1 = 4        | 4          | Good profit!    |
+| 3   | 3     | 1          | 3 - 1 = 2        | 4          | Not better      |
+| 4   | 6     | 1          | 6 - 1 = 5        | **5**      | Best profit! 🏆 |
+| 5   | 4     | 1          | 4 - 1 = 3        | 5          | Stay at best    |
 
----
+------------------------------------------------------------------------
 
 # 💻 Python Solution
 
@@ -182,7 +182,7 @@ def max_profit_pythonic(prices: list[int]) -> int:
 print("Pythonic Example 1:", max_profit_pythonic([7, 1, 5, 3, 6, 4]))  # 5
 ```
 
----
+------------------------------------------------------------------------
 
 # 📊 R Solution
 
@@ -251,7 +251,7 @@ max_profit_vectorized <- function(prices) {
 cat("Vectorized Example 1:", max_profit_vectorized(c(7, 1, 5, 3, 6, 4)), "\n")  # 5
 ```
 
----
+------------------------------------------------------------------------
 
 # 🔍 Solution Breakdown: The Full Fitness Analysis
 
@@ -260,22 +260,22 @@ cat("Vectorized Example 1:", max_profit_vectorized(c(7, 1, 5, 3, 6, 4)), "\n")  
 Let's trace through **Example 1**: `prices = [7, 1, 5, 3, 6, 4]`
 
 | Day | Current Price | Operation | Min Price After | Profit if Sell Today | Max Profit After | Logic |
-|:----|:--------------|:----------|:----------------|:---------------------|:-----------------|:------|
+|:----------|:----------|:----------|:----------|:----------|:----------|:----------|
 | 0 | 7 | Initialize | 7 | 0 | 0 | First day, set baseline |
 | 1 | 1 | Update min | **1** | 0 | 0 | Found cheaper entry! |
 | 2 | 5 | Calculate profit | 1 | 4 | **4** | Profit = 5-1 = 4 |
-| 3 | 3 | Calculate profit | 1 | 2 | 4 | 2 < 4, keep old max |
+| 3 | 3 | Calculate profit | 1 | 2 | 4 | 2 \< 4, keep old max |
 | 4 | 6 | Calculate profit | 1 | 5 | **5** | New best! 🏆 |
-| 5 | 4 | Calculate profit | 1 | 3 | 5 | 3 < 5, keep best |
+| 5 | 4 | Calculate profit | 1 | 3 | 5 | 3 \< 5, keep best |
 
 **Final Answer**: `5` (Buy at 1, Sell at 6)
 
----
+------------------------------------------------------------------------
 
 ## The Gym Metaphor Breakdown
 
 | Coding Concept | Fitness Equivalent |
-|:---------------|:-------------------|
+|:-------------------------------|:---------------------------------------|
 | `prices` array | Daily weigh-ins on your fitness journey |
 | `min_price` | Your personal best (lowest) weight |
 | `max_profit` | Your best transformation (maximum weight loss) |
@@ -284,7 +284,7 @@ Let's trace through **Example 1**: `prices = [7, 1, 5, 3, 6, 4]`
 | Calculating `price - min_price` | "If I ended my cut here, how much would I have lost?" |
 | Constraint: sell after buy | You can't time-travel; progress is measured forward |
 
----
+------------------------------------------------------------------------
 
 ## Why This Works: The Fitness Logic
 
@@ -296,52 +296,50 @@ Why? Because the **maximum profit** ending at day $i$ can only come from buying 
 
 ### Key Insight 2: One Pass is Enough
 
-At each day, we either:
-1. Find a new lowest price (potential better buy point)
-2. Find a new maximum profit (potential best sell point)
+At each day, we either: 1. Find a new lowest price (potential better buy point) 2. Find a new maximum profit (potential best sell point)
 
 We don't need to go back because we're **always tracking the best of everything seen so far**.
 
----
+------------------------------------------------------------------------
 
 ## Decreasing Price Scenario
 
 Let's trace **Example 2**: `prices = [7, 6, 4, 3, 1]`
 
-| Day | Price | Min Price | Profit | Max Profit | Notes |
-|:----|:------|:----------|:-------|:-----------|:------|
-| 0 | 7 | 7 | 0 | 0 | Start |
-| 1 | 6 | 6 | 0 | 0 | New min, but no profit |
-| 2 | 4 | 4 | 0 | 0 | New min, still no profit |
-| 3 | 3 | 3 | 0 | 0 | New min, still no profit |
-| 4 | 1 | 1 | 0 | 0 | New min, still no profit |
+| Day | Price | Min Price | Profit | Max Profit | Notes                    |
+|:----|:------|:----------|:-------|:-----------|:-------------------------|
+| 0   | 7     | 7         | 0      | 0          | Start                    |
+| 1   | 6     | 6         | 0      | 0          | New min, but no profit   |
+| 2   | 4     | 4         | 0      | 0          | New min, still no profit |
+| 3   | 3     | 3         | 0      | 0          | New min, still no profit |
+| 4   | 1     | 1         | 0      | 0          | New min, still no profit |
 
 **Result**: `0` — Like a bulk phase where you only gained weight, no "loss" to report!
 
----
+------------------------------------------------------------------------
 
 # 📈 Complexity Analysis
 
 ## Time Complexity: O(n)
 
-| Operation | Frequency | Cost | Total |
-|:----------|:----------|:-----|:------|
-| Iterate through prices | n times | O(1) | O(n) |
-| Compare and update min | n times | O(1) | O(n) |
-| Compare and update max | n times | O(1) | O(n) |
+| Operation              | Frequency | Cost | Total |
+|:-----------------------|:----------|:-----|:------|
+| Iterate through prices | n times   | O(1) | O(n)  |
+| Compare and update min | n times   | O(1) | O(n)  |
+| Compare and update max | n times   | O(1) | O(n)  |
 
 **Total**: O(n) — One complete walk through your fitness journal
 
 ## Space Complexity: O(1)
 
-| Variable | Space | Purpose |
-|:---------|:------|:--------|
-| `min_price` | O(1) | Track lowest price seen |
-| `max_profit` | O(1) | Track best profit seen |
+| Variable     | Space | Purpose                 |
+|:-------------|:------|:------------------------|
+| `min_price`  | O(1)  | Track lowest price seen |
+| `max_profit` | O(1)  | Track best profit seen  |
 
-**Total**: O(1) — Just two numbers, like carrying a notepad with "lowest weight" and "best loss" 
+**Total**: O(1) — Just two numbers, like carrying a notepad with "lowest weight" and "best loss"
 
----
+------------------------------------------------------------------------
 
 # 🎯 Key Takeaways
 
@@ -353,34 +351,34 @@ This problem is a classic application of **tracking running min/max**:
 
 ## The One-Pass Trick
 
-| What We Track | Why |
-|:--------------|:----|
-| Minimum so far | Best possible buy price for any future sell |
-| Maximum profit so far | Best result we've found |
+| What We Track         | Why                                         |
+|:----------------------|:--------------------------------------------|
+| Minimum so far        | Best possible buy price for any future sell |
+| Maximum profit so far | Best result we've found                     |
 
 ## Common Mistakes to Avoid
 
 | Mistake | Why It's Wrong | Correct Approach |
-|:--------|:---------------|:-----------------|
+|:-----------------|:-------------------------|:----------------------------|
 | Using nested loops | O(n²) when O(n) is possible | Use running minimum |
 | Forgetting the order constraint | Can't sell before buying | Min is from past, current is potential sell |
 | Returning negative profit | Problem says return 0 if no profit | Initialize max_profit to 0 |
 
----
+------------------------------------------------------------------------
 
 # 🏆 Practice Variations
 
 Once you master this, try these progressively harder stock problems:
 
 | Problem | Difficulty | Key Difference |
-|:--------|:-----------|:---------------|
+|:-----------------|:----------------------|:------------------------------|
 | Best Time II (Multiple Transactions) | Medium | Can buy/sell multiple times |
 | Best Time III (At Most 2 Transactions) | Hard | Limited to 2 buy-sells |
 | Best Time IV (At Most K Transactions) | Hard | Generalized to K transactions |
 | Best Time with Cooldown | Medium | Must wait 1 day after selling |
 | Best Time with Transaction Fee | Medium | Fee charged on each sell |
 
----
+------------------------------------------------------------------------
 
 # 🧮 Mathematical Formulation
 
@@ -392,6 +390,6 @@ Which can be computed in one pass as:
 
 $$\text{Max Profit} = \max_{j} \left( prices[j] - \min_{i < j} prices[i] \right)$$
 
----
+------------------------------------------------------------------------
 
 *"Track your personal bests, and the gains will follow. In trading and fitness, consistency and patience win."* 💪📈

@@ -13,7 +13,7 @@ format:
 
 **LeetCode #1 - Two Sum**
 
-Given an array of integers `nums` and an integer `target`, return the **indices** of the two numbers such that they add up to `target`.
+Given an array of integers `nums` and an integer `target`, return the **indices** of the two numbers such that they add up to `target`. \# So basically output shows the position index of that array element
 
 You may assume that each input would have **exactly one solution**, and you may not use the same element twice.
 
@@ -21,31 +21,31 @@ You can return the answer in any order.
 
 ## Examples
 
-| Example | Input | Target | Output | Explanation |
-|:--------|:------|:-------|:-------|:------------|
-| 1 | `[2, 7, 11, 15]` | `9` | `[0, 1]` | nums[0] + nums[1] = 2 + 7 = 9 |
-| 2 | `[3, 2, 4]` | `6` | `[1, 2]` | nums[1] + nums[2] = 2 + 4 = 6 |
-| 3 | `[3, 3]` | `6` | `[0, 1]` | nums[0] + nums[1] = 3 + 3 = 6 |
+| Example | Input            | Target | Output   | Explanation                       |
+|:-------------|:-------------|:-------------|:-------------|:----------------|
+| 1       | `[2, 7, 11, 15]` | `9`    | `[0, 1]` | nums\[0\] + nums\[1\] = 2 + 7 = 9 |
+| 2       | `[3, 2, 4]`      | `6`    | `[1, 2]` | nums\[1\] + nums\[2\] = 2 + 4 = 6 |
+| 3       | `[3, 3]`         | `6`    | `[0, 1]` | nums\[0\] + nums\[1\] = 3 + 3 = 6 |
 
 ## Constraints
 
-- $2 \leq \text{nums.length} \leq 10^4$
-- $-10^9 \leq \text{nums}[i] \leq 10^9$
-- $-10^9 \leq \text{target} \leq 10^9$
-- Only one valid answer exists.
+-   $2 \leq \text{nums.length} \leq 10^4$
+-   $-10^9 \leq \text{nums}[i] \leq 10^9$
+-   $-10^9 \leq \text{target} \leq 10^9$
+-   Only one valid answer exists.
 
 ## Companies That Ask This
 
-| Company | Frequency |
-|:--------|:----------|
-| Google | ⭐⭐⭐⭐⭐ |
-| Amazon | ⭐⭐⭐⭐⭐ |
-| Meta | ⭐⭐⭐⭐⭐ |
-| Apple | ⭐⭐⭐⭐ |
-| Microsoft | ⭐⭐⭐⭐ |
-| Bloomberg | ⭐⭐⭐⭐ |
+| Company   | Frequency  |
+|:----------|:-----------|
+| Google    | ⭐⭐⭐⭐⭐ |
+| Amazon    | ⭐⭐⭐⭐⭐ |
+| Meta      | ⭐⭐⭐⭐⭐ |
+| Apple     | ⭐⭐⭐⭐   |
+| Microsoft | ⭐⭐⭐⭐   |
+| Bloomberg | ⭐⭐⭐⭐   |
 
----
+------------------------------------------------------------------------
 
 # 🏋️ The Gym Metaphor: Finding Your Workout Buddy
 
@@ -57,36 +57,33 @@ Imagine you're at a gym and the trainer says:
 
 You're standing in a line with other gym members, each wearing a shirt that shows their max bench press:
 
-```
+```         
 [25 kg] [75 kg] [45 kg] [55 kg] [30 kg] [70 kg]
          Target Team Total: 100 kg
 ```
 
 **The Challenge**: Find two people whose weights add up to 100 kg.
 
----
+------------------------------------------------------------------------
 
 ## The Naive Approach: Checking Every Pair (Brute Force)
 
 Like a trainer who walks up to each person and then checks every other person:
 
-1. Go to Person 1 (25 kg) → Check Person 2 (75 kg): 25 + 75 = 100 ✅ **FOUND!**
+1.  Go to Person 1 (25 kg) → Check Person 2 (75 kg): 25 + 75 = 100 ✅ **FOUND!**
 
-But what if the match was at the end? You'd check:
-- Person 1 with Person 2, 3, 4, 5, 6...
-- Person 2 with Person 3, 4, 5, 6...
-- And so on...
+But what if the match was at the end? You'd check: - Person 1 with Person 2, 3, 4, 5, 6... - Person 2 with Person 3, 4, 5, 6... - And so on...
 
 **This is exhausting!** It's like doing $n \times n$ burpees. 😫
 
----
+------------------------------------------------------------------------
 
 ## The Smart Approach: The Gym Locker System (Hash Map)
 
 Now imagine the gym has a **smart locker system**:
 
-1. **Each locker is labeled with a weight number**
-2. **When you check in, you put your locker number (index) in the locker matching your weight**
+1.  **Each locker is labeled with a weight number**
+2.  **When you check in, you put your locker number (index) in the locker matching your weight**
 
 Here's the genius insight:
 
@@ -94,14 +91,14 @@ Here's the genius insight:
 
 So instead of checking everyone, you:
 
-1. **Calculate what you need**: `100 - 25 = 75 kg`
-2. **Check the 75 kg locker**: Is anyone there?
-   - **YES** → Found your partner!
-   - **NO** → Put yourself in the 25 kg locker and move on
+1.  **Calculate what you need**: `100 - 25 = 75 kg`
+2.  **Check the 75 kg locker**: Is anyone there?
+    -   **YES** → Found your partner!
+    -   **NO** → Put yourself in the 25 kg locker and move on
 
 ### Visual Walkthrough
 
-```
+```         
 Target: 9
 Array: [2, 7, 11, 15]
 
@@ -117,11 +114,11 @@ Step 2: Person at index 1 has value 7
 ```
 
 | Step | Current Value | Looking For | Locker Check | Action | Locker State |
-|:-----|:--------------|:------------|:-------------|:-------|:-------------|
-| 1 | nums[0] = 2 | 9 - 2 = 7 | Not found | Store index 0 at key 2 | {2: 0} |
-| 2 | nums[1] = 7 | 9 - 7 = 2 | **Found at index 0!** | Return [0, 1] | {2: 0} |
+|:-----------|:-----------|:-----------|:-----------|:-----------|:-----------|
+| 1 | nums\[0\] = 2 | 9 - 2 = 7 | Not found | Store index 0 at key 2 | {2: 0} |
+| 2 | nums\[1\] = 7 | 9 - 7 = 2 | **Found at index 0!** | Return \[0, 1\] | {2: 0} |
 
----
+------------------------------------------------------------------------
 
 # 💻 Python Solution
 
@@ -163,7 +160,7 @@ print("Example 2:", two_sum([3, 2, 4], 6))       # [1, 2]
 print("Example 3:", two_sum([3, 3], 6))          # [0, 1]
 ```
 
----
+------------------------------------------------------------------------
 
 # 📊 R Solution
 
@@ -210,7 +207,7 @@ cat("Example 2:", two_sum(c(3, 2, 4), 6), "\n")       # 2, 3
 cat("Example 3:", two_sum(c(3, 3), 6), "\n")          # 1, 2
 ```
 
----
+------------------------------------------------------------------------
 
 # 🔍 Solution Breakdown: The Full Gym Session Analysis
 
@@ -219,18 +216,18 @@ cat("Example 3:", two_sum(c(3, 3), 6), "\n")          # 1, 2
 Let's trace through **Example 1**: `nums = [2, 7, 11, 15]`, `target = 9`
 
 | Iteration | Index (i) | Current Weight | Partner Needed | Locker Check | Found? | Action | Locker State After |
-|:----------|:----------|:---------------|:---------------|:-------------|:-------|:-------|:-------------------|
-| 1 | 0 | 2 | 9 - 2 = 7 | Is 7 in locker? | ❌ No | Store locker[2] = 0 | {2: 0} |
-| 2 | 1 | 7 | 9 - 7 = 2 | Is 2 in locker? | ✅ Yes (index 0) | Return [0, 1] | {2: 0} |
+|:--------|:--------|:--------|:--------|:--------|:--------|:--------|:--------|
+| 1 | 0 | 2 | 9 - 2 = 7 | Is 7 in locker? | ❌ No | Store locker\[2\] = 0 | {2: 0} |
+| 2 | 1 | 7 | 9 - 7 = 2 | Is 2 in locker? | ✅ Yes (index 0) | Return \[0, 1\] | {2: 0} |
 
 **Result**: `[0, 1]` because `nums[0] + nums[1] = 2 + 7 = 9` ✅
 
----
+------------------------------------------------------------------------
 
 ## The Gym Metaphor Breakdown
 
 | Coding Concept | Gym Equivalent |
-|:---------------|:---------------|
+|:-----------------------------------|:-----------------------------------|
 | Array `nums` | Line of gym members, each with a bench press max |
 | `target` | The team weight goal for the competition |
 | Hash Map/Dictionary | The gym's smart locker system |
@@ -240,35 +237,35 @@ Let's trace through **Example 1**: `nums = [2, 7, 11, 15]`, `target = 9`
 | Hash lookup | Checking if someone's already in that locker |
 | Return indices | "These two people form the winning team!" |
 
----
+------------------------------------------------------------------------
 
 ## Why This Works: The Fitness Logic
 
-1. **One Pass Efficiency**: Like a trainer walking down the line once, checking lockers as they go
-2. **Hash Map = O(1) Lookup**: Checking a locker is instant (like a digital key card)
-3. **Complement Logic**: If I lift X and we need Y total, my partner must lift Y - X
+1.  **One Pass Efficiency**: Like a trainer walking down the line once, checking lockers as they go
+2.  **Hash Map = O(1) Lookup**: Checking a locker is instant (like a digital key card)
+3.  **Complement Logic**: If I lift X and we need Y total, my partner must lift Y - X
 
----
+------------------------------------------------------------------------
 
 # 📈 Complexity Analysis
 
 ## Time Complexity: O(n)
 
-| Operation | Frequency | Cost | Total |
-|:----------|:----------|:-----|:------|
-| Iterate through array | n times | O(1) | O(n) |
-| Hash map lookup | n times | O(1) average | O(n) |
-| Hash map insertion | At most n times | O(1) average | O(n) |
+| Operation             | Frequency       | Cost         | Total |
+|:----------------------|:----------------|:-------------|:------|
+| Iterate through array | n times         | O(1)         | O(n)  |
+| Hash map lookup       | n times         | O(1) average | O(n)  |
+| Hash map insertion    | At most n times | O(1) average | O(n)  |
 
 **Total**: O(n) — Like walking through the gym line once
 
 ## Space Complexity: O(n)
 
 | Storage | Worst Case | Explanation |
-|:--------|:-----------|:------------|
+|:------------------|:------------------------|:--------------------------|
 | Hash Map | n entries | If the matching pair is at the very end, we store n-1 entries first |
 
----
+------------------------------------------------------------------------
 
 # 🎯 Key Takeaways
 
@@ -280,33 +277,33 @@ This problem teaches the **"Complement Pattern"**:
 
 ## When to Use This Pattern
 
-| Scenario | Example |
-|:---------|:--------|
-| Finding pairs with a specific sum | Two Sum, Four Sum |
-| Finding pairs with a specific difference | Two Sum variants |
-| Finding complements in any sense | Pairs, triplets, etc. |
+| Scenario                                 | Example               |
+|:-----------------------------------------|:----------------------|
+| Finding pairs with a specific sum        | Two Sum, Four Sum     |
+| Finding pairs with a specific difference | Two Sum variants      |
+| Finding complements in any sense         | Pairs, triplets, etc. |
 
 ## Common Mistakes to Avoid
 
 | Mistake | Why It's Wrong | Correct Approach |
-|:--------|:---------------|:-----------------|
+|:-----------------|:-------------------------|:----------------------------|
 | Using the same element twice | Problem says "may not use same element" | Check complement exists at different index |
 | Returning values instead of indices | Problem asks for indices | Store and return indices |
 | Not handling duplicates | `[3, 3]` with target 6 | Hash map naturally handles this |
 
----
+------------------------------------------------------------------------
 
 # 🏆 Practice Variations
 
 Once you master Two Sum, try these progressively harder problems:
 
-| Problem | Difficulty | Key Difference |
-|:--------|:-----------|:---------------|
-| Two Sum II (Sorted Array) | Easy | Use two pointers instead |
-| 3Sum | Medium | Sort + Two pointers for pairs |
-| 4Sum | Medium | Two loops + Two Sum |
-| Two Sum Less Than K | Easy | Closest pair, not exact |
+| Problem                   | Difficulty | Key Difference                |
+|:--------------------------|:-----------|:------------------------------|
+| Two Sum II (Sorted Array) | Easy       | Use two pointers instead      |
+| 3Sum                      | Medium     | Sort + Two pointers for pairs |
+| 4Sum                      | Medium     | Two loops + Two Sum           |
+| Two Sum Less Than K       | Easy       | Closest pair, not exact       |
 
----
+------------------------------------------------------------------------
 
 *"In the gym, the first exercise sets the foundation. Two Sum is your first rep in algorithmic training."* 💪

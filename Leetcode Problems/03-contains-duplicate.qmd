@@ -17,28 +17,28 @@ Given an integer array `nums`, return `true` if any value appears **at least twi
 
 ## Examples
 
-| Example | Input | Output | Explanation |
-|:--------|:------|:-------|:------------|
-| 1 | `[1, 2, 3, 1]` | `true` | 1 appears twice |
-| 2 | `[1, 2, 3, 4]` | `false` | All elements are distinct |
-| 3 | `[1, 1, 1, 3, 3, 4, 3, 2, 4, 2]` | `true` | Multiple duplicates |
+| Example | Input                            | Output  | Explanation               |
+|:-------------|:-------------------------|:-------------|:-------------------|
+| 1       | `[1, 2, 3, 1]`                   | `true`  | 1 appears twice           |
+| 2       | `[1, 2, 3, 4]`                   | `false` | All elements are distinct |
+| 3       | `[1, 1, 1, 3, 3, 4, 3, 2, 4, 2]` | `true`  | Multiple duplicates       |
 
 ## Constraints
 
-- $1 \leq \text{nums.length} \leq 10^5$
-- $-10^9 \leq \text{nums}[i] \leq 10^9$
+-   $1 \leq \text{nums.length} \leq 10^5$
+-   $-10^9 \leq \text{nums}[i] \leq 10^9$
 
 ## Companies That Ask This
 
-| Company | Frequency |
-|:--------|:----------|
-| Amazon | ⭐⭐⭐⭐⭐ |
-| Apple | ⭐⭐⭐⭐ |
-| Microsoft | ⭐⭐⭐⭐ |
-| Google | ⭐⭐⭐ |
-| Adobe | ⭐⭐⭐ |
+| Company   | Frequency  |
+|:----------|:-----------|
+| Amazon    | ⭐⭐⭐⭐⭐ |
+| Apple     | ⭐⭐⭐⭐   |
+| Microsoft | ⭐⭐⭐⭐   |
+| Google    | ⭐⭐⭐     |
+| Adobe     | ⭐⭐⭐     |
 
----
+------------------------------------------------------------------------
 
 # 🏋️ The Gym Metaphor: Checking for Repeat Visitors
 
@@ -50,19 +50,19 @@ Imagine you're the **front desk manager** at a gym with a **unique visitor polic
 
 Your job: Detect if **anyone has already checked in** when they try to enter again.
 
-```
+```         
 Check-in sequence: [Member#1, Member#2, Member#3, Member#1]
                                                     ↑
                                                   DUPLICATE!
 ```
 
----
+------------------------------------------------------------------------
 
 ## The Naive Approach: Checking the Entire Sign-in Sheet
 
 When Member #1 tries to check in a second time, you'd flip through every name on the sign-in sheet:
 
-```
+```         
 "Is Member#1 here? Let me check..."
 *flips through 3 names*
 "Yes! They already signed in!"
@@ -70,25 +70,25 @@ When Member #1 tries to check in a second time, you'd flip through every name on
 
 For each of n members, you might check up to n names → **O(n²)** — like reading the entire guest list for every new person!
 
----
+------------------------------------------------------------------------
 
 ## The Smart Approach: The Digital Check-in System (Hash Set)
 
 A modern gym uses a **digital check-in system** (Hash Set):
 
-1. When someone checks in, their ID is **instantly recorded**
-2. Before checking in anyone, the system **instantly knows** if they're already logged
+1.  When someone checks in, their ID is **instantly recorded**
+2.  Before checking in anyone, the system **instantly knows** if they're already logged
 
 ### How It Works:
 
-| Action | Hash Set Query | Time |
-|:-------|:---------------|:-----|
-| "Is Member#5 checked in?" | Lookup in set | O(1) ⚡ |
-| "Add Member#5 to system" | Insert to set | O(1) ⚡ |
+| Action                    | Hash Set Query | Time    |
+|:--------------------------|:---------------|:--------|
+| "Is Member#5 checked in?" | Lookup in set  | O(1) ⚡ |
+| "Add Member#5 to system"  | Insert to set  | O(1) ⚡ |
 
 ### Visual Walkthrough
 
-```
+```         
 Input: [1, 2, 3, 1]
 
 Step 1: Member 1 checks in
@@ -111,14 +111,14 @@ Step 4: Member 1 tries to check in again
         → DUPLICATE DETECTED! Return TRUE
 ```
 
-| Step | Incoming Member | Already in Set? | Action | Set State |
-|:-----|:----------------|:----------------|:-------|:----------|
-| 1 | 1 | ❌ No | Add 1 | {1} |
-| 2 | 2 | ❌ No | Add 2 | {1, 2} |
-| 3 | 3 | ❌ No | Add 3 | {1, 2, 3} |
-| 4 | 1 | ✅ **Yes!** | Return `true` | {1, 2, 3} |
+| Step | Incoming Member | Already in Set? | Action        | Set State |
+|:-----|:----------------|:----------------|:--------------|:----------|
+| 1    | 1               | ❌ No           | Add 1         | {1}       |
+| 2    | 2               | ❌ No           | Add 2         | {1, 2}    |
+| 3    | 3               | ❌ No           | Add 3         | {1, 2, 3} |
+| 4    | 1               | ✅ **Yes!**     | Return `true` | {1, 2, 3} |
 
----
+------------------------------------------------------------------------
 
 # 💻 Python Solution
 
@@ -173,7 +173,7 @@ print("Example 1:", contains_duplicate_oneliner([1, 2, 3, 1]))  # True
 print("Example 2:", contains_duplicate_oneliner([1, 2, 3, 4]))  # False
 ```
 
----
+------------------------------------------------------------------------
 
 # 📊 R Solution
 
@@ -243,7 +243,7 @@ cat("\nUsing duplicated():\n")
 cat("Example 1:", contains_duplicate_any(c(1, 2, 3, 1)), "\n")  # TRUE
 ```
 
----
+------------------------------------------------------------------------
 
 # 🔍 Solution Breakdown: The Full Gym Session Analysis
 
@@ -251,10 +251,10 @@ cat("Example 1:", contains_duplicate_any(c(1, 2, 3, 1)), "\n")  # TRUE
 
 Let's trace through **Example 3**: `nums = [1, 1, 1, 3, 3, 4, 3, 2, 4, 2]`
 
-| Index | Value | In Set? | Action | Set After | Result |
-|:------|:------|:--------|:-------|:----------|:-------|
-| 0 | 1 | ❌ | Add | {1} | Continue |
-| 1 | 1 | ✅ | — | — | **Return TRUE** |
+| Index | Value | In Set? | Action | Set After | Result          |
+|:------|:------|:--------|:-------|:----------|:----------------|
+| 0     | 1     | ❌      | Add    | {1}       | Continue        |
+| 1     | 1     | ✅      | —      | —         | **Return TRUE** |
 
 **Early termination!** We found a duplicate at index 1.
 
@@ -262,29 +262,29 @@ Let's trace through **Example 3**: `nums = [1, 1, 1, 3, 3, 4, 3, 2, 4, 2]`
 
 Let's trace **Example 2**: `nums = [1, 2, 3, 4]`
 
-| Index | Value | In Set? | Action | Set After |
-|:------|:------|:--------|:-------|:----------|
-| 0 | 1 | ❌ | Add | {1} |
-| 1 | 2 | ❌ | Add | {1, 2} |
-| 2 | 3 | ❌ | Add | {1, 2, 3} |
-| 3 | 4 | ❌ | Add | {1, 2, 3, 4} |
+| Index | Value | In Set? | Action | Set After    |
+|:------|:------|:--------|:-------|:-------------|
+| 0     | 1     | ❌      | Add    | {1}          |
+| 1     | 2     | ❌      | Add    | {1, 2}       |
+| 2     | 3     | ❌      | Add    | {1, 2, 3}    |
+| 3     | 4     | ❌      | Add    | {1, 2, 3, 4} |
 
 **Result**: `false` — All members had unique IDs!
 
----
+------------------------------------------------------------------------
 
 ## The Gym Metaphor Breakdown
 
-| Coding Concept | Gym Equivalent |
-|:---------------|:---------------|
-| Array `nums` | List of member IDs checking in |
-| Hash Set | Digital check-in database |
-| `if num in set` | "Is this member already logged?" |
-| `set.add(num)` | "Log this member's check-in" |
-| Return `true` | "Alert! Repeat visitor detected!" |
-| Return `false` | "All clear, everyone is unique" |
+| Coding Concept  | Gym Equivalent                    |
+|:----------------|:----------------------------------|
+| Array `nums`    | List of member IDs checking in    |
+| Hash Set        | Digital check-in database         |
+| `if num in set` | "Is this member already logged?"  |
+| `set.add(num)`  | "Log this member's check-in"      |
+| Return `true`   | "Alert! Repeat visitor detected!" |
+| Return `false`  | "All clear, everyone is unique"   |
 
----
+------------------------------------------------------------------------
 
 ## Why Hash Set Works
 
@@ -292,53 +292,52 @@ Let's trace **Example 2**: `nums = [1, 2, 3, 4]`
 
 A **Hash Set** stores **unique elements** and provides:
 
-| Operation | Average Time | Worst Case |
-|:----------|:-------------|:-----------|
-| Lookup (`in`) | O(1) | O(n) |
-| Insert (`add`) | O(1) | O(n) |
+| Operation      | Average Time | Worst Case |
+|:---------------|:-------------|:-----------|
+| Lookup (`in`)  | O(1)         | O(n)       |
+| Insert (`add`) | O(1)         | O(n)       |
 
 ### Gym Translation
 
-| Operation | Gym Action | Speed |
-|:----------|:-----------|:------|
-| Lookup | "Scan member card" | Instant ⚡ |
-| Insert | "Register check-in" | Instant ⚡ |
+| Operation | Gym Action          | Speed      |
+|:----------|:--------------------|:-----------|
+| Lookup    | "Scan member card"  | Instant ⚡ |
+| Insert    | "Register check-in" | Instant ⚡ |
 
----
+------------------------------------------------------------------------
 
 # 📈 Complexity Analysis
 
 ## Approach Comparison
 
-| Approach | Time | Space | Description |
-|:---------|:-----|:------|:------------|
-| Brute Force | O(n²) | O(1) | Compare every pair |
-| Sorting | O(n log n) | O(1)* | Sort, check adjacent |
-| **Hash Set** | **O(n)** | **O(n)** | **Track seen elements** |
+| Approach     | Time       | Space    | Description             |
+|:-------------|:-----------|:---------|:------------------------|
+| Brute Force  | O(n²)      | O(1)     | Compare every pair      |
+| Sorting      | O(n log n) | O(1)\*   | Sort, check adjacent    |
+| **Hash Set** | **O(n)**   | **O(n)** | **Track seen elements** |
 
-*Sorting can be O(1) space if done in-place
+\*Sorting can be O(1) space if done in-place
 
 ## Hash Set Analysis
 
 ### Time Complexity: O(n)
 
-| Operation | Frequency | Cost | Total |
-|:----------|:----------|:-----|:------|
-| Iterate array | n times | O(1) | O(n) |
-| Set lookup | n times | O(1) avg | O(n) |
-| Set insert | At most n | O(1) avg | O(n) |
+| Operation     | Frequency | Cost     | Total |
+|:--------------|:----------|:---------|:------|
+| Iterate array | n times   | O(1)     | O(n)  |
+| Set lookup    | n times   | O(1) avg | O(n)  |
+| Set insert    | At most n | O(1) avg | O(n)  |
 
-**Best Case**: O(1) — duplicate at index 1
-**Worst Case**: O(n) — no duplicates, or duplicate at end
+**Best Case**: O(1) — duplicate at index 1 **Worst Case**: O(n) — no duplicates, or duplicate at end
 
 ### Space Complexity: O(n)
 
-| Storage | Size | When |
-|:--------|:-----|:-----|
-| Hash Set | Up to n | No duplicates (worst case) |
-| Hash Set | k < n | k unique elements before duplicate |
+| Storage  | Size    | When                               |
+|:---------|:--------|:-----------------------------------|
+| Hash Set | Up to n | No duplicates (worst case)         |
+| Hash Set | k \< n  | k unique elements before duplicate |
 
----
+------------------------------------------------------------------------
 
 # 🎯 Key Takeaways
 
@@ -350,17 +349,17 @@ This problem introduces the fundamental pattern:
 
 ## When to Use This Pattern
 
-| Scenario | Example Problems |
-|:---------|:-----------------|
-| Detecting duplicates | Contains Duplicate, First Duplicate |
-| Tracking visited nodes | Graph BFS/DFS, Cycle Detection |
-| Checking membership | Valid Sudoku, Word Search |
-| Ensuring uniqueness | Unique characters, Distinct values |
+| Scenario               | Example Problems                    |
+|:-----------------------|:------------------------------------|
+| Detecting duplicates   | Contains Duplicate, First Duplicate |
+| Tracking visited nodes | Graph BFS/DFS, Cycle Detection      |
+| Checking membership    | Valid Sudoku, Word Search           |
+| Ensuring uniqueness    | Unique characters, Distinct values  |
 
 ## Three Approaches Summary
 
 | Method | Pros | Cons | Use When |
-|:-------|:-----|:-----|:---------|
+|:----------------|:----------------|:----------------|:--------------------|
 | Hash Set | O(n) time | O(n) space | Default choice |
 | Sorting | O(1) space | O(n log n) time, modifies input | Space-constrained |
 | Brute Force | O(1) space | O(n²) time | Never (for interviews) |
@@ -368,26 +367,26 @@ This problem introduces the fundamental pattern:
 ## Common Mistakes to Avoid
 
 | Mistake | Why It's Wrong | Correct Approach |
-|:--------|:---------------|:-----------------|
+|:-----------------|:-------------------------|:---------------------------|
 | Using list instead of set | O(n) lookup vs O(1) | Use set for lookups |
 | Sorting when not asked | Modifies original array | Only if explicitly allowed |
 | Not returning early | Processes more than needed | Return on first duplicate |
 
----
+------------------------------------------------------------------------
 
 # 🏆 Practice Variations
 
 Build on this concept with these related problems:
 
-| Problem | Difficulty | Key Extension |
-|:--------|:-----------|:--------------|
-| Contains Duplicate II | Easy | Duplicates within k distance |
-| Contains Duplicate III | Hard | Duplicates within k with value diff t |
-| Find All Duplicates | Medium | Find all duplicate numbers |
-| Single Number | Easy | Every element appears twice except one |
-| First Unique Character | Easy | First char that appears once |
+| Problem                | Difficulty | Key Extension                          |
+|:-----------------|:-----------------------|:-----------------------------|
+| Contains Duplicate II  | Easy       | Duplicates within k distance           |
+| Contains Duplicate III | Hard       | Duplicates within k with value diff t  |
+| Find All Duplicates    | Medium     | Find all duplicate numbers             |
+| Single Number          | Easy       | Every element appears twice except one |
+| First Unique Character | Easy       | First char that appears once           |
 
----
+------------------------------------------------------------------------
 
 # 🧮 Mathematical Insight
 
@@ -395,9 +394,8 @@ The **Pigeonhole Principle** applies here:
 
 > If you have n items and fewer than n unique values are possible, there must be duplicates.
 
-For the one-liner solution:
-$$\text{Has Duplicates} = (\text{len}(nums) \neq \text{len}(\text{set}(nums)))$$
+For the one-liner solution: $$\text{Has Duplicates} = (\text{len}(nums) \neq \text{len}(\text{set}(nums)))$$
 
----
+------------------------------------------------------------------------
 
 *"In the gym of algorithms, the hash set is your membership card scanner — fast, reliable, and essential."* 💪🏋️
